@@ -24,6 +24,7 @@ final readonly class Solver
         $methods = [
             'obvious' => $this->getCandidates(...),
             'candidate_not_present_in_related_cell' => $this->getCandidatesNotPresentInOtherRelatedCells(...),
+            'new' => $this->newMethod(...),
         ];
 
         $methodNamesCount = [];
@@ -109,9 +110,20 @@ final readonly class Solver
 
                 $candidates = $candidates->withRemovedValues(...$relatedCellCandidates);
             }
+
+            if ($candidates->isUnique()) {
+                return $candidates;
+            }
         }
 
         return $candidates;
+    }
+
+    private function newMethod(Grid $grid, FillableCell $currentCell): Candidates
+    {
+        $sets = $grid->getSetsContainingCell($currentCell);
+
+        return Candidates::empty();
     }
 
     private function doGetCandidates(Grid $grid, FillableCell $cell): Candidates

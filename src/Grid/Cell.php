@@ -34,4 +34,31 @@ abstract class Cell
     {
         return $this->coordinates->toString() === $cell->coordinates->toString();
     }
+
+    public function isOnSameRow(Cell $cell): bool
+    {
+        if ($this->is($cell)) {
+            return false;
+        }
+
+        return $this->coordinates->y === $cell->coordinates->y;
+    }
+
+    public function isOnSameColumn(Cell $cell): bool
+    {
+        if ($this->is($cell)) {
+            return false;
+        }
+
+        return $this->coordinates->x === $cell->coordinates->x;
+    }
+
+    public function isInSameGroup(Cell $cell): bool
+    {
+        if ($this->is($cell)) {
+            return false;
+        }
+
+        return $this->groupNumber->value === $cell->groupNumber->value;
+    }
 }

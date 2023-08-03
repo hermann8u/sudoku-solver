@@ -77,6 +77,30 @@ abstract readonly class Set implements \IteratorAggregate
         );
     }
 
+    /**
+     * @return Cell[]
+     */
+    public function getCellsOnSameColumn(Cell $cell): array
+    {
+        return array_values(array_filter($this->set, $cell->isOnSameColumn(...)));
+    }
+
+    /**
+     * @return Cell[]
+     */
+    public function getCellsOnSameRow(Cell $cell): array
+    {
+        return array_values(array_filter($this->set, $cell->isOnSameRow(...)));
+    }
+
+    /**
+     * @return Cell[]
+     */
+    public function getCellsInSameGroup(Cell $cell): array
+    {
+        return array_values(array_filter($this->set, $cell->isInSameGroup(...)));
+    }
+
     public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->set);

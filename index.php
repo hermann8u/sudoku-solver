@@ -43,6 +43,54 @@ $hardGrid = <<<GRID
 ;;;2;3;5;;;
 GRID;
 
+/*$hardGrid = <<<GRID
+4;;;3;;9;;;2
+;;;;;;;;
+;6;;;2;;;8;
+;7;;;8;3;;1;
+;;;5;;4;;;
+;3;5;;;;7;9;
+;;7;;;;2;;
+;;9;;4;;1;;
+;;;2;3;5;;;
+GRID;
+
+$hardGrid = <<<GRID
+4;;;3;;9;;;2
+;;;;;;;;
+;6;;;2;;;8;
+;7;;;8;3;;1;
+;;;5;7;4;;;
+;3;5;;;;7;9;
+;;7;;;;2;;
+;;9;;4;;1;;
+;;;2;3;5;;;
+GRID;
+
+$hardGrid = <<<GRID
+4;;;3;;9;;;2
+;;;;;;;;
+;6;;;2;;;8;
+;7;4;9;8;3;;1;
+;;;5;7;4;;2;
+;3;5;;;2;7;9;
+;;7;;9;;2;;
+;;9;;4;;1;;
+;;;2;3;5;;;
+GRID;
+
+$hardGrid = <<<GRID
+4;;;3;;9;;;2
+;;;;;;;;
+;6;;;2;;;8;
+;7;4;9;8;3;;1;
+;;;5;7;4;;2;
+;3;5;;6;2;7;9;
+;;7;;9;;2;;
+;;9;;4;;1;;
+;;;2;3;5;;;
+GRID;*/
+
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($mediumGrid);
@@ -59,7 +107,6 @@ $solver->solve($grid);
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">-->
     <style>
         .container {
             margin-left: auto;
