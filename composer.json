@@ -1,0 +1,29 @@
+{
+    "name": "florian/test-sudoku-solver",
+    "type": "project",
+    "require": {
+        "php": "^8.2",
+        "webmozart/assert": "^1.11"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.11",
+        "symfony/var-dumper": "^6.3",
+        "phpstan/phpstan": "^1.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Florian\\SudokuSolver\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SudokuSolver\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
