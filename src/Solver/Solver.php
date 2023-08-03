@@ -93,9 +93,9 @@ final readonly class Solver
 
     private function getCandidatesNotPresentInOtherRelatedCells(Grid $grid, FillableCell $currentCell): Candidates
     {
-        $candidates = $this->getCandidates($grid, $currentCell);
-
         foreach ($grid->getSetsContainingCell($currentCell) as $set) {
+            $candidates = $this->getCandidates($grid, $currentCell);
+
             foreach ($set->getEmptyCells() as $relatedCell) {
                 if ($relatedCell->is($currentCell)) {
                     continue;
@@ -116,7 +116,7 @@ final readonly class Solver
             }
         }
 
-        return $candidates;
+        return Candidates::empty();
     }
 
     private function newMethod(Grid $grid, FillableCell $currentCell): Candidates

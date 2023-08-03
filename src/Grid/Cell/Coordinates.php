@@ -39,4 +39,9 @@ final readonly class Coordinates implements \Stringable
     {
         return sprintf('(%d,%d)', $this->x, $this->y);
     }
+
+    public function is(int $x, int $y): bool
+    {
+        return $this->x === $x && $this->y === $y;
+    }
 }

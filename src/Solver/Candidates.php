@@ -89,7 +89,7 @@ final readonly class Candidates implements \IteratorAggregate
     /**
      * @return int[]
      */
-    private function toIntegers(): array
+    public function toIntegers(): array
     {
         return array_filter(array_column($this->values, 'value'));
     }

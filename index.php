@@ -93,7 +93,7 @@ GRID;*/
 
 
 $generator = new GridGenerator(new GridFactory());
-$grid = $generator->generate($mediumGrid);
+$grid = $generator->generate($hardGrid);
 
 $solver = new Solver();
 $solver->solve($grid);
