@@ -95,14 +95,14 @@ $veryHardGrid = <<<GRID
 GRID;
 
 $generator = new GridGenerator(new GridFactory());
-$grid = $generator->generate($hardGrid);
+$grid = $generator->generate($newHardGrid);
 
 $obviousCandidateMethod = new ObviousCandidateMethod();
 
 $solver = new Solver([
     $obviousCandidateMethod,
-    new FilterPairMethod($obviousCandidateMethod),
     new UniqueCandidateComparedToRelatedCellsMethod($obviousCandidateMethod),
+    new FilterPairMethod($obviousCandidateMethod),
 ]);
 
 $solver->solve($grid);

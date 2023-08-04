@@ -21,9 +21,9 @@ final readonly class FilterPairMethod implements Method
     {
         $sets = $grid->getSetsOfCell($currentCell);
 
-        $candidateCounts = array_fill(1, 9, []);
-
         foreach ($sets as $set) {
+            $candidateCounts = array_fill(1, 9, []);
+
             foreach ($set->getEmptyCells() as $cell) {
                 [$map, $candidates] = $this->getCandidates($grid, $cell, $map);
 
@@ -32,11 +32,13 @@ final readonly class FilterPairMethod implements Method
                 }
             }
 
+            $candidateCounts = array_filter($candidateCounts, static fn (array $items) => count($items) === 2);
+
             foreach ($set->getEmptyCells() as $cell) {
                 $newCandidates = [];
 
                 foreach ($candidateCounts as $value => $cellsCoordinates) {
-                    if (count($cellsCoordinates) === 2 && in_array($cell->coordinates->toString(), $cellsCoordinates, true)) {
+                    if (in_array($cell->coordinates->toString(), $cellsCoordinates, true)) {
                         $newCandidates[] = (int) $value;
                     }
                 }
