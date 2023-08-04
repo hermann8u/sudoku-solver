@@ -57,17 +57,6 @@ final readonly class Grid
     }
 
     /**
-     * @return FillableCell[]
-     */
-    public function getEmptyFillableCells(): array
-    {
-        return array_values(array_filter(
-            $this->cells,
-            static fn (Cell $cell) => $cell instanceof FillableCell && $cell->isEmpty(),
-        ));
-    }
-
-    /**
      * @return iterable<Set>
      */
     public function getSetsOfCell(Cell $cell): iterable
@@ -101,24 +90,24 @@ final readonly class Grid
     public function containsDuplicate(): bool
     {
         foreach ($this->columns as $column) {
-            if (! $column->containsDuplicate()) {
-                return false;
+            if ($column->containsDuplicate()) {
+                return true;
             }
         }
 
         foreach ($this->rows as $row) {
-            if (! $row->containsDuplicate()) {
-                return false;
+            if ($row->containsDuplicate()) {
+                return true;
             }
         }
 
         foreach ($this->groups as $group) {
-            if (! $group->containsDuplicate()) {
-                return false;
+            if ($group->containsDuplicate()) {
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     /**

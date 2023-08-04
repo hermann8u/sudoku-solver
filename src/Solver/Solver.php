@@ -27,7 +27,11 @@ final readonly class Solver
         $map = CellCandidatesMap::empty();
 
         do {
-            foreach ($grid->getEmptyFillableCells() as $currentCell) {
+            foreach ($grid->getFillableCells() as $currentCell) {
+                if ($currentCell->isEmpty() === false) {
+                    continue;
+                }
+
                 foreach ($this->methods as $method) {
                     $map = $method->apply($grid, $currentCell, $map);
 
@@ -45,12 +49,17 @@ final readonly class Solver
                         $methodName = $method::class;
                         $methodNamesCount[$methodName] = ($methodNamesCount[$methodName] ?? 0) +1;
 
+                        if ($grid->containsDuplicate()) {
+                            dump([$cell, $methodName, $cellValue->value]);
+                            break 3;
+                        }
+
                         break;
                     }
                 }
             }
             $i++;
-        } while ($grid->isValid() === false && $i < 500);
+        } while (($grid->isValid() === false && $i < 10));
 
         dump([
             'iteration' => $i,

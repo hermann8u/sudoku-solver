@@ -43,17 +43,7 @@ abstract readonly class Set implements \IteratorAggregate
     {
         $presentValues = $this->getPresentValues();
 
-        $v = count($presentValues) !== count(array_unique(array_column($presentValues, 'value')));
-
-        if ($v === true) {
-            dd([
-                'Contains duplicates :o',
-                $presentValues,
-                array_map(static fn (Cell $cell) => $cell->coordinates->toString(), $this->cells),
-            ]);
-        }
-
-        return $v;
+        return count($presentValues) !== count(array_unique(array_column($presentValues, 'value')));
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Florian\SudokuSolver\Solver\Method;
 
+use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Florian\SudokuSolver\Grid\Cell\FillableCell;
 use Florian\SudokuSolver\Grid\Grid;
 use Florian\SudokuSolver\Solver\Candidates;
