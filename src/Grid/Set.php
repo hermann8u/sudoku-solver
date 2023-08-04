@@ -15,18 +15,18 @@ use Webmozart\Assert\Assert;
 abstract readonly class Set implements \IteratorAggregate
 {
     /** @var Cell[] */
-    private array $set;
+    private array $cells;
 
     /**
-     * @param Cell[] $set
+     * @param Cell[] $cells
      */
-    protected function __construct(array $set)
+    protected function __construct(array $cells)
     {
-        Assert::count($set, 9);
+        Assert::count($cells, 9);
 
-        usort($set, static fn (Cell $a, Cell $b) => $a->coordinates->compare($b->coordinates));
+        usort($cells, static fn (Cell $a, Cell $b) => $a->coordinates->compare($b->coordinates));
 
-        $this->set = $set;
+        $this->cells = $cells;
     }
 
     public function isValid(): bool
@@ -49,7 +49,7 @@ abstract readonly class Set implements \IteratorAggregate
             dd([
                 'Contains duplicates :o',
                 $presentValues,
-                array_map(static fn(Cell $cell) => $cell->coordinates->toString(), $this->set)
+                array_map(static fn (Cell $cell) => $cell->coordinates->toString(), $this->cells),
             ]);
         }
 
@@ -61,7 +61,7 @@ abstract readonly class Set implements \IteratorAggregate
      */
     public function getEmptyCells(): array
     {
-        return array_filter($this->set, static fn (Cell $cell) => $cell->isEmpty() && $cell instanceof FillableCell);
+        return array_filter($this->cells, static fn (Cell $cell) => $cell->isEmpty() && $cell instanceof FillableCell);
     }
 
     /**
@@ -69,7 +69,7 @@ abstract readonly class Set implements \IteratorAggregate
      */
     public function getPresentValues(): array
     {
-        $cellsWithValue = array_filter($this->set, static fn (Cell $cell) => ! $cell->isEmpty());
+        $cellsWithValue = array_filter($this->cells, static fn (Cell $cell) => ! $cell->isEmpty());
 
         return array_map(
             static fn (Cell $cell) => $cell->getCellValue(),
@@ -77,32 +77,8 @@ abstract readonly class Set implements \IteratorAggregate
         );
     }
 
-    /**
-     * @return Cell[]
-     */
-    public function getCellsOnSameColumn(Cell $cell): array
-    {
-        return array_values(array_filter($this->set, $cell->isOnSameColumn(...)));
-    }
-
-    /**
-     * @return Cell[]
-     */
-    public function getCellsOnSameRow(Cell $cell): array
-    {
-        return array_values(array_filter($this->set, $cell->isOnSameRow(...)));
-    }
-
-    /**
-     * @return Cell[]
-     */
-    public function getCellsInSameGroup(Cell $cell): array
-    {
-        return array_values(array_filter($this->set, $cell->isInSameGroup(...)));
-    }
-
     public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->set);
+        return new \ArrayIterator($this->cells);
     }
 }

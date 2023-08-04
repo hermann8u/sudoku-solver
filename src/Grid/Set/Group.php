@@ -12,11 +12,11 @@ final readonly class Group extends Set
     public const WIDTH = 3;
     public const HEIGHT = 3;
 
-    public function __construct(
-        array $set,
+    private function __construct(
+        array $cells,
         public GroupNumber $number,
     ) {
-        parent::__construct($set);
+        parent::__construct($cells);
     }
 
     /**

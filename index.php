@@ -3,6 +3,9 @@
 use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
 use Florian\SudokuSolver\Grid\GridFactory;
 use Florian\SudokuSolver\Grid\GridGenerator;
+use Florian\SudokuSolver\Solver\Method\FilterPairMethod;
+use Florian\SudokuSolver\Solver\Method\ObviousCandidateMethod;
+use Florian\SudokuSolver\Solver\Method\UniqueCandidateComparedToRelatedCellsMethod;
 use Florian\SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
@@ -91,11 +94,69 @@ $hardGrid = <<<GRID
 ;;;2;3;5;;;
 GRID;*/
 
+$newHardGrid = <<<GRID
+;;;;;2;;;
+;;;;6;;;;8
+1;8;;;;;5;6;
+;1;8;2;;9;;;3
+;;6;;4;;2;;
+2;;;6;;3;9;7;
+;2;9;;;;;3;7
+3;;;;9;;;;
+;;;3;;;;;
+GRID;
+
+$exampleGrid = <<<GRID
+9;6;;;1;;;3;
+3;;2;;;;8;;4
+;7;;;;;;9;6
+;;;3;;8;;;
+6;;9;;;;;8;5
+;;;4;;9;;;
+;2;;5;8;4;;6;
+5;;8;;;;2;;7
+;4;;;9;;3;5;
+GRID;
+
+$exampleGrid = <<<GRID
+4;;;3;1;9;;;6
+;;1;;;;9;;
+;6;7;4;;;;2;1
+7;;;;5;;;;4
+;;;1;4;2;;;
+2;;;;7;;;;8
+;2;;;;;;6;
+;;4;;;;8;;
+1;;;5;;8;;;7
+GRID;
+
+
+$veryHardGrid = <<<GRID
+2;;6;;;7;;4;3
+7;;9;3;8;;2;;
+;;;;;;;;
+;;;;;3;;2;6
+;;;;7;;;;
+8;2;;5;;;;;
+;;;;;;;;
+;;7;;6;2;1;;9
+4;1;;9;;;6;;5
+GRID;
+
+
+
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($hardGrid);
 
-$solver = new Solver();
+$obviousCandidateMethod = new ObviousCandidateMethod();
+
+$solver = new Solver([
+    $obviousCandidateMethod,
+    new FilterPairMethod($obviousCandidateMethod),
+    new UniqueCandidateComparedToRelatedCellsMethod($obviousCandidateMethod),
+]);
+
 $solver->solve($grid);
 
 ?>

@@ -44,7 +44,7 @@ final readonly class Candidates implements \IteratorAggregate
         return new self([]);
     }
 
-    public function isUnique(): bool
+    public function hasUniqueValue(): bool
     {
         return count($this->values) === 1;
     }

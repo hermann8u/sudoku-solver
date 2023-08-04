@@ -12,6 +12,10 @@ final readonly class Coordinates implements \Stringable
     public const MIN = 1;
     public const MAX = 9;
 
+    /**
+     * @param int<self::MIN, self::MAX> $x
+     * @param int<self::MIN, self::MAX> $y
+     */
     public function __construct(
         public int $x,
         public int $y,
@@ -20,6 +24,17 @@ final readonly class Coordinates implements \Stringable
         Assert::lessThanEq($this->x, self::MAX);
         Assert::greaterThanEq($this->y, self::MIN);
         Assert::lessThanEq($this->y, self::MAX);
+    }
+
+    public static function fromString(string $coordinates): self
+    {
+        /**
+         * @var int<self::MIN, self::MAX> $x
+         * @var int<self::MIN, self::MAX> $y
+         */
+        [$x, $y] = explode(',', trim($coordinates, '()'));
+
+        return new self((int) $x, (int) $y);
     }
 
     /**
@@ -40,8 +55,8 @@ final readonly class Coordinates implements \Stringable
         return sprintf('(%d,%d)', $this->x, $this->y);
     }
 
-    public function is(int $x, int $y): bool
+    public function is(Coordinates $coordinates): bool
     {
-        return $this->x === $x && $this->y === $y;
+        return $this->x === $coordinates->x && $this->y === $coordinates->y;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Florian\SudokuSolver\Grid;
 
+use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Florian\SudokuSolver\Grid\Cell\FillableCell;
 use Florian\SudokuSolver\Grid\Set\Column;
 use Florian\SudokuSolver\Grid\Set\Group;
@@ -33,6 +34,17 @@ final readonly class Grid
         [$this->columns, $this->rows, $this->groups] = $this->prepareSets($cells);
     }
 
+    public function getCellByCoordinates(Coordinates $coordinates): Cell
+    {
+        foreach ($this->cells as $cell) {
+            if ($cell->coordinates->is($coordinates)) {
+                return $cell;
+            }
+        }
+
+        throw new \DomainException();
+    }
+
     /**
      * @return FillableCell[]
      */
@@ -45,9 +57,20 @@ final readonly class Grid
     }
 
     /**
+     * @return FillableCell[]
+     */
+    public function getEmptyFillableCells(): array
+    {
+        return array_values(array_filter(
+            $this->cells,
+            static fn (Cell $cell) => $cell instanceof FillableCell && $cell->isEmpty(),
+        ));
+    }
+
+    /**
      * @return iterable<Set>
      */
-    public function getSetsContainingCell(Cell $cell): iterable
+    public function getSetsOfCell(Cell $cell): iterable
     {
         yield $this->columns[$cell->coordinates->x];
         yield $this->rows[$cell->coordinates->y];
