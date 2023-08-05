@@ -13,7 +13,7 @@ final class GridGenerator
 
     public function generate(string $gridAsString): Grid
     {
-        $rows = preg_split("/\r\n|\n|\r/", $gridAsString);
+        $rows = preg_split("/\r\n|\n|\r/", trim($gridAsString));
 
         $gridAsArray = [];
 

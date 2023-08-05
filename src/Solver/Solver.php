@@ -23,7 +23,6 @@ final readonly class Solver
         $i = 0;
 
         $methodNamesCount = [];
-
         $map = CellCandidatesMap::empty();
 
         do {
@@ -33,7 +32,7 @@ final readonly class Solver
                 }
 
                 foreach ($this->methods as $method) {
-                    $map = $method->apply($grid, $currentCell, $map);
+                    $map = $method->apply($map, $grid, $currentCell);
 
                     [$coordinates, $cellValue] = $map->findUniqueValue();
 
@@ -63,6 +62,7 @@ final readonly class Solver
         } while (($grid->isValid() === false && $i < 10));
 
         dump([
+            'map' => $map->display(),
             'iteration' => $i,
             'valid' => $grid->isValid(),
             'filled' => $grid->isFilled(),

@@ -27,8 +27,7 @@ final readonly class Grid
      */
     public function __construct(array $cells)
     {
-        $expectedCellsCount = 9 * 9;
-        Assert::count($cells, $expectedCellsCount);
+        Assert::count($cells, 9 * 9);
 
         $this->cells = $cells;
         [$this->columns, $this->rows, $this->groups] = $this->prepareSets($cells);

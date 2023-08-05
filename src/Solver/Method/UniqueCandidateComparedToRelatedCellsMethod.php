@@ -17,7 +17,7 @@ final readonly class UniqueCandidateComparedToRelatedCellsMethod implements Meth
     ) {
     }
 
-    public function apply(Grid $grid, FillableCell $currentCell, CellCandidatesMap $map): CellCandidatesMap
+    public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         [$map, $initialCandidates] = $this->getCandidates($grid, $currentCell, $map);
 
@@ -53,7 +53,7 @@ final readonly class UniqueCandidateComparedToRelatedCellsMethod implements Meth
     private function getCandidates(Grid $grid, FillableCell $cell, CellCandidatesMap $map): array
     {
         if (! $map->has($cell)) {
-            $map = $this->obviousCandidateMethod->apply($grid, $cell, $map);
+            $map = $this->obviousCandidateMethod->apply($map, $grid, $cell);
         }
 
         return [$map, $map->get($cell)];

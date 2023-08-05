@@ -17,18 +17,14 @@ final readonly class Candidates implements \IteratorAggregate
     /**
      * @param CellValue[] $values
      */
-    private function __construct(array $values) {
+    private function __construct(array $values)
+    {
         $this->values = array_values($values);
     }
 
     public static function all(): self
     {
         return self::fromInt(...range(1, 9));
-    }
-
-    public static function from(CellValue ...$cellValues): self
-    {
-        return new self($cellValues);
     }
 
     public static function fromInt(int ...$values): self

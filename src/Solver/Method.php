@@ -7,5 +7,5 @@ use Florian\SudokuSolver\Grid\Grid;
 
 interface Method
 {
-    public function apply(Grid $grid, FillableCell $currentCell, CellCandidatesMap $map): CellCandidatesMap;
+    public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap;
 }

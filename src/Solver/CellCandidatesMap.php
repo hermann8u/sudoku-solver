@@ -59,4 +59,20 @@ final readonly class CellCandidatesMap
 
         return [null, null];
     }
+
+    public function display(): array
+    {
+        $map = $this->map;
+        ksort($map);
+
+        return array_map(
+            static function (Candidates $candidates) {
+                $integers = $candidates->toIntegers();
+                sort($integers);
+
+                return implode(',', $integers);
+            },
+            $map,
+        );
+    }
 }
