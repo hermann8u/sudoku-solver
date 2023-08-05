@@ -46,6 +46,16 @@ final readonly class CellCandidatesMap
         return new self($map);
     }
 
+    public function without(Cell $cell): self
+    {
+        $map = $this->map;
+        if ($this->has($cell)) {
+            unset($map[$cell->coordinates->toString()]);
+        }
+
+        return new self($map);
+    }
+
     /**
      * @return array{?Coordinates, ?CellValue}
      */
@@ -60,6 +70,9 @@ final readonly class CellCandidatesMap
         return [null, null];
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function display(): array
     {
         $map = $this->map;

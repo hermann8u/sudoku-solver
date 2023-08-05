@@ -14,6 +14,15 @@ final class ObviousCandidateMethod implements Method
 {
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
+        if (! $map->has($currentCell)) {
+            $map = $this->getCandidates($map, $grid, $currentCell);
+        }
+
+        return $map;
+    }
+
+    private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
+    {
         $sets = $grid->getSetsOfCell($currentCell);
 
         $candidatesBySet = [];

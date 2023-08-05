@@ -12,7 +12,7 @@ use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
 final class GridFactory
 {
     /**
-     * @param array<int, array<int, string>> $gridAsArray
+     * @param array<int<0, 8>, array<int<0, 8>, string>> $gridAsArray
      */
     public function create(array $gridAsArray): Grid
     {

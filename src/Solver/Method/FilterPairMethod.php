@@ -25,7 +25,7 @@ final readonly class FilterPairMethod implements Method
         $sets = $grid->getSetsOfCell($currentCell);
 
         foreach ($sets as $set) {
-            $pairs = $this->findPairs($map, $grid, $set);
+            [$map, $pairs] = $this->findPairs($map, $grid, $set);
 
             foreach ($pairs as $pair) {
                 foreach ($pair->coordinatesPair as $coordinates) {
@@ -40,50 +40,39 @@ final readonly class FilterPairMethod implements Method
             }
         }
 
-        [$map] = $this->getCandidates($grid, $currentCell, $map);
+        // Force to recalculate candidates for current cell
+        $map = $map->without($currentCell);
 
-        return $map;
+        return $this->obviousCandidateMethod->apply($map, $grid, $currentCell);
     }
 
     /**
-     * @return array{CellCandidatesMap, Candidates}
-     */
-    private function getCandidates(Grid $grid, FillableCell $cell, CellCandidatesMap $map): array
-    {
-        if (! $map->has($cell)) {
-            $map = $this->obviousCandidateMethod->apply($map, $grid, $cell);
-        }
-
-        return [$map, $map->get($cell)];
-    }
-
-    /**
-     * @return Pair[]
+     * @return array{CellCandidatesMap, Pair[]}
      */
     private function findPairs(CellCandidatesMap $map, Grid $grid, Set $set): array
     {
-        $valueCoordinatesMap = array_fill(1, 9, []);
+        $candidateCoordinatesMap = array_fill(1, 9, []);
 
         foreach ($set->getEmptyCells() as $cell) {
             [$map, $candidates] = $this->getCandidates($grid, $cell, $map);
 
             foreach ($candidates as $candidate) {
-                $valueCoordinatesMap[$candidate->value][] = $cell->coordinates->toString();
+                $candidateCoordinatesMap[$candidate->value][] = $cell->coordinates->toString();
             }
         }
 
-        // Filter candidates with more or less than 2 available cells
-        $valueCoordinatesMap = array_filter($valueCoordinatesMap, static fn (array $items) => count($items) === 2);
+        // Filter candidates with more or less than 2 possible cells
+        /** @var array<int, string[]> $candidateCoordinatesMap */
+        $candidateCoordinatesMap = array_filter($candidateCoordinatesMap, static fn (array $items) => count($items) === 2);
 
-        // We need at least 2 values to create pairs
-        if (count($valueCoordinatesMap) < 2) {
-            return [];
+        // No pairs identified
+        if (count($candidateCoordinatesMap) < 2) {
+            return [$map, []];
         }
 
-        $pairs = [];
-
-        foreach ($valueCoordinatesMap as $v1 => $coordinatesSet) {
-            foreach ($valueCoordinatesMap as $v2 => $otherCoordinatesSet) {
+        // Associate pairs
+        foreach ($candidateCoordinatesMap as $v1 => $coordinatesSet) {
+            foreach ($candidateCoordinatesMap as $v2 => $otherCoordinatesSet) {
                 if ($v1 === $v2) {
                     continue;
                 }
@@ -103,6 +92,16 @@ final readonly class FilterPairMethod implements Method
             }
         }
 
-        return $pairs;
+        return [$map, $pairs ?? []];
+    }
+
+    /**
+     * @return array{CellCandidatesMap, Candidates}
+     */
+    private function getCandidates(Grid $grid, FillableCell $cell, CellCandidatesMap $map): array
+    {
+        $map = $this->obviousCandidateMethod->apply($map, $grid, $cell);
+
+        return [$map, $map->get($cell)];
     }
 }

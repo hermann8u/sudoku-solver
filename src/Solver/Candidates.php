@@ -47,8 +47,12 @@ final readonly class Candidates implements \IteratorAggregate
 
     public function first(): CellValue
     {
-        /** @phpstan-ignore-next-line */
-        return current($this->values);
+        $value = current($this->values);
+        if ($value === false) {
+            throw new \LogicException();
+        }
+
+        return $value;
     }
 
     public function withRemovedValues(CellValue ...$cellValues): self

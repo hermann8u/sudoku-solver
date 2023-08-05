@@ -31,7 +31,7 @@ final readonly class UniqueCandidateComparedToRelatedCellsMethod implements Meth
 
                 [$map, $relatedCellCandidates] = $this->getCandidates($grid, $relatedCell, $map);
 
-                // Short circuit :  When related cell has only one candidate
+                // Short circuit : When related cell has only one candidate
                 if ($relatedCellCandidates->hasUniqueValue()) {
                     return $map->merge($relatedCell, $relatedCellCandidates);
                 }
@@ -52,9 +52,7 @@ final readonly class UniqueCandidateComparedToRelatedCellsMethod implements Meth
      */
     private function getCandidates(Grid $grid, FillableCell $cell, CellCandidatesMap $map): array
     {
-        if (! $map->has($cell)) {
-            $map = $this->obviousCandidateMethod->apply($map, $grid, $cell);
-        }
+        $map = $this->obviousCandidateMethod->apply($map, $grid, $cell);
 
         return [$map, $map->get($cell)];
     }
