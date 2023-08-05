@@ -10,10 +10,10 @@ use Florian\SudokuSolver\Solver\Candidates;
 use Florian\SudokuSolver\Solver\CellCandidatesMap;
 use Florian\SudokuSolver\Solver\Method;
 
-final readonly class UniqueCandidateComparedToRelatedCellsMethod implements Method
+final readonly class ExclusiveMethod implements Method
 {
     public function __construct(
-        private ObviousCandidateMethod $obviousCandidateMethod,
+        private InclusiveMethod $inclusiveMethod,
     ) {
     }
 
@@ -52,7 +52,7 @@ final readonly class UniqueCandidateComparedToRelatedCellsMethod implements Meth
      */
     private function getCandidates(Grid $grid, FillableCell $cell, CellCandidatesMap $map): array
     {
-        $map = $this->obviousCandidateMethod->apply($map, $grid, $cell);
+        $map = $this->inclusiveMethod->apply($map, $grid, $cell);
 
         return [$map, $map->get($cell)];
     }

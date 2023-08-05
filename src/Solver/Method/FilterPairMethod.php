@@ -17,7 +17,7 @@ use Florian\SudokuSolver\Solver\Pair;
 final readonly class FilterPairMethod implements Method
 {
     public function __construct(
-        private ObviousCandidateMethod $obviousCandidateMethod,
+        private InclusiveMethod $inclusiveMethod,
     ) {
     }
 
@@ -41,7 +41,7 @@ final readonly class FilterPairMethod implements Method
             }
         }
 
-        return $this->obviousCandidateMethod->apply($map, $grid, $currentCell);
+        return $this->inclusiveMethod->apply($map, $grid, $currentCell);
     }
 
     /**
@@ -71,7 +71,7 @@ final readonly class FilterPairMethod implements Method
      */
     private function getCandidates(Grid $grid, FillableCell $cell, CellCandidatesMap $map): array
     {
-        $map = $this->obviousCandidateMethod->apply($map, $grid, $cell);
+        $map = $this->inclusiveMethod->apply($map, $grid, $cell);
 
         return [$map, $map->get($cell)];
     }

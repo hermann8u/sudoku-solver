@@ -10,7 +10,7 @@ use Florian\SudokuSolver\Solver\Candidates;
 use Florian\SudokuSolver\Solver\CellCandidatesMap;
 use Florian\SudokuSolver\Solver\Method;
 
-final class ObviousCandidateMethod implements Method
+final class InclusiveMethod implements Method
 {
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {

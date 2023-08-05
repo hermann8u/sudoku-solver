@@ -4,23 +4,23 @@ use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
 use Florian\SudokuSolver\Grid\GridFactory;
 use Florian\SudokuSolver\Grid\GridGenerator;
 use Florian\SudokuSolver\Solver\Method\FilterPairMethod;
-use Florian\SudokuSolver\Solver\Method\ObviousCandidateMethod;
-use Florian\SudokuSolver\Solver\Method\UniqueCandidateComparedToRelatedCellsMethod;
+use Florian\SudokuSolver\Solver\Method\InclusiveMethod;
+use Florian\SudokuSolver\Solver\Method\ExclusiveMethod;
 use Florian\SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
 
-$stringGrid = file_get_contents('./data/grid/easy/1.csv');
+$stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($stringGrid);
 
-$obviousCandidateMethod = new ObviousCandidateMethod();
+$obviousCandidateMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $obviousCandidateMethod,
     new FilterPairMethod($obviousCandidateMethod),
-    new UniqueCandidateComparedToRelatedCellsMethod($obviousCandidateMethod),
+    new ExclusiveMethod($obviousCandidateMethod),
 ]);
 
 $result = $solver->solve($grid);
