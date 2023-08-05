@@ -27,7 +27,7 @@ final readonly class Grid
      */
     public function __construct(array $cells)
     {
-        Assert::count($cells, 9 * 9);
+        Assert::count($cells, Coordinates::MAX * Coordinates::MAX);
 
         $this->cells = $cells;
         [$this->columns, $this->rows, $this->groups] = $this->prepareSets($cells);
@@ -137,9 +137,9 @@ final readonly class Grid
             }
         }
 
-        Assert::count($columns, 9);
-        Assert::count($rows, 9);
-        Assert::count($groups, 9);
+        Assert::count($columns, Set::CELLS_COUNT);
+        Assert::count($rows, Set::CELLS_COUNT);
+        Assert::count($groups, Set::CELLS_COUNT);
 
         return [$columns, $rows, $groups];
     }

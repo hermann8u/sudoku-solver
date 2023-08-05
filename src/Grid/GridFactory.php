@@ -20,9 +20,19 @@ final class GridFactory
             foreach ($row as $x => $value) {
                 $coordinates = new Coordinates($x + 1, $y + 1);
 
-                $cells[] = $value === ''
-                    ? new FillableCell($coordinates)
-                    : new FixedValueCell($coordinates, CellValue::from((int) $value));
+                if ($value === '') {
+                    $cells[] = new FillableCell($coordinates);
+
+                    continue;
+                }
+
+                $value = (int) $value;
+
+                if ($value < CellValue::MIN || $value > CellValue::MAX) {
+                    throw new \InvalidArgumentException();
+                }
+
+                $cells[] = new FixedValueCell($coordinates, CellValue::from($value));
             }
         }
 

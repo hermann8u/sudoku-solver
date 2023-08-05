@@ -14,6 +14,8 @@ use Webmozart\Assert\Assert;
  */
 abstract readonly class Set implements \IteratorAggregate
 {
+    public const CELLS_COUNT = 9;
+
     /** @var Cell[] */
     private array $cells;
 
@@ -22,7 +24,7 @@ abstract readonly class Set implements \IteratorAggregate
      */
     protected function __construct(array $cells)
     {
-        Assert::count($cells, 9);
+        Assert::count($cells, self::CELLS_COUNT);
 
         usort($cells, static fn (Cell $a, Cell $b) => $a->coordinates->compare($b->coordinates));
 

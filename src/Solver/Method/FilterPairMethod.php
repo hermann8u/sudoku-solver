@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Florian\SudokuSolver\Solver\Method;
 
+use Florian\SudokuSolver\Grid\Cell\CellValue;
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Florian\SudokuSolver\Grid\Cell\FillableCell;
 use Florian\SudokuSolver\Grid\Grid;
@@ -51,7 +52,7 @@ final readonly class FilterPairMethod implements Method
      */
     private function findPairs(CellCandidatesMap $map, Grid $grid, Set $set): array
     {
-        $candidateCoordinatesMap = array_fill(1, 9, []);
+        $candidateCoordinatesMap = array_fill(CellValue::MIN, CellValue::MAX, []);
 
         foreach ($set->getEmptyCells() as $cell) {
             [$map, $candidates] = $this->getCandidates($grid, $cell, $map);
@@ -62,7 +63,7 @@ final readonly class FilterPairMethod implements Method
         }
 
         // Filter candidates with more or less than 2 possible cells
-        /** @var array<int, string[]> $candidateCoordinatesMap */
+        /** @var array<int<CellValue::MIN, CellValue::MAX>, string[]> $candidateCoordinatesMap */
         $candidateCoordinatesMap = array_filter($candidateCoordinatesMap, static fn (array $items) => count($items) === 2);
 
         // No pairs identified

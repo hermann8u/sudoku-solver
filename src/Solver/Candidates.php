@@ -24,9 +24,12 @@ final readonly class Candidates implements \IteratorAggregate
 
     public static function all(): self
     {
-        return self::fromInt(...range(1, 9));
+        return self::fromInt(...range(CellValue::MIN, CellValue::MAX));
     }
 
+    /**
+     * @param int<CellValue::MIN, CellValue::MAX> ...$values
+     */
     public static function fromInt(int ...$values): self
     {
         return new self(array_map(
@@ -87,7 +90,7 @@ final readonly class Candidates implements \IteratorAggregate
     }
 
     /**
-     * @return int[]
+     * @return array<int<CellValue::MIN, CellValue::MAX>>
      */
     public function toIntegers(): array
     {

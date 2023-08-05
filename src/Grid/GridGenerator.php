@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Florian\SudokuSolver\Grid;
 
+use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;
 
 final class GridGenerator
@@ -20,12 +21,12 @@ final class GridGenerator
             $rows = [];
         }
 
-        Assert::count($rows, 9);
+        Assert::count($rows, Coordinates::MAX);
 
         foreach ($rows as $row) {
             $cellValues = explode(';', $row);
 
-            Assert::count($cellValues, 9);
+            Assert::count($cellValues, Coordinates::MAX);
 
             $gridAsArray[] = $cellValues;
         }

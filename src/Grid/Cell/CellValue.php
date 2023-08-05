@@ -11,6 +11,9 @@ final readonly class CellValue implements \Stringable
     public const MIN = 1;
     public const MAX = 9;
 
+    /**
+     * @param int<self::MIN, self::MAX>|null $value
+     */
     private function __construct(
         public ?int $value,
     ) {
@@ -27,6 +30,9 @@ final readonly class CellValue implements \Stringable
         return new self(null);
     }
 
+    /**
+     * @param int<self::MIN, self::MAX> $value
+     */
     public static function from(int $value): self
     {
         return new self($value);
