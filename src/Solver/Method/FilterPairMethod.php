@@ -41,9 +41,6 @@ final readonly class FilterPairMethod implements Method
             }
         }
 
-        // Force to recalculate candidates for current cell
-        $map = $map->without($currentCell);
-
         return $this->obviousCandidateMethod->apply($map, $grid, $currentCell);
     }
 
