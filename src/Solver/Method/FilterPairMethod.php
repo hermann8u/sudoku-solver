@@ -66,34 +66,7 @@ final readonly class FilterPairMethod implements Method
         /** @var array<int<CellValue::MIN, CellValue::MAX>, string[]> $candidateCoordinatesMap */
         $candidateCoordinatesMap = array_filter($candidateCoordinatesMap, static fn (array $items) => count($items) === 2);
 
-        // No pairs identified
-        if (count($candidateCoordinatesMap) < 2) {
-            return [$map, []];
-        }
-
-        // Associate pairs
-        foreach ($candidateCoordinatesMap as $v1 => $coordinatesSet) {
-            foreach ($candidateCoordinatesMap as $v2 => $otherCoordinatesSet) {
-                if ($v1 === $v2) {
-                    continue;
-                }
-
-                if ($otherCoordinatesSet === $coordinatesSet) {
-                    $pairCoordinates = implode(',', $coordinatesSet);
-
-                    if (isset($pairs[$pairCoordinates])) {
-                        continue;
-                    }
-
-                    $pairs[$pairCoordinates] = new Pair(
-                        array_map(static fn (string $coordinates) => Coordinates::fromString($coordinates), $coordinatesSet),
-                        Candidates::fromInt($v1, $v2),
-                    );
-                }
-            }
-        }
-
-        return [$map, $pairs ?? []];
+        return [$map, $this->associatePairs($candidateCoordinatesMap)];
     }
 
     /**
@@ -104,5 +77,40 @@ final readonly class FilterPairMethod implements Method
         $map = $this->obviousCandidateMethod->apply($map, $grid, $cell);
 
         return [$map, $map->get($cell)];
+    }
+
+    /**
+     * @param array<int<CellValue::MIN, CellValue::MAX>, string[]>  $candidateCoordinatesMap
+     *
+     * @return Pair[]
+     */
+    private function associatePairs(array $candidateCoordinatesMap): array
+    {
+        foreach ($candidateCoordinatesMap as $v1 => $coordinatesSet) {
+            foreach ($candidateCoordinatesMap as $v2 => $otherCoordinatesSet) {
+                if ($v1 === $v2) {
+                    continue;
+                }
+
+                if ($otherCoordinatesSet === $coordinatesSet) {
+                    $pairs[] = new Pair(
+                        array_map(
+                            static fn (string $coordinates) => Coordinates::fromString($coordinates),
+                            $coordinatesSet,
+                        ),
+                        Candidates::fromInt($v1, $v2),
+                    );
+
+                    unset($candidateCoordinatesMap[$v1]);
+                    unset($candidateCoordinatesMap[$v2]);
+
+                    if (count($candidateCoordinatesMap) < 2) {
+                        return $pairs;
+                    }
+                }
+            }
+        }
+
+        return $pairs ?? [];
     }
 }
