@@ -3,6 +3,7 @@
 use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
 use Florian\SudokuSolver\Grid\GridFactory;
 use Florian\SudokuSolver\Grid\GridGenerator;
+use Florian\SudokuSolver\Solver\Method\ExclusivePairMethod;
 use Florian\SudokuSolver\Solver\Method\FilterPairMethod;
 use Florian\SudokuSolver\Solver\Method\InclusiveMethod;
 use Florian\SudokuSolver\Solver\Method\ExclusiveMethod;
@@ -19,6 +20,7 @@ $obviousCandidateMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $obviousCandidateMethod,
+    new ExclusivePairMethod($obviousCandidateMethod),
     new FilterPairMethod($obviousCandidateMethod),
     new ExclusiveMethod($obviousCandidateMethod),
 ]);

@@ -52,7 +52,7 @@ final readonly class FilterPairMethod implements Method
         $candidateCoordinatesMap = array_fill(CellValue::MIN, CellValue::MAX, []);
 
         foreach ($set->getEmptyCells() as $cell) {
-            [$map, $candidates] = $this->getCandidates($grid, $cell, $map);
+            [$map, $candidates] = $this->getCandidates($map, $grid, $cell);
 
             foreach ($candidates as $candidate) {
                 $candidateCoordinatesMap[$candidate->value][] = $cell->coordinates->toString();
@@ -69,7 +69,7 @@ final readonly class FilterPairMethod implements Method
     /**
      * @return array{CellCandidatesMap, Candidates}
      */
-    private function getCandidates(Grid $grid, FillableCell $cell, CellCandidatesMap $map): array
+    private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $cell): array
     {
         $map = $this->inclusiveMethod->apply($map, $grid, $cell);
 

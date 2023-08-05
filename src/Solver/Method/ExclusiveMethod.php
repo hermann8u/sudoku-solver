@@ -19,7 +19,7 @@ final readonly class ExclusiveMethod implements Method
 
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
-        [$map, $initialCandidates] = $this->getCandidates($grid, $currentCell, $map);
+        [$map, $initialCandidates] = $this->getCandidates($map, $grid, $currentCell);
 
         foreach ($grid->getSetsOfCell($currentCell) as $set) {
             $candidates = $initialCandidates;
@@ -29,7 +29,7 @@ final readonly class ExclusiveMethod implements Method
                     continue;
                 }
 
-                [$map, $relatedCellCandidates] = $this->getCandidates($grid, $relatedCell, $map);
+                [$map, $relatedCellCandidates] = $this->getCandidates($map, $grid, $relatedCell);
 
                 // Short circuit : When related cell has only one candidate
                 if ($relatedCellCandidates->hasUniqueValue()) {
@@ -50,7 +50,7 @@ final readonly class ExclusiveMethod implements Method
     /**
      * @return array{CellCandidatesMap, Candidates}
      */
-    private function getCandidates(Grid $grid, FillableCell $cell, CellCandidatesMap $map): array
+    private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $cell): array
     {
         $map = $this->inclusiveMethod->apply($map, $grid, $cell);
 

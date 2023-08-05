@@ -58,6 +58,11 @@ final readonly class Candidates implements \IteratorAggregate
         return $value;
     }
 
+    public function count(): int
+    {
+        return count($this->values);
+    }
+
     public function withRemovedValues(CellValue ...$cellValues): self
     {
         $currentValues = $this->toIntegers();
