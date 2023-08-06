@@ -6,18 +6,18 @@ namespace Florian\SudokuSolver\Grid;
 
 use Florian\SudokuSolver\Grid\Cell\CellValue;
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Set\GroupNumber;
+use Florian\SudokuSolver\Grid\Set\RegionNumber;
 
 abstract class Cell
 {
     protected CellValue $cellValue;
-    public readonly GroupNumber $groupNumber;
+    public readonly RegionNumber $regionNumber;
 
     public function __construct(
         public readonly Coordinates $coordinates,
     ) {
         $this->cellValue = CellValue::empty();
-        $this->groupNumber = GroupNumber::fromCoordinates($this->coordinates);
+        $this->regionNumber = RegionNumber::fromCoordinates($this->coordinates);
     }
 
     public function getCellValue(): CellValue

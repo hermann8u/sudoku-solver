@@ -7,7 +7,7 @@ namespace Florian\SudokuSolver\Grid;
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Florian\SudokuSolver\Grid\Cell\FillableCell;
 use Florian\SudokuSolver\Grid\Set\Column;
-use Florian\SudokuSolver\Grid\Set\Group;
+use Florian\SudokuSolver\Grid\Set\Region;
 use Florian\SudokuSolver\Grid\Set\Row;
 use Webmozart\Assert\Assert;
 
@@ -19,8 +19,8 @@ final readonly class Grid
     private array $columns;
     /** @var Row[] */
     private array $rows;
-    /** @var Group[] */
-    private array $groups;
+    /** @var Region[] */
+    private array $regions;
 
     /**
      * @param Cell[] $cells
@@ -30,7 +30,7 @@ final readonly class Grid
         Assert::count($cells, Coordinates::MAX * Coordinates::MAX);
 
         $this->cells = $cells;
-        [$this->columns, $this->rows, $this->groups] = $this->prepareSets($cells);
+        [$this->columns, $this->rows, $this->regions] = $this->prepareSets($cells);
     }
 
     public function getCellByCoordinates(Coordinates $coordinates): Cell
@@ -62,7 +62,7 @@ final readonly class Grid
     {
         yield $this->columns[$cell->coordinates->x];
         yield $this->rows[$cell->coordinates->y];
-        yield $this->groups[$cell->groupNumber->value];
+        yield $this->regions[$cell->regionNumber->value];
     }
 
     public function getCellsByRow(int $y): Set
@@ -100,8 +100,8 @@ final readonly class Grid
             }
         }
 
-        foreach ($this->groups as $group) {
-            if ($group->containsDuplicate()) {
+        foreach ($this->regions as $region) {
+            if ($region->containsDuplicate()) {
                 return true;
             }
         }
@@ -112,13 +112,13 @@ final readonly class Grid
     /**
      * @param Cell[] $cells
      *
-     * @return array{Column[], Row[], Group[]}
+     * @return array{Column[], Row[], Region[]}
      */
     private function prepareSets(array $cells): array
     {
         $columns = [];
         $rows = [];
-        $groups = [];
+        $regions = [];
 
         foreach ($cells as $cell) {
             $x = $cell->coordinates->x;
@@ -131,16 +131,16 @@ final readonly class Grid
                 $rows[$y] = Row::fromCells($cells, $y);
             }
 
-            $groupNumber = $cell->groupNumber;
-            if (! isset($groups[$groupNumber->value])) {
-                $groups[$groupNumber->value] = Group::fromCells($cells, $groupNumber);
+            $regionNumber = $cell->regionNumber;
+            if (! isset($regions[$regionNumber->value])) {
+                $regions[$regionNumber->value] = Region::fromCells($cells, $regionNumber);
             }
         }
 
         Assert::count($columns, Set::CELLS_COUNT);
         Assert::count($rows, Set::CELLS_COUNT);
-        Assert::count($groups, Set::CELLS_COUNT);
+        Assert::count($regions, Set::CELLS_COUNT);
 
-        return [$columns, $rows, $groups];
+        return [$columns, $rows, $regions];
     }
 }

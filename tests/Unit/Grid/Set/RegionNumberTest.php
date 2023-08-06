@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Set\GroupNumber;
+use Florian\SudokuSolver\Grid\Set\RegionNumber;
 
 it('has the expected number when built from coordinates', function (int $x, int $y, int $expectedNumber) {
     $coordinates = new Coordinates($x, $y);
 
-    $group = GroupNumber::fromCoordinates($coordinates);
+    $regionNumber = RegionNumber::fromCoordinates($coordinates);
 
-    expect($group->value)->toBe($expectedNumber);
+    expect($regionNumber->value)->toBe($expectedNumber);
 })->with([
     '(1,1)' => [1, 1, 1],
     '(4,1)' => [4, 1, 2],
