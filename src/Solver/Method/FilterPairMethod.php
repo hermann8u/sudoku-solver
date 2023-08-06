@@ -8,7 +8,7 @@ use Florian\SudokuSolver\Grid\Cell\CellValue;
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Florian\SudokuSolver\Grid\Cell\FillableCell;
 use Florian\SudokuSolver\Grid\Grid;
-use Florian\SudokuSolver\Grid\Set;
+use Florian\SudokuSolver\Grid\Group;
 use Florian\SudokuSolver\Solver\Candidates;
 use Florian\SudokuSolver\Solver\CellCandidatesMap;
 use Florian\SudokuSolver\Solver\Method;
@@ -23,10 +23,10 @@ final readonly class FilterPairMethod implements Method
 
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
-        $sets = $grid->getSetsOfCell($currentCell);
+        $groups = $grid->getGroupForCell($currentCell);
 
-        foreach ($sets as $set) {
-            [$map, $pairs] = $this->findPairs($map, $grid, $set);
+        foreach ($groups as $group) {
+            [$map, $pairs] = $this->findPairs($map, $grid, $group);
 
             foreach ($pairs as $pair) {
                 foreach ($pair->coordinatesPair as $coordinates) {
@@ -47,11 +47,11 @@ final readonly class FilterPairMethod implements Method
     /**
      * @return array{CellCandidatesMap, Pair[]}
      */
-    private function findPairs(CellCandidatesMap $map, Grid $grid, Set $set): array
+    private function findPairs(CellCandidatesMap $map, Grid $grid, Group $group): array
     {
         $candidateCoordinatesMap = array_fill(CellValue::MIN, CellValue::MAX, []);
 
-        foreach ($set->getEmptyCells() as $cell) {
+        foreach ($group->getEmptyCells() as $cell) {
             [$map, $candidates] = $this->getCandidates($map, $grid, $cell);
 
             foreach ($candidates as $candidate) {
@@ -83,17 +83,17 @@ final readonly class FilterPairMethod implements Method
      */
     private function associatePairs(array $candidateCoordinatesMap): array
     {
-        foreach ($candidateCoordinatesMap as $v1 => $coordinatesSet) {
-            foreach ($candidateCoordinatesMap as $v2 => $otherCoordinatesSet) {
+        foreach ($candidateCoordinatesMap as $v1 => $coordinatesPair) {
+            foreach ($candidateCoordinatesMap as $v2 => $otherCoordinatesPair) {
                 if ($v1 === $v2) {
                     continue;
                 }
 
-                if ($otherCoordinatesSet === $coordinatesSet) {
+                if ($otherCoordinatesPair === $coordinatesPair) {
                     $pairs[] = new Pair(
                         array_map(
                             static fn (string $coordinates) => Coordinates::fromString($coordinates),
-                            $coordinatesSet,
+                            $coordinatesPair,
                         ),
                         Candidates::fromInt($v1, $v2),
                     );

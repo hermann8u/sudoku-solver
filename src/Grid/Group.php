@@ -12,7 +12,7 @@ use Webmozart\Assert\Assert;
 /**
  * @implements \IteratorAggregate<int, Cell>
  */
-abstract readonly class Set implements \IteratorAggregate
+abstract readonly class Group implements \IteratorAggregate
 {
     public const CELLS_COUNT = 9;
 

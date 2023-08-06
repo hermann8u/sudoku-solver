@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Set\RegionNumber;
+use Florian\SudokuSolver\Grid\Group\RegionNumber;
 
 it('has the expected number when built from coordinates', function (int $x, int $y, int $expectedNumber) {
     $coordinates = new Coordinates($x, $y);

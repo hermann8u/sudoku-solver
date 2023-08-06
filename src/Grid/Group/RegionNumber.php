@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid\Set;
+namespace Florian\SudokuSolver\Grid\Group;
 
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;

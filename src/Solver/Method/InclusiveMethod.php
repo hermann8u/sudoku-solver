@@ -23,20 +23,20 @@ final class InclusiveMethod implements Method
 
     private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
-        $sets = $grid->getSetsOfCell($currentCell);
+        $groups = $grid->getGroupForCell($currentCell);
 
-        $candidatesBySet = [];
+        $candidatesByGroup = [];
 
-        foreach ($sets as $set) {
-            $candidates = Candidates::all()->withRemovedValues(...$set->getPresentValues());
+        foreach ($groups as $group) {
+            $candidates = Candidates::all()->withRemovedValues(...$group->getPresentValues());
 
             if ($candidates->hasUniqueValue()) {
                 return $map->merge($currentCell, $candidates);
             }
 
-            $candidatesBySet[] = $candidates;
+            $candidatesByGroup[] = $candidates;
         }
 
-        return $map->merge($currentCell, Candidates::intersect(...$candidatesBySet));
+        return $map->merge($currentCell, Candidates::intersect(...$candidatesByGroup));
     }
 }

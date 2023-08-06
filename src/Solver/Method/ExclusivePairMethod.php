@@ -22,10 +22,10 @@ final readonly class ExclusivePairMethod implements Method
 
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
-        foreach ($grid->getSetsOfCell($currentCell) as $set) {
+        foreach ($grid->getGroupForCell($currentCell) as $group) {
             $coordinatesByCandidates = [];
 
-            foreach ($set->getEmptyCells() as $cell) {
+            foreach ($group->getEmptyCells() as $cell) {
                 [$map, $candidates] = $this->getCandidates($map, $grid, $cell);
 
                 if ($candidates->count() === 2) {
@@ -41,7 +41,7 @@ final readonly class ExclusivePairMethod implements Method
             $pairs = $this->associatePairs($coordinatesByCandidates);
 
             foreach ($pairs as $pair) {
-                foreach ($set->getEmptyCells() as $cell) {
+                foreach ($group->getEmptyCells() as $cell) {
                     if ($pair->match($cell)) {
                         $map = $map->merge($cell, $pair->candidates);
                         continue;

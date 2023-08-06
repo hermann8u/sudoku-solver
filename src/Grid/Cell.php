@@ -6,7 +6,7 @@ namespace Florian\SudokuSolver\Grid;
 
 use Florian\SudokuSolver\Grid\Cell\CellValue;
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Set\RegionNumber;
+use Florian\SudokuSolver\Grid\Group\RegionNumber;
 
 abstract class Cell
 {

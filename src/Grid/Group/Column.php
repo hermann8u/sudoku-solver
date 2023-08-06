@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid\Set;
+namespace Florian\SudokuSolver\Grid\Group;
 
 use Florian\SudokuSolver\Grid\Cell;
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Set;
+use Florian\SudokuSolver\Grid\Group;
 use Webmozart\Assert\Assert;
 
-final readonly class Column extends Set
+final readonly class Column extends Group
 {
     /**
      * @param Cell[] $cells

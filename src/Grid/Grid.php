@@ -6,9 +6,9 @@ namespace Florian\SudokuSolver\Grid;
 
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Florian\SudokuSolver\Grid\Cell\FillableCell;
-use Florian\SudokuSolver\Grid\Set\Column;
-use Florian\SudokuSolver\Grid\Set\Region;
-use Florian\SudokuSolver\Grid\Set\Row;
+use Florian\SudokuSolver\Grid\Group\Column;
+use Florian\SudokuSolver\Grid\Group\Region;
+use Florian\SudokuSolver\Grid\Group\Row;
 use Webmozart\Assert\Assert;
 
 final readonly class Grid
@@ -30,7 +30,7 @@ final readonly class Grid
         Assert::count($cells, Coordinates::MAX * Coordinates::MAX);
 
         $this->cells = $cells;
-        [$this->columns, $this->rows, $this->regions] = $this->prepareSets($cells);
+        [$this->columns, $this->rows, $this->regions] = $this->prepareGroups($cells);
     }
 
     public function getCellByCoordinates(Coordinates $coordinates): Cell
@@ -56,16 +56,16 @@ final readonly class Grid
     }
 
     /**
-     * @return iterable<Set>
+     * @return iterable<Group>
      */
-    public function getSetsOfCell(Cell $cell): iterable
+    public function getGroupForCell(Cell $cell): iterable
     {
         yield $this->columns[$cell->coordinates->x];
         yield $this->rows[$cell->coordinates->y];
         yield $this->regions[$cell->regionNumber->value];
     }
 
-    public function getCellsByRow(int $y): Set
+    public function getCellsByRow(int $y): Group
     {
         return $this->rows[$y];
     }
@@ -114,7 +114,7 @@ final readonly class Grid
      *
      * @return array{Column[], Row[], Region[]}
      */
-    private function prepareSets(array $cells): array
+    private function prepareGroups(array $cells): array
     {
         $columns = [];
         $rows = [];
@@ -137,9 +137,9 @@ final readonly class Grid
             }
         }
 
-        Assert::count($columns, Set::CELLS_COUNT);
-        Assert::count($rows, Set::CELLS_COUNT);
-        Assert::count($regions, Set::CELLS_COUNT);
+        Assert::count($columns, Group::CELLS_COUNT);
+        Assert::count($rows, Group::CELLS_COUNT);
+        Assert::count($regions, Group::CELLS_COUNT);
 
         return [$columns, $rows, $regions];
     }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid\Set;
+namespace Florian\SudokuSolver\Grid\Group;
 
 use Florian\SudokuSolver\Grid\Cell;
-use Florian\SudokuSolver\Grid\Set;
+use Florian\SudokuSolver\Grid\Group;
 
-final readonly class Region extends Set
+final readonly class Region extends Group
 {
     public const WIDTH = 3;
     public const HEIGHT = 3;
