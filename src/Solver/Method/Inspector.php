@@ -22,15 +22,16 @@ final readonly class Inspector implements Method
 
         $afterMap = $this->inner->apply($map, $grid, $currentCell);
 
+        $previousDisplay = $previous->display();
         $afterDisplay = $afterMap->display();
 
         if ($previous->display() !== $afterDisplay) {
             $display = [];
-            foreach ($previous->display() as $key => $previousRow) {
-                if ($afterDisplay[$key] !== $previousRow) {
+            foreach (array_keys($afterDisplay) as $key) {
+                if (($afterDisplay[$key] ?? []) !== ($previousDisplay[$key] ?? [])) {
                     $display[$key] = [
-                        'previous' => $previousRow,
-                        'after' => $afterDisplay[$key],
+                        'previous' => $previousDisplay[$key] ?? [],
+                        'after' => $afterDisplay[$key] ?? [],
                     ];
                 }
             }

@@ -42,7 +42,7 @@ final readonly class ExclusivePairMethod implements Method
 
             foreach ($pairs as $pair) {
                 foreach ($group->getEmptyCells() as $cell) {
-                    if ($pair->match($cell)) {
+                    if ($pair->contains($cell)) {
                         $map = $map->merge($cell, $pair->candidates);
                         continue;
                     }
@@ -66,7 +66,9 @@ final readonly class ExclusivePairMethod implements Method
      */
     private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $cell): array
     {
-        $map = $this->inclusiveMethod->apply($map, $grid, $cell);
+        if (! $map->has($cell)) {
+            $map = $this->inclusiveMethod->apply($map, $grid, $cell);
+        }
 
         return [$map, $map->get($cell)];
     }

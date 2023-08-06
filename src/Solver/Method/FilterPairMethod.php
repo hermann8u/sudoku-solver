@@ -14,6 +14,9 @@ use Florian\SudokuSolver\Solver\CellCandidatesMap;
 use Florian\SudokuSolver\Solver\Method;
 use Florian\SudokuSolver\Solver\Pair;
 
+/**
+ * TODO: To remove
+ */
 final readonly class FilterPairMethod implements Method
 {
     public function __construct(
@@ -30,7 +33,7 @@ final readonly class FilterPairMethod implements Method
 
             foreach ($pairs as $pair) {
                 foreach ($group->getEmptyCells() as $cell) {
-                    if ($pair->match($cell)) {
+                    if ($pair->contains($cell)) {
                         $map = $map->merge($cell, $pair->candidates);
                         continue;
                     }

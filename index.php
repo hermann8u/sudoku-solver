@@ -4,6 +4,7 @@ use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
 use Florian\SudokuSolver\Grid\GridFactory;
 use Florian\SudokuSolver\Grid\GridGenerator;
 use Florian\SudokuSolver\Solver\Method\ExclusivePairMethod;
+use Florian\SudokuSolver\Solver\Method\ExclusiveTripletMethod;
 use Florian\SudokuSolver\Solver\Method\FilterPairMethod;
 use Florian\SudokuSolver\Solver\Method\InclusiveMethod;
 use Florian\SudokuSolver\Solver\Method\ExclusiveMethod;
@@ -12,7 +13,7 @@ use Florian\SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
 
-$stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
+$stringGrid = file_get_contents('./data/grid/hard/2.csv');
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($stringGrid);
@@ -21,8 +22,8 @@ $obviousCandidateMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $obviousCandidateMethod,
+    new ExclusiveTripletMethod($obviousCandidateMethod),
     new ExclusivePairMethod($obviousCandidateMethod),
-    new Inspector(new FilterPairMethod($obviousCandidateMethod)),
     new ExclusiveMethod($obviousCandidateMethod),
 ]);
 
