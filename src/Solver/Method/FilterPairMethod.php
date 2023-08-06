@@ -29,19 +29,24 @@ final readonly class FilterPairMethod implements Method
             [$map, $pairs] = $this->findPairs($map, $grid, $group);
 
             foreach ($pairs as $pair) {
-                foreach ($pair->coordinatesPair as $coordinates) {
-                    $cell = $grid->getCellByCoordinates($coordinates);
-
-                    if (! $cell->isEmpty() || ! $cell instanceof FillableCell) {
-                        throw new \LogicException();
+                foreach ($group->getEmptyCells() as $cell) {
+                    if ($pair->match($cell)) {
+                        $map = $map->merge($cell, $pair->candidates);
+                        continue;
                     }
 
-                    $map = $map->merge($cell, $pair->candidates);
+                    [$map, $candidates] = $this->getCandidates($map, $grid, $cell);
+                    $candidates = $candidates->withRemovedValues(...$pair->candidates);
+                    $map = $map->merge($cell, $candidates);
+
+                    if ($candidates->hasUniqueValue()) {
+                        return $map;
+                    }
                 }
             }
         }
 
-        return $this->inclusiveMethod->apply($map, $grid, $currentCell);
+        return $map;
     }
 
     /**
@@ -61,7 +66,7 @@ final readonly class FilterPairMethod implements Method
 
         // Filter candidates with more or less than 2 possible cells
         /** @var array<int<CellValue::MIN, CellValue::MAX>, string[]> $candidateCoordinatesMap */
-        $candidateCoordinatesMap = array_filter($candidateCoordinatesMap, static fn (array $items) => count($items) === 2);
+        $candidateCoordinatesMap = array_filter($candidateCoordinatesMap, static fn (array $items) => count($items) === 1);
 
         return [$map, $this->associatePairs($candidateCoordinatesMap)];
     }

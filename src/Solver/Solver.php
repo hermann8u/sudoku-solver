@@ -65,7 +65,7 @@ final readonly class Solver
 
         return new Result(
             $i,
-            memory_get_peak_usage(true),
+            memory_get_peak_usage(),
             $methodNamesCount,
             $grid,
         );

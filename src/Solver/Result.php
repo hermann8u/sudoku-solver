@@ -17,13 +17,16 @@ final readonly class Result
     public int $cellFilled;
     public int $remaining;
 
+    /**
+     * @param array<string, int> $methods
+     */
     public function __construct(
         public int $iterationCount,
         public int $memory,
         public array $methods,
         private Grid $grid,
     ) {
-        $this->realMemory = $this->memory / 1024 / 1024 . 'MiB';
+        $this->realMemory = round($this->memory / 1024 / 1024, 5) . ' MiB';
         $this->valid = $this->grid->isValid();
         $this->filled = $this->grid->isFilled();
         $this->containsDuplicate = $this->grid->containsDuplicate();
