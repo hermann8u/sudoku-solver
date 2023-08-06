@@ -15,11 +15,11 @@ final readonly class Grid
 {
     /** @var Cell[] */
     private array $cells;
-    /** @var Column[] */
+    /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Column> */
     private array $columns;
-    /** @var Row[] */
+    /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Row> */
     private array $rows;
-    /** @var Region[] */
+    /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Region> */
     private array $regions;
 
     /**
@@ -112,7 +112,11 @@ final readonly class Grid
     /**
      * @param Cell[] $cells
      *
-     * @return array{Column[], Row[], Region[]}
+     * @return array{
+     *     array<int<Coordinates::MIN, Coordinates::MAX>, Column>,
+     *     array<int<Coordinates::MIN, Coordinates::MAX>, Row>,
+     *     array<int<Coordinates::MIN, Coordinates::MAX>, Region>,
+     * }
      */
     private function prepareGroups(array $cells): array
     {
