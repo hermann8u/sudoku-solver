@@ -46,13 +46,14 @@ final readonly class Region extends Group
             $regionNumbers[] = $regionX + 3 * $y;
         }
 
-        $regionNumbers = array_filter($regionNumbers, fn (int $value) => $value !== $this->number->value);
+        /** @var array<int<RegionNumber::MIN, RegionNumber::MAX>> $regionNumbers */
+        $regionNumbers = array_values(array_filter($regionNumbers, fn (int $value) => $value !== $this->number->value));
 
         sort($regionNumbers);
 
         return array_map(
             static fn (int $value) => new RegionNumber($value),
-            array_values($regionNumbers),
+            $regionNumbers,
         );
     }
 }

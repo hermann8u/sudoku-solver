@@ -12,6 +12,9 @@ final readonly class RegionNumber
     public const MIN = 1;
     public const MAX = 9;
 
+    /**
+     * @param int<self::MIN, self::MAX> $value
+     */
     public function __construct(
         public int $value,
     ) {
@@ -21,8 +24,9 @@ final readonly class RegionNumber
 
     public static function fromCoordinates(Coordinates $coordinates): self
     {
-        $number = ceil($coordinates->x / Region::WIDTH) + (ceil($coordinates->y / Region::HEIGHT) - 1) * Region::HEIGHT;
+        /** @var int<self::MIN, self::MAX> $number */
+        $number = (int) (ceil($coordinates->x / Region::WIDTH) + (ceil($coordinates->y / Region::HEIGHT) - 1) * Region::HEIGHT);
 
-        return new self((int) $number);
+        return new self($number);
     }
 }
