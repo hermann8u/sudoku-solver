@@ -23,7 +23,7 @@ final readonly class ExclusivePairMethod implements Method
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         foreach ($grid->getSetsOfCell($currentCell) as $set) {
-            $v = [];
+            $coordinatesByCandidates = [];
 
             foreach ($set->getEmptyCells() as $cell) {
                 [$map, $candidates] = $this->getCandidates($map, $grid, $cell);
@@ -32,26 +32,27 @@ final readonly class ExclusivePairMethod implements Method
                     $values = $candidates->toIntegers();
                     sort($values);
 
-                    $v[implode(',', $values)][] = $cell->coordinates->toString();
+                    $coordinatesByCandidates[implode(',', $values)][] = $cell->coordinates->toString();
                 }
             }
 
-            $v = array_filter($v, static fn ($e) => count($e) === 2);
+            $coordinatesByCandidates = array_filter($coordinatesByCandidates, static fn ($e) => count($e) === 2);
 
-            $pairs = $this->associatePairs($v);
+            $pairs = $this->associatePairs($coordinatesByCandidates);
 
-            foreach ($set->getEmptyCells() as $cell) {
-                foreach ($pairs as $pair) {
+            foreach ($pairs as $pair) {
+                foreach ($set->getEmptyCells() as $cell) {
                     if ($pair->match($cell)) {
                         $map = $map->merge($cell, $pair->candidates);
-                    } else {
-                        [$map, $candidates] = $this->getCandidates($map, $grid, $cell);
-                        $candidates = $candidates->withRemovedValues(...$pair->candidates);
-                        $map = $map->merge($cell, $candidates);
+                        continue;
+                    }
 
-                        if ($candidates->hasUniqueValue()) {
-                            return $map;
-                        }
+                    [$map, $candidates] = $this->getCandidates($map, $grid, $cell);
+                    $candidates = $candidates->withRemovedValues(...$pair->candidates);
+                    $map = $map->merge($cell, $candidates);
+
+                    if ($candidates->hasUniqueValue()) {
+                        return $map;
                     }
                 }
             }
