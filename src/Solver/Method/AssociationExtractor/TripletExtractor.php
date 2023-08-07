@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 namespace Florian\SudokuSolver\Solver\Method\AssociationExtractor;
-use Florian\SudokuSolver\Solver\Association\Pair;
+
 use Florian\SudokuSolver\Solver\Association\Triplet;
 use Florian\SudokuSolver\Solver\Candidates;
 use Florian\SudokuSolver\Solver\CellCandidatesMap;
 use Florian\SudokuSolver\Solver\Method\AssociationExtractor;
 
 /**
- * @implements AssociationExtractor<Pair>
+ * @implements AssociationExtractor<Triplet>
  */
 final class TripletExtractor implements AssociationExtractor
 {

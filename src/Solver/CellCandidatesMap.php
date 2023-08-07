@@ -8,8 +8,10 @@ use Florian\SudokuSolver\Grid\Cell;
 use Florian\SudokuSolver\Grid\Cell\CellValue;
 use Florian\SudokuSolver\Grid\Cell\Coordinates;
 use Florian\SudokuSolver\Grid\Cell\FillableCell;
-use Traversable;
 
+/**
+ * @implements \IteratorAggregate<string, Candidates>
+ */
 final readonly class CellCandidatesMap implements \IteratorAggregate
 {
     /**
@@ -49,7 +51,7 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
 
     public function filtered(callable $filter): self
     {
-        return new self(array_filter($this->map, $filter, ARRAY_FILTER_USE_BOTH));
+        return new self(array_filter($this->map, $filter));
     }
 
     /**
@@ -80,7 +82,7 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
         );
     }
 
-    public function getIterator(): Traversable
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->map);
     }

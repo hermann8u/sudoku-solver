@@ -13,7 +13,7 @@ abstract readonly class Association
     /**
      * @param Coordinates[] $coordinatesList
      */
-    public function __construct(
+    final public function __construct(
         public array $coordinatesList,
         public Candidates $candidates,
     ) {
@@ -21,6 +21,9 @@ abstract readonly class Association
         Assert::count($this->candidates->values, $this->getAssociationCount());
     }
 
+    /**
+     * @param string[] $coordinatesStrings
+     */
     public static function fromStrings(array $coordinatesStrings, string $valuesString): static
     {
         return new static(
