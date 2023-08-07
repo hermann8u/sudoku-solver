@@ -8,8 +8,10 @@ use Florian\SudokuSolver\Solver\Association;
 
 final readonly class Triplet extends Association
 {
-    protected function getAssociationCount(): int
+    public const COUNT = 3;
+
+    public static function getAssociationCount(): int
     {
-        return 3;
+        return self::COUNT;
     }
 }

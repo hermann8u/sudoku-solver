@@ -16,35 +16,12 @@ final class TripletExtractor implements AssociationExtractor
 {
     public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
     {
-        $mapForGroup = $mapForGroup->filtered(static fn (Candidates $c) => $c->count() < 4);
+        $mapForGroup = $mapForGroup->filtered(static fn (Candidates $c) => $c->count() <= Triplet::COUNT);
 
-        foreach ($mapForGroup as $coordinates => $candidates) {
-            foreach ($mapForGroup as $otherCoordinates => $otherCandidates) {
-                if ($coordinates === $otherCoordinates) {
-                    continue;
-                }
+        $coordinatesByCandidates = $mapForGroup->multidimensionalKeyLoop($this->tryToAssociateCells(...));
 
-                [$candidatesWithBiggerCount, $candidatesWithSmallerCount] = $this->order($candidates, $otherCandidates);
-
-                if ($candidatesWithBiggerCount->count() < 3) {
-                    continue;
-                }
-
-                if (! $candidatesWithBiggerCount->contains($candidatesWithSmallerCount)) {
-                    continue;
-                }
-
-                $key = $candidatesWithBiggerCount->toString();
-
-                $coordinatesByCandidates[$key][] = $coordinates;
-                $coordinatesByCandidates[$key][] = $otherCoordinates;
-
-                $coordinatesByCandidates[$key] = array_unique($coordinatesByCandidates[$key]);
-            }
-        }
-
-        foreach ($coordinatesByCandidates ?? [] as $valuesString => $coordinatesTriplet) {
-            if (count($coordinatesTriplet) !== 3) {
+        foreach ($coordinatesByCandidates as $valuesString => $coordinatesTriplet) {
+            if (count($coordinatesTriplet) !== Triplet::COUNT) {
                 continue;
             }
 
@@ -60,15 +37,49 @@ final class TripletExtractor implements AssociationExtractor
     }
 
     /**
+     * @param array<string, string[]> $carry
+     *
+     * @return array<string, string[]>
+     */
+    private function tryToAssociateCells(
+        CellCandidatesMap $mapForGroup,
+        array $carry,
+        string $a,
+        string $b,
+    ): array {
+        [$candidatesWithSmallerCount, $candidatesWithBiggerCount] = $this->sortByCount(
+            $mapForGroup->get($a),
+            $mapForGroup->get($b),
+        );
+
+        if ($candidatesWithBiggerCount->count() < Triplet::COUNT) {
+            return $carry;
+        }
+
+        if (! $candidatesWithBiggerCount->contains($candidatesWithSmallerCount)) {
+            return $carry;
+        }
+
+        $key = $candidatesWithBiggerCount->toString();
+
+        $carry[$key][] = $a;
+        $carry[$key][] = $b;
+
+        $carry[$key] = array_unique($carry[$key]);
+
+        return $carry;
+    }
+
+    /**
      * @param Candidates $candidates
      * @param Candidates $otherCandidates
      *
      * @return array{Candidates, Candidates}
      */
-    private function order(Candidates $candidates, Candidates $otherCandidates): array
+    private function sortByCount(Candidates $candidates, Candidates $otherCandidates): array
     {
         $v = [$candidates, $otherCandidates];
-        usort($v, static fn (Candidates $a, Candidates $b) => -1 * ($a->count() <=> $b->count()));
+        usort($v, static fn (Candidates $a, Candidates $b) => $a->count() <=> $b->count());
 
         return $v;
     }

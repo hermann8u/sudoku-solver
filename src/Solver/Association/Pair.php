@@ -8,8 +8,10 @@ use Florian\SudokuSolver\Solver\Association;
 
 final readonly class Pair extends Association
 {
-    protected function getAssociationCount(): int
+    public const COUNT = 2;
+
+    public static function getAssociationCount(): int
     {
-        return 2;
+        return self::COUNT;
     }
 }

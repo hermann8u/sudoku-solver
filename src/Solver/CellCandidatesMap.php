@@ -37,18 +37,20 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
         return array_diff($this->display(), $otherMap->display()) === [];
     }
 
-    public function get(FillableCell $cell): Candidates
+    public function get(FillableCell|Coordinates|string $key): Candidates
     {
-        if (! $this->has($cell)) {
+        $coordinatesString = $this->getCoordinatesString($key);
+
+        if (! $this->has($coordinatesString)) {
             throw new \DomainException();
         }
 
-        return $this->map[$cell->coordinates->toString()];
+        return $this->map[$coordinatesString];
     }
 
-    public function has(Cell $cell): bool
+    public function has(FillableCell|Coordinates|string $key): bool
     {
-        return isset($this->map[$cell->coordinates->toString()]);
+        return isset($this->map[$this->getCoordinatesString($key)]);
     }
 
     public function merge(FillableCell $cell, Candidates $candidates): self
@@ -62,6 +64,31 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
     public function filtered(callable $filter): self
     {
         return new self(array_filter($this->map, $filter));
+    }
+
+    /**
+     * @template T of mixed
+     *
+     * @param callable(self $map, T $carry, string $a, string $b): T $callable
+     * @param T $carry
+     *
+     * @return T
+     */
+    public function multidimensionalKeyLoop(callable $callable, mixed $carry = []): mixed
+    {
+        $keys = array_keys($this->map);
+
+        foreach ($keys as $a) {
+            foreach ($keys as $b) {
+                if ($a === $b) {
+                    continue;
+                }
+
+                $carry = $callable($this, $carry, $a, $b);
+            }
+        }
+
+        return $carry;
     }
 
     /**
@@ -95,5 +122,14 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->map);
+    }
+
+    private function getCoordinatesString(Cell|Coordinates|string $key): string
+    {
+        return match (true) {
+            $key instanceof Cell => $key->coordinates->toString(),
+            $key instanceof Coordinates => $key->toString(),
+            default => $key,
+        };
     }
 }

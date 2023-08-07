@@ -12,7 +12,7 @@ use Florian\SudokuSolver\Grid\Cell\CellValue;
 final readonly class Candidates implements \IteratorAggregate, \Stringable
 {
     /** @var CellValue[] */
-    public array $values;
+    private array $values;
 
     /**
      * @param CellValue[] $values

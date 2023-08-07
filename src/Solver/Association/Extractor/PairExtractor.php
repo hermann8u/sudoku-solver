@@ -16,14 +16,14 @@ final class PairExtractor implements AssociationExtractor
 {
     public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
     {
-        $mapForGroup = $mapForGroup->filtered(static fn (Candidates $c) => $c->count() === 2);
+        $mapForGroup = $mapForGroup->filtered(static fn (Candidates $c) => $c->count() === Pair::COUNT);
 
         foreach ($mapForGroup as $coordinates => $candidates) {
             $coordinatesByCandidates[$candidates->toString()][] = $coordinates;
         }
 
         foreach ($coordinatesByCandidates ?? [] as $valuesString => $coordinatesPair) {
-            if (count($coordinatesPair) !== 2) {
+            if (count($coordinatesPair) !== Pair::COUNT) {
                 continue;
             }
 

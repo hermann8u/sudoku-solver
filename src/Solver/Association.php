@@ -13,12 +13,12 @@ abstract readonly class Association
     /**
      * @param Coordinates[] $coordinatesList
      */
-    final public function __construct(
+    final protected function __construct(
         public array $coordinatesList,
         public Candidates $candidates,
     ) {
         Assert::count($this->coordinatesList, $this->getAssociationCount());
-        Assert::count($this->candidates->values, $this->getAssociationCount());
+        Assert::same($this->candidates->count(), $this->getAssociationCount());
     }
 
     /**
@@ -47,5 +47,5 @@ abstract readonly class Association
     /**
      * @return positive-int
      */
-    abstract protected function getAssociationCount(): int;
+    abstract public static function getAssociationCount(): int;
 }
