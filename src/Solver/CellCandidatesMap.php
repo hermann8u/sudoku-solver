@@ -27,6 +27,16 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
         return new self([]);
     }
 
+    public function isEmpty(): bool
+    {
+        return $this->map === [];
+    }
+
+    public function isSame(CellCandidatesMap $otherMap): bool
+    {
+        return array_diff($this->display(), $otherMap->display()) === [];
+    }
+
     public function get(FillableCell $cell): Candidates
     {
         if (! $this->has($cell)) {

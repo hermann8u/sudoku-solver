@@ -12,7 +12,7 @@ use Florian\SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
 
-$stringGrid = file_get_contents('./data/grid/hard/2.csv');
+$stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($stringGrid);

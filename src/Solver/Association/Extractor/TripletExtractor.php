@@ -30,8 +30,7 @@ final class TripletExtractor implements AssociationExtractor
                     continue;
                 }
 
-                // Check that both candidates collection contains the same numbers
-                if (Candidates::intersect($candidatesWithBiggerCount, $candidatesWithSmallerCount)->count() < $candidatesWithSmallerCount->count()) {
+                if (! $candidatesWithBiggerCount->contains($candidatesWithSmallerCount)) {
                     continue;
                 }
 

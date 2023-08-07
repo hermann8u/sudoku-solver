@@ -37,6 +37,6 @@ final class InclusiveMethod implements Method
             $candidatesByGroup[] = $candidates;
         }
 
-        return $map->merge($currentCell, Candidates::intersect(...$candidatesByGroup));
+        return $map->merge($currentCell, Candidates::fromIntersect(...$candidatesByGroup));
     }
 }

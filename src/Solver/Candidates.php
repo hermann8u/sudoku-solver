@@ -47,15 +47,9 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$values);
     }
 
-    public static function intersect(Candidates $candidates, Candidates ...$otherCandidates): self
+    public static function fromIntersect(Candidates $candidates, Candidates ...$others): self
     {
-        $values = $candidates->toIntegers();
-        $otherValues = array_map(
-            static fn (Candidates $c) => $c->toIntegers(),
-            $otherCandidates,
-        );
-
-        return self::fromInt(...array_intersect($values, ...$otherValues));
+        return $candidates->intersect(...array_values($others));
     }
 
     public static function empty(): self
@@ -83,6 +77,23 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return count($this->values);
     }
 
+    public function intersect(Candidates ...$others): self
+    {
+        $otherValues = array_map(
+            static fn (Candidates $c) => $c->toIntegers(),
+            $others,
+        );
+
+        $intersect = array_intersect($this->toIntegers(), ...$otherValues);
+
+        return self::fromInt(...$intersect);
+    }
+
+    public function contains(Candidates $otherCandidates): bool
+    {
+        return $this->intersect($otherCandidates)->count() === $otherCandidates->count();
+    }
+
     public function withRemovedValues(CellValue ...$cellValues): self
     {
         $currentValues = $this->toIntegers();
@@ -96,14 +107,6 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         }
 
         return self::fromInt(...$currentValues);
-    }
-
-    /**
-     * @return array<int<CellValue::MIN, CellValue::MAX>>
-     */
-    public function toIntegers(): array
-    {
-        return array_filter(array_column($this->values, 'value'));
     }
 
     public function toString(): string
@@ -122,5 +125,13 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->values);
+    }
+
+    /**
+     * @return array<int<CellValue::MIN, CellValue::MAX>>
+     */
+    private function toIntegers(): array
+    {
+        return array_filter(array_column($this->values, 'value'));
     }
 }

@@ -9,6 +9,8 @@ use Florian\SudokuSolver\Grid\Grid;
 
 final readonly class Solver
 {
+    private const MAX_ITERATION = 20;
+
     /**
      * @param iterable<Method> $methods
      */
@@ -25,6 +27,8 @@ final readonly class Solver
         $map = CellCandidatesMap::empty();
 
         do {
+            $previousMap = $map;
+
             foreach ($grid->getFillableCells() as $currentCell) {
                 if ($currentCell->isEmpty() === false) {
                     continue;
@@ -59,8 +63,12 @@ final readonly class Solver
                     break;
                 }
             }
+
             $i++;
-        } while (($grid->isValid() === false && $grid->containsDuplicate() === false && $i < 10));
+        } while (false === $this->shouldStop($i, $grid, $previousMap, $map));
+
+        dump(array_diff($previousMap->display(), $map->display()));
+        //dump(array_filter($map->display(), static fn (string $v) => strlen($v) === 3/*in_array($v, ['4,6', '6,8', '4,8'])*/));
 
         return new Result(
             $i,
@@ -68,5 +76,26 @@ final readonly class Solver
             $methodNamesCount,
             $grid,
         );
+    }
+
+    private function shouldStop(int $iteration, Grid $grid, CellCandidatesMap $previousMap, CellCandidatesMap $currentMap): bool
+    {
+        if ($grid->containsDuplicate()) {
+            return true;
+        }
+
+        if ($grid->isValid()) {
+            return true;
+        }
+
+        if (! $previousMap->isEmpty() && ! $currentMap->isEmpty() && $currentMap->isSame($previousMap)) {
+            return true;
+        }
+
+        if ($iteration > (self::MAX_ITERATION - 1)) {
+            return true;
+        }
+
+        return false;
     }
 }
