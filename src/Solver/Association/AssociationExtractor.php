@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver\Method;
+namespace Florian\SudokuSolver\Solver\Association;
 
 use Florian\SudokuSolver\Solver\Association;
 use Florian\SudokuSolver\Solver\CellCandidatesMap;

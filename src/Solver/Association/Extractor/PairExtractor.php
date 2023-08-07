@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver\Method\AssociationExtractor;
+namespace Florian\SudokuSolver\Solver\Association\Extractor;
 
 use Florian\SudokuSolver\Solver\Association\Pair;
 use Florian\SudokuSolver\Solver\Candidates;
 use Florian\SudokuSolver\Solver\CellCandidatesMap;
-use Florian\SudokuSolver\Solver\Method\AssociationExtractor;
+use Florian\SudokuSolver\Solver\Association\AssociationExtractor;
 
 /**
  * @implements AssociationExtractor<Pair>

@@ -3,8 +3,8 @@
 use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
 use Florian\SudokuSolver\Grid\GridFactory;
 use Florian\SudokuSolver\Grid\GridGenerator;
-use Florian\SudokuSolver\Solver\Method\AssociationExtractor\PairExtractor;
-use Florian\SudokuSolver\Solver\Method\AssociationExtractor\TripletExtractor;
+use Florian\SudokuSolver\Solver\Association\Extractor\PairExtractor;
+use Florian\SudokuSolver\Solver\Association\Extractor\TripletExtractor;
 use Florian\SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
 use Florian\SudokuSolver\Solver\Method\ExclusiveMethod;
 use Florian\SudokuSolver\Solver\Method\InclusiveMethod;
