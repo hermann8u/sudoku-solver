@@ -14,6 +14,9 @@ use Florian\SudokuSolver\Solver\Method;
 use Florian\SudokuSolver\Solver\Triplet;
 
 /**
+ * Identify the triplets in the groups of current cell. It allows to remove the three values of the triplet in the other
+ * cells of the group candidates.
+ *
  * TODO : To clean up
  */
 final class ExclusiveTripletMethod implements Method
@@ -32,14 +35,13 @@ final class ExclusiveTripletMethod implements Method
 
             foreach ($triplets as $triplet) {
                 foreach ($group->getEmptyCells() as $cell) {
-                    $candidates = $candidatesByGroup[$cell->coordinates->toString()];
-
                     if ($triplet->contains($cell)) {
-                        $map = $map->merge($cell, Candidates::intersect($candidates, $triplet->candidates));
                         continue;
                     }
 
+                    $candidates = $candidatesByGroup[$cell->coordinates->toString()];
                     $candidates = $candidates->withRemovedValues(...$triplet->candidates);
+
                     $map = $map->merge($cell, $candidates);
 
                     if ($candidates->hasUniqueValue()) {
@@ -95,10 +97,7 @@ final class ExclusiveTripletMethod implements Method
                     continue;
                 }
 
-                $valuesForKey = $candidatesForKey->toIntegers();
-                sort($valuesForKey);
-
-                $key = implode(',', $valuesForKey);
+                $key = $candidatesForKey->toString();
 
                 $coordinatesByCandidates[$key][] = $coordinates;
                 $coordinatesByCandidates[$key][] = $otherCoordinates;
@@ -107,7 +106,24 @@ final class ExclusiveTripletMethod implements Method
             }
         }
 
-        return $coordinatesByCandidates ?? [];
+        return array_filter(
+            $coordinatesByCandidates ?? [],
+            static fn (array $coordinatesTriplet) => count($coordinatesTriplet) === 3,
+        );
+    }
+
+    /**
+     * @param Candidates $candidates
+     * @param Candidates $otherCandidates
+     *
+     * @return array{Candidates, Candidates}
+     */
+    private function order(Candidates $candidates, Candidates $otherCandidates): array
+    {
+        $v = [$candidates, $otherCandidates];
+        usort($v, static fn (Candidates $a, Candidates $b) => -1 * ($a->count() <=> $b->count()));
+
+        return $v;
     }
 
     /**
@@ -118,31 +134,15 @@ final class ExclusiveTripletMethod implements Method
     private function associateTriplets(array $candidatesCoordinatesMap): array
     {
         foreach ($candidatesCoordinatesMap as $valuesString => $coordinatesTriplets) {
-            if (count($coordinatesTriplets) !== 3) {
-                continue;
-            }
-
-            $values = explode(',', $valuesString);
-            /** @var array<int<CellValue::MIN, CellValue::MAX>> $values */
-            $values = array_map(static fn (string $v) => (int) $v, $values);
-
-            $pairs[] = new Triplet(
+            $triplets[] = new Triplet(
                 array_map(
                     static fn (string $coordinates) => Coordinates::fromString($coordinates),
                     $coordinatesTriplets,
                 ),
-                Candidates::fromInt(...$values),
+                Candidates::fromString($valuesString),
             );
         }
 
-        return $pairs ?? [];
-    }
-
-    private function order(Candidates $candidates, Candidates $otherCandidates)
-    {
-        $v = [$candidates, $otherCandidates];
-        usort($v, static fn (Candidates $a, Candidates $b) => $a->count() <=> $b->count());
-
-        return $v;
+        return $triplets ?? [];
     }
 }

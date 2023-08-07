@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Florian\SudokuSolver\Solver;
 
-use Florian\SudokuSolver\Grid\Cell;
 use Florian\SudokuSolver\Grid\Cell\FillableCell;
 use Florian\SudokuSolver\Grid\Grid;
 

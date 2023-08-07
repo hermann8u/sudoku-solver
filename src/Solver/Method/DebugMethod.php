@@ -9,7 +9,7 @@ use Florian\SudokuSolver\Grid\Grid;
 use Florian\SudokuSolver\Solver\CellCandidatesMap;
 use Florian\SudokuSolver\Solver\Method;
 
-final readonly class Inspector implements Method
+final readonly class DebugMethod implements Method
 {
     public function __construct(
         private Method $inner,
@@ -25,7 +25,7 @@ final readonly class Inspector implements Method
         $previousDisplay = $previous->display();
         $afterDisplay = $afterMap->display();
 
-        if ($previous->display() !== $afterDisplay) {
+        if ($previousDisplay !== $afterDisplay) {
             $display = [];
             foreach (array_keys($afterDisplay) as $key) {
                 if (($afterDisplay[$key] ?? []) !== ($previousDisplay[$key] ?? [])) {

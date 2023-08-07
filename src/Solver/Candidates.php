@@ -9,7 +9,7 @@ use Florian\SudokuSolver\Grid\Cell\CellValue;
 /**
  * @implements \IteratorAggregate<int, CellValue>
  */
-final readonly class Candidates implements \IteratorAggregate
+final readonly class Candidates implements \IteratorAggregate, \Stringable
 {
     /** @var CellValue[] */
     public array $values;
@@ -36,6 +36,15 @@ final readonly class Candidates implements \IteratorAggregate
             static fn (int $v) => CellValue::from($v),
             $values,
         ));
+    }
+
+    public static function fromString(string $valuesString): self
+    {
+        $values = explode(',', $valuesString);
+        /** @var array<int<CellValue::MIN, CellValue::MAX>> $values */
+        $values = array_map(static fn (string $v) => (int) $v, $values);
+
+        return self::fromInt(...$values);
     }
 
     public static function empty(): self
@@ -100,5 +109,18 @@ final readonly class Candidates implements \IteratorAggregate
     public function toIntegers(): array
     {
         return array_filter(array_column($this->values, 'value'));
+    }
+
+    public function toString(): string
+    {
+        $values = $this->toIntegers();
+        sort($values);
+
+        return implode(',', $values);
+    }
+
+    public function __toString(): string
+    {
+       return $this->toString();
     }
 }

@@ -69,12 +69,7 @@ final readonly class CellCandidatesMap
         ksort($map);
 
         return array_map(
-            static function (Candidates $candidates) {
-                $integers = $candidates->toIntegers();
-                sort($integers);
-
-                return implode(',', $integers);
-            },
+            static fn (Candidates $candidates) => $candidates->toString(),
             $map,
         );
     }
