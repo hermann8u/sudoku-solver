@@ -47,6 +47,17 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$values);
     }
 
+    public static function intersect(Candidates $candidates, Candidates ...$otherCandidates): self
+    {
+        $values = $candidates->toIntegers();
+        $otherValues = array_map(
+            static fn (Candidates $c) => $c->toIntegers(),
+            $otherCandidates,
+        );
+
+        return self::fromInt(...array_intersect($values, ...$otherValues));
+    }
+
     public static function empty(): self
     {
         return new self([]);
@@ -87,22 +98,6 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$currentValues);
     }
 
-    public function getIterator(): \Traversable
-    {
-        return new \ArrayIterator($this->values);
-    }
-
-    public static function intersect(Candidates $candidates, Candidates ...$otherCandidates): self
-    {
-        $values = $candidates->toIntegers();
-        $otherValues = array_map(
-            static fn (Candidates $c) => $c->toIntegers(),
-            $otherCandidates,
-        );
-
-        return self::fromInt(...array_intersect($values, ...$otherValues));
-    }
-
     /**
      * @return array<int<CellValue::MIN, CellValue::MAX>>
      */
@@ -122,5 +117,10 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
     public function __toString(): string
     {
        return $this->toString();
+    }
+
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->values);
     }
 }

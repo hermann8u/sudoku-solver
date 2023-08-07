@@ -3,9 +3,10 @@
 use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
 use Florian\SudokuSolver\Grid\GridFactory;
 use Florian\SudokuSolver\Grid\GridGenerator;
+use Florian\SudokuSolver\Solver\Method\AssociationExtractor\PairExtractor;
+use Florian\SudokuSolver\Solver\Method\AssociationExtractor\TripletExtractor;
+use Florian\SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
 use Florian\SudokuSolver\Solver\Method\ExclusiveMethod;
-use Florian\SudokuSolver\Solver\Method\ExclusivePairMethod;
-use Florian\SudokuSolver\Solver\Method\ExclusiveTripletMethod;
 use Florian\SudokuSolver\Solver\Method\InclusiveMethod;
 use Florian\SudokuSolver\Solver\Solver;
 
@@ -21,8 +22,13 @@ $inclusiveMethod = new InclusiveMethod();
 $solver = new Solver([
     $inclusiveMethod,
     new ExclusiveMethod($inclusiveMethod),
-    new ExclusiveTripletMethod($inclusiveMethod),
-    new ExclusivePairMethod($inclusiveMethod),
+    new ExclusiveAssociationMethod(
+        $inclusiveMethod,
+        [
+            new TripletExtractor(),
+            new PairExtractor(),
+        ]
+    ),
 ]);
 
 $result = $solver->solve($grid);
