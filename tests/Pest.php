@@ -1,5 +1,14 @@
 <?php
 
+use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Grid;
+use SudokuSolver\Grid\GridFactory;
+use SudokuSolver\Grid\GridGenerator;
+use SudokuSolver\Solver\Association;
+use SudokuSolver\Solver\Candidates;
+use SudokuSolver\Solver\CellCandidatesMap;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -23,12 +32,6 @@
 | to assert different things. Of course, you may extend the Expectation API at any time.
 |
 */
-
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Solver\Association;
-use SudokuSolver\Solver\Candidates;
-use SudokuSolver\Solver\CellCandidatesMap;
 
 expect()->extend('toBeAssociation', function (Association $other) {
 
@@ -76,6 +79,20 @@ expect()->extend('toHaveSameCoordinatesList', function (Association $other) {
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
+
+function buildGridFromFilePath(string $path): Grid
+{
+    $realpath = sprintf('%s/data/grid/%s', __DIR__, $path);
+    $stringGrid = file_get_contents($realpath);
+
+    if ($stringGrid === false) {
+        throw new \LogicException(sprintf('Unable to load file %s', $realpath));
+    }
+
+    $generator = new GridGenerator(new GridFactory());
+
+    return $generator->generate($stringGrid);
+}
 
 function buildMapFrom(array $mapData): CellCandidatesMap
 {
