@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver\Method;
+namespace SudokuSolver\Solver\Method;
 
-use Florian\SudokuSolver\Grid\Cell\FillableCell;
-use Florian\SudokuSolver\Grid\Grid;
-use Florian\SudokuSolver\Grid\Group;
-use Florian\SudokuSolver\Solver\Association\AssociationExtractor;
-use Florian\SudokuSolver\Solver\CellCandidatesMap;
-use Florian\SudokuSolver\Solver\Method;
+use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Grid;
+use SudokuSolver\Grid\Group;
+use SudokuSolver\Solver\Association\AssociationExtractor;
+use SudokuSolver\Solver\CellCandidatesMap;
+use SudokuSolver\Solver\Method;
 
 final class ExclusiveAssociationMethod implements Method
 {

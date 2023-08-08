@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid;
+namespace SudokuSolver\Grid;
 
-use Florian\SudokuSolver\Grid\Cell\CellValue;
-use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Group\RegionNumber;
+use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Group\RegionNumber;
 
 abstract class Cell
 {

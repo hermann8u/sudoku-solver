@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid\Group;
+namespace SudokuSolver\Grid\Group;
 
-use Florian\SudokuSolver\Grid\Cell;
-use Florian\SudokuSolver\Grid\Group;
+use SudokuSolver\Grid\Cell;
+use SudokuSolver\Grid\Group;
 
 final readonly class Region extends Group
 {

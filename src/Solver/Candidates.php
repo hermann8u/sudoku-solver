@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver;
+namespace SudokuSolver\Solver;
 
-use Florian\SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\CellValue;
 
 /**
  * @implements \IteratorAggregate<int, CellValue>

@@ -24,8 +24,45 @@
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
+use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Solver\Association;
+use SudokuSolver\Solver\Candidates;
+
+expect()->extend('toBeAssociation', function (Association $other) {
+
+    /** @var Association $association */
+    $association = $this->value;
+
+    expect($association::class)->toBe($other::class);
+    expect($association)->toHaveSameCandidates($other);
+    expect($association)->toHaveSameCoordinatesList($other);
+
+    return $this;
+});
+
+expect()->extend('toHaveSameCandidates', function (Association $other) {
+    /** @var Candidates $candidates */
+    $candidates = $this->value->candidates;
+
+    expect($candidates->intersect($other->candidates)->count())->toBe($candidates->count());
+
+    return $this;
+});
+
+expect()->extend('toHaveSameCoordinatesList', function (Association $other) {
+    /** @var Coordinates[] $coordinatesList */
+    $coordinatesList = $this->value->coordinatesList;
+
+    $coordinatesStrings = array_map(static fn (Coordinates $c) => $c->toString(), $coordinatesList);
+    sort($coordinatesStrings);
+
+    $otherCoordinatesStrings = array_map(static fn (Coordinates $c) => $c->toString(), $other->coordinatesList);
+    sort($otherCoordinatesStrings);
+
+    expect($coordinatesStrings)->toBe($otherCoordinatesStrings);
+
+    return $this;
 });
 
 /*
@@ -39,7 +76,7 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function fillableCellFromCoordinatesString(string $coordinatesString): FillableCell
 {
-    // ..
+    return new FillableCell(Coordinates::fromString($coordinatesString));
 }

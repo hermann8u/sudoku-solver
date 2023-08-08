@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid;
+namespace SudokuSolver\Grid;
 
-use Florian\SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;
 
 final class GridGenerator

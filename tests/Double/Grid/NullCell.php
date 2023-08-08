@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Tests\Double\Grid;
 
-use Florian\SudokuSolver\Grid\Cell;
+use SudokuSolver\Grid\Cell;
 
 final class NullCell extends Cell
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid;
+namespace SudokuSolver\Grid;
 
-use Florian\SudokuSolver\Grid\Cell\CellValue;
-use Florian\SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\FillableCell;
 use Traversable;
 use Webmozart\Assert\Assert;
 

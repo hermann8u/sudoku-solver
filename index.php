@@ -1,14 +1,14 @@
 <?php
 
-use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
-use Florian\SudokuSolver\Grid\GridFactory;
-use Florian\SudokuSolver\Grid\GridGenerator;
-use Florian\SudokuSolver\Solver\Association\Extractor\PairExtractor;
-use Florian\SudokuSolver\Solver\Association\Extractor\TripletExtractor;
-use Florian\SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
-use Florian\SudokuSolver\Solver\Method\ExclusiveMethod;
-use Florian\SudokuSolver\Solver\Method\InclusiveMethod;
-use Florian\SudokuSolver\Solver\Solver;
+use SudokuSolver\Grid\Cell\FixedValueCell;
+use SudokuSolver\Grid\GridFactory;
+use SudokuSolver\Grid\GridGenerator;
+use SudokuSolver\Solver\Association\Extractor\PairExtractor;
+use SudokuSolver\Solver\Association\Extractor\TripletExtractor;
+use SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
+use SudokuSolver\Solver\Method\ExclusiveMethod;
+use SudokuSolver\Solver\Method\InclusiveMethod;
+use SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
 
@@ -21,7 +21,6 @@ $inclusiveMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $inclusiveMethod,
-    new ExclusiveMethod($inclusiveMethod),
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
         [
@@ -29,6 +28,7 @@ $solver = new Solver([
             new PairExtractor(),
         ]
     ),
+    new ExclusiveMethod($inclusiveMethod),
 ]);
 
 $result = $solver->solve($grid);

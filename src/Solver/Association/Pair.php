@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver\Association;
+namespace SudokuSolver\Solver\Association;
 
-use Florian\SudokuSolver\Solver\Association;
+use SudokuSolver\Solver\Association;
 
 final readonly class Pair extends Association
 {

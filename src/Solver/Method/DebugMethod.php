@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver\Method;
+namespace SudokuSolver\Solver\Method;
 
-use Florian\SudokuSolver\Grid\Cell\FillableCell;
-use Florian\SudokuSolver\Grid\Grid;
-use Florian\SudokuSolver\Solver\CellCandidatesMap;
-use Florian\SudokuSolver\Solver\Method;
+use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Grid;
+use SudokuSolver\Solver\CellCandidatesMap;
+use SudokuSolver\Solver\Method;
 
 final readonly class DebugMethod implements Method
 {

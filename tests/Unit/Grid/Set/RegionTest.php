@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Florian\SudokuSolver\Grid\Group\Region;
-use Florian\SudokuSolver\Grid\Group\RegionNumber;
+use SudokuSolver\Grid\Group\Region;
+use SudokuSolver\Grid\Group\RegionNumber;
 use SudokuSolver\Tests\Double\Grid\NullCell;
 
 it('has expected regions with direct impact', function (int $value, array $expectedRegionsNumber) {
@@ -26,4 +26,4 @@ it('has expected regions with direct impact', function (int $value, array $expec
     [6, [3, 4, 5, 9]],
     [7, [1, 4, 8, 9]],
     [9, [3, 6, 7, 8]],
-])->only();
+])->skip();

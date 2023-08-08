@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver;
+namespace SudokuSolver\Solver;
 
-use Florian\SudokuSolver\Grid\Cell;
-use Florian\SudokuSolver\Grid\Cell\CellValue;
-use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Cell;
+use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\FillableCell;
 
 /**
  * @implements \IteratorAggregate<string, Candidates>

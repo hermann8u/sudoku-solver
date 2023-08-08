@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid\Group;
+namespace SudokuSolver\Grid\Group;
 
-use Florian\SudokuSolver\Grid\Cell;
-use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Group;
+use SudokuSolver\Grid\Cell;
+use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Group;
 use Webmozart\Assert\Assert;
 
 final readonly class Column extends Group

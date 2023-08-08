@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid\Cell;
+namespace SudokuSolver\Grid\Cell;
 
 use Webmozart\Assert\Assert;
 

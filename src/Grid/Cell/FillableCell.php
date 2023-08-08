@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid\Cell;
+namespace SudokuSolver\Grid\Cell;
 
 
-use Florian\SudokuSolver\Grid\Cell;
+use SudokuSolver\Grid\Cell;
 
 final class FillableCell extends Cell
 {

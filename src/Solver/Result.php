@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver;
+namespace SudokuSolver\Solver;
 
-use Florian\SudokuSolver\Grid\Cell;
-use Florian\SudokuSolver\Grid\Grid;
+use SudokuSolver\Grid\Cell;
+use SudokuSolver\Grid\Grid;
 
 final readonly class Result
 {

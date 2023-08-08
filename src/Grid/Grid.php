@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid;
+namespace SudokuSolver\Grid;
 
-use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Cell\FillableCell;
-use Florian\SudokuSolver\Grid\Group\Column;
-use Florian\SudokuSolver\Grid\Group\Region;
-use Florian\SudokuSolver\Grid\Group\Row;
+use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Group\Column;
+use SudokuSolver\Grid\Group\Region;
+use SudokuSolver\Grid\Group\RegionNumber;
+use SudokuSolver\Grid\Group\Row;
 use Webmozart\Assert\Assert;
 
 final readonly class Grid
@@ -115,7 +116,7 @@ final readonly class Grid
      * @return array{
      *     array<int<Coordinates::MIN, Coordinates::MAX>, Column>,
      *     array<int<Coordinates::MIN, Coordinates::MAX>, Row>,
-     *     array<int<Coordinates::MIN, Coordinates::MAX>, Region>,
+     *     array<int<RegionNumber::MIN, RegionNumber::MAX>, Region>,
      * }
      */
     private function prepareGroups(array $cells): array

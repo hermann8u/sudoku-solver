@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Grid;
+namespace SudokuSolver\Grid;
 
-use Florian\SudokuSolver\Grid\Cell\CellValue;
-use Florian\SudokuSolver\Grid\Cell\Coordinates;
-use Florian\SudokuSolver\Grid\Cell\FillableCell;
-use Florian\SudokuSolver\Grid\Cell\FixedValueCell;
+use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Cell\FixedValueCell;
 
 final class GridFactory
 {

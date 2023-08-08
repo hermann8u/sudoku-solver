@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Florian\SudokuSolver\Solver\Association;
+namespace SudokuSolver\Solver\Association;
 
-use Florian\SudokuSolver\Solver\Association;
-use Florian\SudokuSolver\Solver\CellCandidatesMap;
+use SudokuSolver\Solver\Association;
+use SudokuSolver\Solver\CellCandidatesMap;
 
 /**
  * @template T of Association
