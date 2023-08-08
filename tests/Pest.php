@@ -28,6 +28,7 @@ use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Solver\Association;
 use SudokuSolver\Solver\Candidates;
+use SudokuSolver\Solver\CellCandidatesMap;
 
 expect()->extend('toBeAssociation', function (Association $other) {
 
@@ -76,7 +77,20 @@ expect()->extend('toHaveSameCoordinatesList', function (Association $other) {
 |
 */
 
-function fillableCellFromCoordinatesString(string $coordinatesString): FillableCell
+function buildMapFrom(array $mapData): CellCandidatesMap
+{
+    $map = CellCandidatesMap::empty();
+    foreach ($mapData as $coordinatesString => $candidates) {
+        $map = $map->merge(
+            buildFillableCellFromCoordinatesString($coordinatesString),
+            Candidates::fromString($candidates),
+        );
+    }
+
+    return $map;
+}
+
+function buildFillableCellFromCoordinatesString(string $coordinatesString): FillableCell
 {
     return new FillableCell(Coordinates::fromString($coordinatesString));
 }

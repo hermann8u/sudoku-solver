@@ -2,17 +2,9 @@
 
 use SudokuSolver\Solver\Association\Extractor\HiddenTripletExtractor;
 use SudokuSolver\Solver\Association\Triplet;
-use SudokuSolver\Solver\Candidates;
-use SudokuSolver\Solver\CellCandidatesMap;
 
 it('is able to find hidden triplets', function (array $mapForGroupData, array $expectedAssociationStrings) {
-    $mapForGroup = CellCandidatesMap::empty();
-    foreach ($mapForGroupData as $coordinatesString => $candidates) {
-        $mapForGroup = $mapForGroup->merge(
-            fillableCellFromCoordinatesString($coordinatesString),
-            Candidates::fromString($candidates),
-        );
-    }
+    $mapForGroup = buildMapFrom($mapForGroupData);
 
     $extractor = new HiddenTripletExtractor();
     $associations = $extractor->getAssociationsForGroup($mapForGroup);

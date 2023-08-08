@@ -2,17 +2,9 @@
 
 use SudokuSolver\Solver\Association\Extractor\PairExtractor;
 use SudokuSolver\Solver\Association\Pair;
-use SudokuSolver\Solver\Candidates;
-use SudokuSolver\Solver\CellCandidatesMap;
 
 it('is able to find pairs', function (array $mapForGroupData, array $expectedAssociationStrings) {
-    $mapForGroup = CellCandidatesMap::empty();
-    foreach ($mapForGroupData as $coordinatesString => $candidates) {
-        $mapForGroup = $mapForGroup->merge(
-            fillableCellFromCoordinatesString($coordinatesString),
-            Candidates::fromString($candidates),
-        );
-    }
+    $mapForGroup = buildMapFrom($mapForGroupData);
 
     $extractor = new PairExtractor();
     $associations = $extractor->getAssociationsForGroup($mapForGroup);
