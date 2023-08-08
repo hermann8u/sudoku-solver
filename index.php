@@ -25,8 +25,8 @@ $solver = new Solver([
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
         [
-            new TripletExtractor(),
             new HiddenTripletExtractor(),
+            new TripletExtractor(),
             new PairExtractor(),
         ]
     ),
@@ -36,6 +36,7 @@ $solver = new Solver([
 $result = $solver->solve($grid);
 
 dump($result);
+dump($result->map->display());
 
 ?>
 <!DOCTYPE html>

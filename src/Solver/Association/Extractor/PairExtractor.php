@@ -16,7 +16,7 @@ final class PairExtractor implements AssociationExtractor
 {
     public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
     {
-        $mapForGroup = $mapForGroup->filtered(static fn (Candidates $c) => $c->count() === Pair::COUNT);
+        $mapForGroup = $mapForGroup->filter(static fn (Candidates $c) => $c->count() === Pair::COUNT);
 
         foreach ($mapForGroup as $coordinates => $candidates) {
             $coordinatesByCandidates[$candidates->toString()][] = $coordinates;

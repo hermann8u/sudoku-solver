@@ -49,6 +49,7 @@ final readonly class Solver
                     }
 
                     $cell->updateValue($cellValue);
+                    $map = CellCandidatesMap::empty();
 
                     $methodName = $method::class;
                     $methodNamesCount[$methodName] = ($methodNamesCount[$methodName] ?? 0) + 1;
@@ -58,8 +59,6 @@ final readonly class Solver
                         break 3;
                     }
 
-                    $map = CellCandidatesMap::empty();
-
                     break;
                 }
             }
@@ -67,13 +66,13 @@ final readonly class Solver
             $i++;
         } while (false === $this->shouldStop($i, $grid, $previousMap, $map));
 
-        dump(array_diff($previousMap->display(), $map->display()));
         //dump(array_filter($map->display(), static fn (string $v) => strlen($v) === 3/*in_array($v, ['4,6', '6,8', '4,8'])*/));
 
         return new Result(
             $i,
             memory_get_peak_usage(),
             $methodNamesCount,
+            $map,
             $grid,
         );
     }

@@ -24,6 +24,7 @@ final readonly class Result
         public int $iterationCount,
         public int $memory,
         public array $methods,
+        public CellCandidatesMap $map,
         private Grid $grid,
     ) {
         $this->realMemory = round($this->memory / 1024 / 1024, 5) . ' MiB';

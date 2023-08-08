@@ -16,7 +16,7 @@ final class TripletExtractor implements AssociationExtractor
 {
     public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
     {
-        $mapForGroup = $mapForGroup->filtered(static fn (Candidates $c) => $c->count() <= Triplet::COUNT);
+        $mapForGroup = $mapForGroup->filter(static fn (Candidates $c) => $c->count() <= Triplet::COUNT);
 
         $coordinatesByCandidates = $mapForGroup->multidimensionalKeyLoop($this->tryToAssociateCells(...));
 
