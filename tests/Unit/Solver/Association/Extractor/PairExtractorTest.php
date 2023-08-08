@@ -5,25 +5,25 @@ use SudokuSolver\Solver\Association\Pair;
 use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CellCandidatesMap;
 
-it('is able to find right pairs', function (array $cellCandidatesData, array $expectedPairStrings) {
+it('is able to find pairs', function (array $mapForGroupData, array $expectedAssociationStrings) {
     $mapForGroup = CellCandidatesMap::empty();
-    foreach ($cellCandidatesData as $coordinatesString => $candidates) {
+    foreach ($mapForGroupData as $coordinatesString => $candidates) {
         $mapForGroup = $mapForGroup->merge(
             fillableCellFromCoordinatesString($coordinatesString),
             Candidates::fromString($candidates),
         );
     }
 
-    $pairExtractor = new PairExtractor();
-    $pairs = $pairExtractor->getAssociationsForGroup($mapForGroup);
+    $extractor = new PairExtractor();
+    $associations = $extractor->getAssociationsForGroup($mapForGroup);
 
-    expect($pairs)->toHaveCount(1);
+    expect($associations)->toHaveCount(1);
 
-    $pair = reset($pairs);
+    $association = reset($associations);
 
-    expect($pair)->toBeAssociation(Pair::fromStrings(...$expectedPairStrings));
+    expect($association)->toBeAssociation(Pair::fromStrings(...$expectedAssociationStrings));
 })->with([
-    'column' => [
+    'Column' => [
         [
             '(4,1)' => '7,6',
             '(4,3)' => '7,3',
@@ -36,7 +36,7 @@ it('is able to find right pairs', function (array $cellCandidatesData, array $ex
             '3,7',
         ],
     ],
-    'row' => [
+    'Row' => [
         [
             '(1,5)' => '4,8',
             '(2,5)' => '4,8',

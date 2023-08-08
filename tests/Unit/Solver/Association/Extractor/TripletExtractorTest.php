@@ -5,23 +5,23 @@ use SudokuSolver\Solver\Association\Triplet;
 use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CellCandidatesMap;
 
-it('is able to find right triplets', function (array $cellCandidatesData, array $expectedPairStrings) {
+it('is able to find triplets', function (array $mapForGroupData, array $expectedAssociationStrings) {
     $mapForGroup = CellCandidatesMap::empty();
-    foreach ($cellCandidatesData as $coordinatesString => $candidates) {
+    foreach ($mapForGroupData as $coordinatesString => $candidates) {
         $mapForGroup = $mapForGroup->merge(
             fillableCellFromCoordinatesString($coordinatesString),
             Candidates::fromString($candidates),
         );
     }
 
-    $pairExtractor = new TripletExtractor();
-    $pairs = $pairExtractor->getAssociationsForGroup($mapForGroup);
+    $extractor = new TripletExtractor();
+    $associations = $extractor->getAssociationsForGroup($mapForGroup);
 
-    expect($pairs)->toHaveCount(1);
+    expect($associations)->toHaveCount(1);
 
-    $pair = reset($pairs);
+    $association = reset($associations);
 
-    expect($pair)->toBeAssociation(Triplet::fromStrings(...$expectedPairStrings));
+    expect($association)->toBeAssociation(Triplet::fromStrings(...$expectedAssociationStrings));
 })->with([
     'Perfect triplet' => [
         [

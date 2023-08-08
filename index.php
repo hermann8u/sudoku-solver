@@ -3,6 +3,7 @@
 use SudokuSolver\Grid\Cell\FixedValueCell;
 use SudokuSolver\Grid\GridFactory;
 use SudokuSolver\Grid\GridGenerator;
+use SudokuSolver\Solver\Association\Extractor\HiddenTripletExtractor;
 use SudokuSolver\Solver\Association\Extractor\PairExtractor;
 use SudokuSolver\Solver\Association\Extractor\TripletExtractor;
 use SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
@@ -12,7 +13,7 @@ use SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
 
-$stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
+$stringGrid = file_get_contents('./data/grid/very_hard/2.csv');
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($stringGrid);
@@ -25,6 +26,7 @@ $solver = new Solver([
         $inclusiveMethod,
         [
             new TripletExtractor(),
+            new HiddenTripletExtractor(),
             new PairExtractor(),
         ]
     ),

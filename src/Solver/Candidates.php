@@ -89,9 +89,16 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$intersect);
     }
 
-    public function contains(Candidates $otherCandidates): bool
+    public function merge(Candidates $other): self
     {
-        return $this->intersect($otherCandidates)->count() === $otherCandidates->count();
+        $values = array_unique([...$this->toIntegers(), ...$other->toIntegers()]);
+
+        return self::fromInt(...$values);
+    }
+
+    public function contains(Candidates $other): bool
+    {
+        return $this->intersect($other)->count() === $other->count();
     }
 
     public function withRemovedValues(CellValue ...$cellValues): self
