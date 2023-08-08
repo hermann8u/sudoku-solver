@@ -27,17 +27,6 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...range(CellValue::MIN, CellValue::MAX));
     }
 
-    /**
-     * @param int<CellValue::MIN, CellValue::MAX> ...$values
-     */
-    public static function fromInt(int ...$values): self
-    {
-        return new self(array_map(
-            static fn (int $v) => CellValue::from($v),
-            $values,
-        ));
-    }
-
     public static function fromString(string $valuesString): self
     {
         $values = explode(',', $valuesString);
@@ -132,6 +121,17 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->values);
+    }
+
+    /**
+     * @param int<CellValue::MIN, CellValue::MAX> ...$values
+     */
+    private static function fromInt(int ...$values): self
+    {
+        return new self(array_map(
+            static fn (int $v) => CellValue::from($v),
+            $values,
+        ));
     }
 
     /**
