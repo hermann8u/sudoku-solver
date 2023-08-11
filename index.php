@@ -9,11 +9,13 @@ use SudokuSolver\Solver\Association\Extractor\TripletExtractor;
 use SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
 use SudokuSolver\Solver\Method\ExclusiveMethod;
 use SudokuSolver\Solver\Method\InclusiveMethod;
+use SudokuSolver\Solver\Method\XWingMethod;
 use SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
 
 $stringGrid = file_get_contents('./data/grid/very_hard/2.csv');
+//$stringGrid = file_get_contents('./tests/data/grid/x_wing/horizontal.csv');
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($stringGrid);
@@ -30,6 +32,7 @@ $solver = new Solver([
             new PairExtractor(),
         ]
     ),
+    new XWingMethod($inclusiveMethod),
     new ExclusiveMethod($inclusiveMethod),
 ]);
 

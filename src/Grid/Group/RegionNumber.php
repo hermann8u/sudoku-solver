@@ -29,4 +29,9 @@ final readonly class RegionNumber
 
         return new self($number);
     }
+
+    public function is(RegionNumber $regionNumber): bool
+    {
+        return $this->value === $regionNumber->value;
+    }
 }

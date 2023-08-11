@@ -15,7 +15,7 @@ it('exclude candidates present in pair', function () {
     $map = buildMapFrom(['(4,1)' => '6,7']);
     $grid = buildGridFromFilePath('exclusive_association/exclusive_pair.csv');
     /** @var FillableCell $cell */
-    $cell = $grid->getCellByCoordinates(Coordinates::fromString('(4,1)'));
+    $cell = $grid->getCell(Coordinates::fromString('(4,1)'));
 
     // Act
     $method = new ExclusiveAssociationMethod(
@@ -30,4 +30,4 @@ it('exclude candidates present in pair', function () {
 
     expect($candidates->hasUniqueValue())->toBeTrue();
     expect($candidates->toString())->toBe('6');
-})->only();
+});

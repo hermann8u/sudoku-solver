@@ -27,6 +27,8 @@ final readonly class Solver
         $map = CellCandidatesMap::empty();
 
         do {
+            $i++;
+
             $previousMap = $map;
 
             foreach ($grid->getFillableCells() as $currentCell) {
@@ -43,16 +45,16 @@ final readonly class Solver
                         continue;
                     }
 
-                    $cell = $grid->getCellByCoordinates($coordinates);
+                    $cell = $grid->getCell($coordinates);
                     if (! $cell instanceof FillableCell) {
                         throw new \LogicException();
                     }
 
-                    $cell->updateValue($cellValue);
-                    $map = CellCandidatesMap::empty();
-
                     $methodName = $method::class;
                     $methodNamesCount[$methodName] = ($methodNamesCount[$methodName] ?? 0) + 1;
+
+                    $cell->updateValue($cellValue);
+                    $map = CellCandidatesMap::empty();
 
                     if ($grid->containsDuplicate()) {
                         dump([$cell->coordinates->toString(), $methodName, $cellValue->value]);
@@ -62,11 +64,7 @@ final readonly class Solver
                     break;
                 }
             }
-
-            $i++;
         } while (false === $this->shouldStop($i, $grid, $previousMap, $map));
-
-        //dump(array_filter($map->display(), static fn (string $v) => strlen($v) === 3/*in_array($v, ['4,6', '6,8', '4,8'])*/));
 
         return new Result(
             $i,
@@ -91,7 +89,7 @@ final readonly class Solver
             return true;
         }
 
-        if ($iteration > (self::MAX_ITERATION - 1)) {
+        if ($iteration > self::MAX_ITERATION) {
             return true;
         }
 

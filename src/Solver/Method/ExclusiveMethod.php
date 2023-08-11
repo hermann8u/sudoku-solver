@@ -52,7 +52,9 @@ final readonly class ExclusiveMethod implements Method
      */
     private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $cell): array
     {
-        $map = $this->inclusiveMethod->apply($map, $grid, $cell);
+        if (! $map->has($cell)) {
+            $map = $this->inclusiveMethod->apply($map, $grid, $cell);
+        }
 
         return [$map, $map->get($cell)];
     }

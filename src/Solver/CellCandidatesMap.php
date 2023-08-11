@@ -63,7 +63,7 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
 
     public function filter(callable $filter): self
     {
-        return new self(array_filter($this->map, $filter));
+        return new self(array_filter($this->map, $filter, ARRAY_FILTER_USE_BOTH));
     }
 
     /**
@@ -96,13 +96,24 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
      */
     public function findUniqueValue(): array
     {
+        $coordinates = $this->findCoordinatesForCandidatesWithUniqueValue();
+
+        if (! $coordinates instanceof Coordinates) {
+            return [null, null];
+        }
+
+        return [$coordinates, $this->map[$coordinates->toString()]->first()];
+    }
+
+    public function findCoordinatesForCandidatesWithUniqueValue(): ?Coordinates
+    {
         foreach ($this->map as $coordinateAsString => $candidates) {
             if ($candidates->hasUniqueValue()) {
-                return [Coordinates::fromString($coordinateAsString), $candidates->first()];
+                return Coordinates::fromString($coordinateAsString);
             }
         }
 
-        return [null, null];
+        return null;
     }
 
     /**

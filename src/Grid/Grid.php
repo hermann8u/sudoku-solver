@@ -17,9 +17,9 @@ final readonly class Grid
     /** @var Cell[] */
     private array $cells;
     /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Column> */
-    private array $columns;
+    public array $columns;
     /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Row> */
-    private array $rows;
+    public array $rows;
     /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Region> */
     private array $regions;
 
@@ -34,7 +34,7 @@ final readonly class Grid
         [$this->columns, $this->rows, $this->regions] = $this->prepareGroups($cells);
     }
 
-    public function getCellByCoordinates(Coordinates $coordinates): Cell
+    public function getCell(Coordinates $coordinates): Cell
     {
         foreach ($this->cells as $cell) {
             if ($cell->coordinates->is($coordinates)) {
@@ -61,9 +61,24 @@ final readonly class Grid
      */
     public function getGroupForCell(Cell $cell): iterable
     {
-        yield $this->columns[$cell->coordinates->x];
-        yield $this->rows[$cell->coordinates->y];
-        yield $this->regions[$cell->regionNumber->value];
+        yield $this->getColumnByCell($cell);
+        yield $this->getRowByCell($cell);
+        yield $this->getRegionByCell($cell);
+    }
+
+    public function getRowByCell(Cell $cell): Row
+    {
+        return $this->rows[$cell->coordinates->y];
+    }
+
+    public function getColumnByCell(Cell $cell): Column
+    {
+        return $this->columns[$cell->coordinates->x];
+    }
+
+    public function getRegionByCell(Cell $cell): Region
+    {
+        return $this->regions[$cell->regionNumber->value];
     }
 
     public function getCellsByRow(int $y): Group
@@ -108,6 +123,17 @@ final readonly class Grid
         }
 
         return false;
+    }
+
+    public function toString(): string
+    {
+        $string = '';
+
+        foreach ($this->cells as $cell) {
+            $string .= $cell->getCellValue()->value . ($cell->coordinates->x === 9 ? PHP_EOL : ';');
+        }
+
+        return $string;
     }
 
     /**
