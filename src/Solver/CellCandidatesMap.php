@@ -63,7 +63,15 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
 
     public function filter(callable $filter): self
     {
-        return new self(array_filter($this->map, $filter, ARRAY_FILTER_USE_BOTH));
+        return new self(array_filter($this->map, $filter));
+    }
+
+    /**
+     * @return Candidates[]
+     */
+    public function getAllCandidates(): array
+    {
+        return array_values($this->map);
     }
 
     /**

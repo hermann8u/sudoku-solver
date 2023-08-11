@@ -24,20 +24,6 @@ final class XWing
         Assert::count(array_merge(...array_map(static fn (Coordinates $c) => ['x' . $c->x => 0, 'y' . $c->y => 0], $this->coordinatesList)), 4);
     }
 
-    /**
-     * @param string[] $coordinatesStrings
-     */
-    public static function fromStrings(array $coordinatesStrings, int $value): static
-    {
-        return new static(
-            array_map(
-                static fn (string $coordinates) => Coordinates::fromString($coordinates),
-                $coordinatesStrings,
-            ),
-            CellValue::from($value),
-        );
-    }
-
     public function contains(Cell $cell): bool
     {
         return in_array(

@@ -12,7 +12,7 @@ use SudokuSolver\Grid\Cell\CellValue;
 final readonly class Candidates implements \IteratorAggregate, \Stringable
 {
     /** @var CellValue[] */
-    private array $values;
+    public array $values;
 
     /**
      * @param CellValue[] $values
@@ -39,6 +39,22 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
     public static function fromIntersect(Candidates $candidates, Candidates ...$others): self
     {
         return $candidates->intersect(...array_values($others));
+    }
+
+    public static function fromValuesOnlyPresentOnceIn(Candidates $candidates, Candidates ...$others): self
+    {
+        $values = array_values(array_map(static fn (Candidates $c) => $c->toIntegers(), [$candidates, ...$others]));
+
+        $acceptedValues = array_merge(...$values);
+
+        $count = [];
+        foreach ($acceptedValues as $value) {
+            $count[$value] = ($count[$value] ?? 0) + 1;
+        }
+
+        $count = array_filter($count, static fn (int $v) => $v === 1);
+
+        return self::fromInt(...array_keys($count));
     }
 
     public static function empty(): self
@@ -88,6 +104,25 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
     public function contains(Candidates $other): bool
     {
         return $this->intersect($other)->count() === $other->count();
+    }
+
+    /**
+     * @param CellValue[] $values
+     */
+    public function hasOneOf(array $values): bool
+    {
+        foreach ($values as $value) {
+            if ($this->has($value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function has(CellValue $value): bool
+    {
+        return \in_array($value->value, $this->toIntegers());
     }
 
     public function withRemovedValues(CellValue ...$cellValues): self

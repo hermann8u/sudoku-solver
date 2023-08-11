@@ -23,10 +23,6 @@ final class XWingMethod implements Method
 
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
-        if (false === $currentCell->coordinates->is(Coordinates::fromString('(2,3)'))) {
-            return $map;
-        }
-
         /** @var XWing[] $xWings */
         $xWings = [];
 
@@ -58,11 +54,9 @@ final class XWingMethod implements Method
 
             foreach ($firstRowRelatedCells as $firstRowRelatedCellCoordinatesString => $firstRowRelatedCellCandidates) {
                 $firstRowRelatedCellCoordinates = Coordinates::fromString($firstRowRelatedCellCoordinatesString);
-
                 $secondRowRelatedCellCoordinates = new Coordinates($firstRowRelatedCellCoordinates->x, $secondRow->y);
 
                 $secondRowRelatedCellCandidates = $secondRowRelatedCells[$secondRowRelatedCellCoordinates->toString()] ?? null;
-
                 if ($secondRowRelatedCellCandidates === null) {
                     continue;
                 }
@@ -73,17 +67,15 @@ final class XWingMethod implements Method
                     continue;
                 }
 
-                foreach ($allCandidatesIntersect as $value) {
-                    $xWings[] = new XWing(
-                        [
-                            $currentCell->coordinates,
-                            $firstRowRelatedCellCoordinates,
-                            $secondRowCell->coordinates,
-                            $secondRowRelatedCellCoordinates,
-                        ],
-                        $value,
-                    );
-                }
+                $xWings[] = new XWing(
+                    [
+                        $currentCell->coordinates,
+                        $firstRowRelatedCellCoordinates,
+                        $secondRowCell->coordinates,
+                        $secondRowRelatedCellCoordinates,
+                    ],
+                    $allCandidatesIntersect->first(),
+                );
             }
         }
 
@@ -131,13 +123,16 @@ final class XWingMethod implements Method
      */
     private function getPotentialRelatedCellsInRow(CellCandidatesMap $map, Grid $grid, Row $currentRow, FillableCell $currentCell): array
     {
-        $potentialRelatedCells = [];
-
         [$map, $currentCandidates] = $this->getCandidates($map, $grid, $currentCell);
+        [$map, $mapForRow] = $this->getMapForGroup($map, $grid, $currentRow, withoutCell: $currentCell);
 
-        [$map, $mapForRow] = $this->getMapForGroup($map, $grid, $currentRow);
+        if ($mapForRow->isEmpty()) {
+            return [$map, []];
+        }
 
-        $mapForRow = $mapForRow->filter(static fn (Candidates $c, string $coordinatesString) => $coordinatesString !== $currentCell->coordinates->toString());
+        $acceptedValues = Candidates::fromValuesOnlyPresentOnceIn(...$mapForRow->getAllCandidates());
+
+        $potentialRelatedCells = [];
 
         foreach ($currentRow->getEmptyCells() as $relatedCell) {
             if ($currentCell->regionNumber->is($relatedCell->regionNumber)) {
@@ -151,14 +146,8 @@ final class XWingMethod implements Method
                 continue;
             }
 
-            foreach ($mapForRow as $rowCellCoordinatesString => $rowCellCandidates) {
-                if ($rowCellCoordinatesString === $relatedCell->coordinates->toString()) {
-                    continue;
-                }
-
-                if ($intersectCandidates->intersect($rowCellCandidates)->count() > 0) {
-                    continue 2;
-                }
+            if (false === $intersectCandidates->hasOneOf($acceptedValues->values)) {
+                continue;
             }
 
             $potentialRelatedCells[$relatedCell->coordinates->toString()] = $intersectCandidates;
@@ -170,11 +159,15 @@ final class XWingMethod implements Method
     /**
      * @return array{CellCandidatesMap, CellCandidatesMap}
      */
-    private function getMapForGroup(CellCandidatesMap $map, Grid $grid, Group $group): array
+    private function getMapForGroup(CellCandidatesMap $map, Grid $grid, Group $group, ?FillableCell $withoutCell = null): array
     {
         $partialMap = CellCandidatesMap::empty();
 
         foreach ($group->getEmptyCells() as $cell) {
+            if ($withoutCell instanceof FillableCell && $cell->is($withoutCell)) {
+                continue;
+            }
+
             if (! $map->has($cell)) {
                 $map = $this->inclusiveMethod->apply($map, $grid, $cell);
             }
