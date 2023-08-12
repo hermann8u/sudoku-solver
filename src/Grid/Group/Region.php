@@ -29,31 +29,4 @@ final readonly class Region extends Group
             $number,
         );
     }
-
-    /**
-     * @return RegionNumber[]
-     */
-    public function getRegionNumbersWithDirectImpact(): array
-    {
-        $regionX = $this->number->value % 3 ?: 3;
-        $regionY = (int) ceil($this->number->value / 3);
-
-        for ($x = $regionY * 3; $x > ($regionY - 1) * 3; $x--) {
-            $regionNumbers[] = $x;
-        }
-
-        for ($y = 0; $y < 3; $y++) {
-            $regionNumbers[] = $regionX + 3 * $y;
-        }
-
-        /** @var array<int<RegionNumber::MIN, RegionNumber::MAX>> $regionNumbers */
-        $regionNumbers = array_values(array_filter($regionNumbers, fn (int $value) => $value !== $this->number->value));
-
-        sort($regionNumbers);
-
-        return array_map(
-            static fn (int $value) => new RegionNumber($value),
-            $regionNumbers,
-        );
-    }
 }

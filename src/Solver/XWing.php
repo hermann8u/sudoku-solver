@@ -9,7 +9,7 @@ use SudokuSolver\Grid\Cell\CellValue;
 use SudokuSolver\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;
 
-final class XWing
+final readonly class XWing
 {
     /**
      * @param Coordinates[] $coordinatesList
@@ -26,11 +26,13 @@ final class XWing
 
     public function contains(Cell $cell): bool
     {
-        return in_array(
-            $cell->coordinates->toString(),
-            array_map(static fn (Coordinates $c) => (string) $c, $this->coordinatesList),
-            true,
-        );
+        foreach ($this->coordinatesList as $coordinates) {
+            if ($cell->coordinates->is($coordinates)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function toString(): string

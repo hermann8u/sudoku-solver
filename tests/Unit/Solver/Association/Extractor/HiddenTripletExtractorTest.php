@@ -15,7 +15,7 @@ it('is able to find hidden triplets', function (array $mapForGroupData, array $e
 
     expect($association)->toBeAssociation(Triplet::fromStrings(...$expectedAssociationStrings));
 })->with([
-    'Group' => [
+    'Region' => [
         [
             '(5,7)' => '4,9',
             '(5,8)' => '6,9',

@@ -54,12 +54,13 @@ final readonly class Solver
                     $methodNamesCount[$methodName] = ($methodNamesCount[$methodName] ?? 0) + 1;
 
                     $cell->updateValue($cellValue);
-                    $map = CellCandidatesMap::empty();
 
                     if ($grid->containsDuplicate()) {
-                        dump([$cell->coordinates->toString(), $methodName, $cellValue->value]);
+                        dump([$cell->coordinates->toString(), $methodName, $cellValue->value, $map->display()]);
                         break 3;
                     }
+
+                    $map = CellCandidatesMap::empty();
 
                     break;
                 }

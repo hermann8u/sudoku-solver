@@ -101,7 +101,7 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$values);
     }
 
-    public function contains(Candidates $other): bool
+    public function hasAll(Candidates $other): bool
     {
         return $this->intersect($other)->count() === $other->count();
     }

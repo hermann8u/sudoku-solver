@@ -37,11 +37,13 @@ abstract readonly class Association
 
     public function contains(Cell $cell): bool
     {
-        return in_array(
-            $cell->coordinates->toString(),
-            array_map(static fn (Coordinates $c) => (string) $c, $this->coordinatesList),
-            true,
-        );
+        foreach ($this->coordinatesList as $coordinates) {
+            if ($cell->coordinates->is($coordinates)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

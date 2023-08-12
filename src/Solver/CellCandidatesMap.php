@@ -86,11 +86,23 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
     {
         $keys = array_keys($this->map);
 
+        $alreadyLooped = [];
+
         foreach ($keys as $a) {
             foreach ($keys as $b) {
                 if ($a === $b) {
                     continue;
                 }
+
+                $ab = $a.$b;
+                $ba = $b.$a;
+
+                if (\in_array($ba, $alreadyLooped, true) || \in_array($ab, $alreadyLooped, true)) {
+                    continue;
+                }
+
+                $alreadyLooped[] = $ba;
+                $alreadyLooped[] = $ab;
 
                 $carry = $callable($this, $carry, $a, $b);
             }
