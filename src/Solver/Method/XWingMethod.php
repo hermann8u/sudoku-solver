@@ -28,33 +28,34 @@ final class XWingMethod implements Method
         $firstRow = $grid->getRowByCell($currentCell);
 
         [$map, $currentCellCandidates] = $this->getCandidates($map, $grid, $currentCell);
-        [$map, $potentialSecondCells] = $this->getPotentialRelatedCellsInGroup($map, $grid, $firstRow, $currentCell);
+        [$map, $potentialSecondCells] = $this->getPotentialRelatedCellsInGroup($currentCellCandidates, $map, $grid, $firstRow, $currentCell);
 
         if ($potentialSecondCells === []) {
             return $map;
         }
 
         $column = $grid->getColumnByCell($currentCell);
-        [$map, $potentialThirdCells] = $this->getPotentialRelatedCellsInGroup($map, $grid, $column, $currentCell, false);
 
-        if ($potentialThirdCells === []) {
-            return $map;
-        }
+        foreach ($potentialSecondCells as $secondCellCoordinatesString => $secondCellCandidates) {
+            [$map, $potentialThirdCells] = $this->getPotentialRelatedCellsInGroup($secondCellCandidates, $map, $grid, $column, $currentCell, false);
 
-        foreach ($potentialThirdCells as $thirdCellCoordinatesString => $thirdCellCandidates) {
-            $thirdCellCoordinates = Coordinates::fromString($thirdCellCoordinatesString);
-            /** @var FillableCell $thirdCell */
-            $thirdCell = $grid->getCell($thirdCellCoordinates);
-
-            $secondRow = $grid->getRowByCell($thirdCell);
-
-            [$map, $potentialFourthCells] = $this->getPotentialRelatedCellsInGroup($map, $grid, $secondRow, $thirdCell);
-
-            if ($potentialFourthCells === []) {
+            if ($potentialThirdCells === []) {
                 continue;
             }
 
-            foreach ($potentialSecondCells as $secondCellCoordinatesString => $secondCellCandidates) {
+            foreach ($potentialThirdCells as $thirdCellCoordinatesString => $thirdCellCandidates) {
+                $thirdCellCoordinates = Coordinates::fromString($thirdCellCoordinatesString);
+                /** @var FillableCell $thirdCell */
+                $thirdCell = $grid->getCell($thirdCellCoordinates);
+
+                $secondRow = $grid->getRowByCell($thirdCell);
+
+                [$map, $potentialFourthCells] = $this->getPotentialRelatedCellsInGroup($thirdCellCandidates, $map, $grid, $secondRow, $thirdCell);
+
+                if ($potentialFourthCells === []) {
+                    continue;
+                }
+
                 $secondCellCoordinates = Coordinates::fromString($secondCellCoordinatesString);
                 $fourthCellCoordinates = new Coordinates($secondCellCoordinates->x, $secondRow->number);
 
@@ -63,7 +64,7 @@ final class XWingMethod implements Method
                     continue;
                 }
 
-                $allCandidatesIntersect = $currentCellCandidates->intersect($secondCellCandidates, $thirdCellCandidates, $fourthCellCandidates);
+                $allCandidatesIntersect = $thirdCellCandidates->intersect($fourthCellCandidates);
 
                 if ($allCandidatesIntersect->count() !== 1) {
                     continue;
@@ -127,10 +128,9 @@ final class XWingMethod implements Method
     /**
      * @return array{CellCandidatesMap, array<string, Candidates>}
      */
-    private function getPotentialRelatedCellsInGroup(CellCandidatesMap $map, Grid $grid, Group $currentGroup, FillableCell $currentCell, bool $withFilter = true): array
+    private function getPotentialRelatedCellsInGroup(Candidates $currentFilteredCandidates, CellCandidatesMap $map, Grid $grid, Group $currentGroup, FillableCell $currentCell, bool $withFilter = true): array
     {
         $currentCellCoordinatesString = $currentCell->coordinates->toString();
-        [$map, $currentCandidates] = $this->getCandidates($map, $grid, $currentCell);
         [$map, $mapForRow] = $this->getMapForGroup($map, $grid, $currentGroup/*, withoutCell: $currentCell*/);
 
         if ($mapForRow->isEmpty()) {
@@ -153,7 +153,7 @@ final class XWingMethod implements Method
                 }
 
                 return $carry->withRemovedValues(...$intersect);
-            }, $currentCandidates);
+            }, $currentFilteredCandidates);
         } else {
             $expectedValues = Candidates::all();
         }
@@ -167,13 +167,17 @@ final class XWingMethod implements Method
 
             $relatedCellCandidates = $mapForRow->get($relatedCell);
 
-            if ($withFilter && ! $relatedCellCandidates->hasOneOf($expectedValues->values)) {
+            $intersectCellCandidates = $currentFilteredCandidates->intersect($relatedCellCandidates);
+
+            if ($intersectCellCandidates->count() === 0) {
                 continue;
             }
 
-            dump($expectedValues->toString());
+            if ($withFilter && ! $intersectCellCandidates->hasOneOf($expectedValues->values)) {
+                continue;
+            }
 
-            $potentialRelatedCells[$relatedCell->coordinates->toString()] = $relatedCellCandidates;
+            $potentialRelatedCells[$relatedCell->coordinates->toString()] = $intersectCellCandidates;
         }
 
         return [$map, $potentialRelatedCells];
