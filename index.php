@@ -14,7 +14,8 @@ use SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
 
-$stringGrid = file_get_contents('./data/grid/very_hard/2.csv');
+$stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
+$stringGrid = file_get_contents('./data/grid/test.csv');
 //$stringGrid = file_get_contents('./tests/data/grid/x_wing/horizontal.csv');
 
 $generator = new GridGenerator(new GridFactory());
@@ -23,8 +24,7 @@ $grid = $generator->generate($stringGrid);
 $inclusiveMethod = new InclusiveMethod();
 
 $solver = new Solver([
-    $inclusiveMethod,
-    //new XWingMethod($inclusiveMethod),
+    /*$inclusiveMethod,
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
         [
@@ -32,13 +32,15 @@ $solver = new Solver([
             new TripletExtractor(),
             new PairExtractor(),
         ]
-    ),
-    new ExclusiveMethod($inclusiveMethod),
+    ),*/
+    new XWingMethod($inclusiveMethod),
+    /*new ExclusiveMethod($inclusiveMethod),*/
 ]);
 
 $result = $solver->solve($grid);
 
 dump($result);
+dump($result->map->display());
 
 ?>
 <!DOCTYPE html>
@@ -100,6 +102,9 @@ dump($result);
                         <?php else: ?>
                             <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
                                 <?= $cell->getCellValue() ?>
+                                <?php if ($result->map->has($cell)) foreach ($result->map->get($cell) as $value) : ?>
+                                    <small><?= $value ?></small>
+                                <?php endforeach;?>
                             </td>
                         <?php endif ?>
                     <?php endforeach;?>

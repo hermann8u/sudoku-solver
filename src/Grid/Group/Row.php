@@ -13,14 +13,14 @@ final readonly class Row extends Group
 {
     /**
      * @param Cell[] $cells
-     * @param int<Coordinates::MIN, Coordinates::MAX> $y
+     * @param int<Coordinates::MIN, Coordinates::MAX> $number
      */
     private function __construct(
         array $cells,
-        public int $y,
+        public int $number,
     ) {
-        Assert::greaterThanEq($this->y, Coordinates::MIN);
-        Assert::lessThanEq($this->y, Coordinates::MAX);
+        Assert::greaterThanEq($this->number, Coordinates::MIN);
+        Assert::lessThanEq($this->number, Coordinates::MAX);
 
         parent::__construct($cells);
     }
