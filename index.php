@@ -14,7 +14,7 @@ use SudokuSolver\Solver\Solver;
 
 require './vendor/autoload.php';
 
-$stringGrid = file_get_contents('./data/grid/very_hard/2.csv');
+$stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
 //$stringGrid = file_get_contents('./tests/data/grid/x_wing/horizontal.csv');
 
 $generator = new GridGenerator(new GridFactory());
@@ -24,6 +24,7 @@ $inclusiveMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $inclusiveMethod,
+    new XWingMethod($inclusiveMethod),
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
         [
@@ -32,14 +33,12 @@ $solver = new Solver([
             new PairExtractor(),
         ]
     ),
-    new XWingMethod($inclusiveMethod),
     new ExclusiveMethod($inclusiveMethod),
 ]);
 
 $result = $solver->solve($grid);
 
 dump($result);
-dump($result->map->display());
 
 ?>
 <!DOCTYPE html>
@@ -80,10 +79,23 @@ dump($result->map->display());
         }
         .fillable {
             cursor: pointer;
+            position: relative;
         }
         .fillable.solved {
             background-color: forestgreen;
             color: white;
+        }
+        .fillable .candidates {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap-reverse;
+        }
+        .fillable .candidates small {
+            padding: 0 2px;
         }
     </style>
 </head>
@@ -100,10 +112,14 @@ dump($result->map->display());
                             </td>
                         <?php else: ?>
                             <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
-                                <?= $cell->getCellValue() ?>
-                                <?php if ($result->map->has($cell)) foreach ($result->map->get($cell) as $value) : ?>
-                                    <small><?= $value ?></small>
-                                <?php endforeach;?>
+                                <span><?= $cell->getCellValue() ?></span>
+                                <?php if ($result->map->has($cell)) : ?>
+                                    <div class="candidates">
+                                        <?php foreach ($result->map->get($cell) as $value) : ?>
+                                            <small><?= $value ?></small>
+                                        <?php endforeach;?>
+                                    </div>
+                                <?php endif; ?>
                             </td>
                         <?php endif ?>
                     <?php endforeach;?>
