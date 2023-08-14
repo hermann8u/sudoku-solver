@@ -57,9 +57,30 @@ final readonly class Grid
     }
 
     /**
+     * @param int<Coordinates::MIN, Coordinates::MAX> $number
+     */
+    public function getColumn(int $number): Column
+    {
+        return $this->columns[$number];
+    }
+
+    /**
+     * @param int<Coordinates::MIN, Coordinates::MAX> $number
+     */
+    public function getRow(int $number): Row
+    {
+        return $this->rows[$number];
+    }
+
+    public function getRegion(RegionNumber $number): Region
+    {
+        return $this->regions[$number->value];
+    }
+
+    /**
      * @return iterable<Group>
      */
-    public function getGroupForCell(Cell $cell): iterable
+    public function getGroupsForCell(Cell $cell): iterable
     {
         yield $this->getColumnByCell($cell);
         yield $this->getRowByCell($cell);
@@ -68,22 +89,17 @@ final readonly class Grid
 
     public function getRowByCell(Cell $cell): Row
     {
-        return $this->rows[$cell->coordinates->y];
+        return $this->getRow($cell->coordinates->y);
     }
 
     public function getColumnByCell(Cell $cell): Column
     {
-        return $this->columns[$cell->coordinates->x];
+        return $this->getColumn($cell->coordinates->x);
     }
 
     public function getRegionByCell(Cell $cell): Region
     {
-        return $this->regions[$cell->regionNumber->value];
-    }
-
-    public function getCellsByRow(int $y): Group
-    {
-        return $this->rows[$y];
+        return $this->getRegion($cell->regionNumber);
     }
 
     public function isValid(): bool

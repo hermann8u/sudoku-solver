@@ -12,6 +12,7 @@ use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CellCandidatesMap;
 use SudokuSolver\Solver\Method;
 use SudokuSolver\Solver\XWing;
+use SudokuSolver\Solver\XWing\Direction;
 
 final readonly class XWingMethod implements Method
 {
@@ -25,78 +26,21 @@ final readonly class XWingMethod implements Method
         /** @var XWing[] $xWings */
         $xWings = [];
 
-        $firstRow = $grid->getRowByCell($currentCell);
-
-        [$map, $currentCellCandidates] = $this->getCandidates($map, $grid, $currentCell);
-        [$map, $potentialSecondCells] = $this->getPotentialRelatedCellsInGroup($currentCellCandidates, $map, $grid, $firstRow, $currentCell);
-
-        if ($potentialSecondCells === []) {
-            return $map;
-        }
-
-        $column = $grid->getColumnByCell($currentCell);
-
-        foreach ($potentialSecondCells as $secondCellCoordinatesString => $secondCellCandidates) {
-            [$map, $potentialThirdCells] = $this->getPotentialRelatedCellsInGroup($secondCellCandidates, $map, $grid, $column, $currentCell, false);
-
-            if ($potentialThirdCells === []) {
-                continue;
-            }
-
-            foreach ($potentialThirdCells as $thirdCellCoordinatesString => $thirdCellCandidates) {
-                $thirdCellCoordinates = Coordinates::fromString($thirdCellCoordinatesString);
-                /** @var FillableCell $thirdCell */
-                $thirdCell = $grid->getCell($thirdCellCoordinates);
-
-                $secondRow = $grid->getRowByCell($thirdCell);
-
-                [$map, $potentialFourthCells] = $this->getPotentialRelatedCellsInGroup($thirdCellCandidates, $map, $grid, $secondRow, $thirdCell);
-
-                if ($potentialFourthCells === []) {
-                    continue;
-                }
-
-                $secondCellCoordinates = Coordinates::fromString($secondCellCoordinatesString);
-                $fourthCellCoordinates = new Coordinates($secondCellCoordinates->x, $secondRow->number);
-
-                $fourthCellCandidates = $potentialFourthCells[$fourthCellCoordinates->toString()] ?? null;
-                if ($fourthCellCandidates === null) {
-                    continue;
-                }
-
-                $allCandidatesIntersect = $thirdCellCandidates->intersect($fourthCellCandidates);
-
-                if ($allCandidatesIntersect->count() !== 1) {
-                    continue;
-                }
-
-                $xWings[] = new XWing(
-                    [
-                        $currentCell->coordinates,
-                        $secondCellCoordinates,
-                        $thirdCellCoordinates,
-                        $fourthCellCoordinates,
-                    ],
-                    $allCandidatesIntersect->first(),
-                );
-            }
+        foreach (Direction::cases() as $direction) {
+            [$map, $xWingsByDirection] = $this->buildXWings($direction, $map, $grid, $currentCell);
+            $xWings = [...$xWings, ...$xWingsByDirection];
         }
 
         foreach ($xWings as $xWing) {
-            $already = [];
+            $getGroupToModifyCallable = match ($xWing->direction) {
+                Direction::Horizontal => $grid->getColumn(...),
+                Direction::Vertical => $grid->getRow(...),
+            };
 
-            foreach ($xWing->coordinatesList as $coordinates) {
-                $cell = $grid->getCell($coordinates);
+            foreach ($xWing->getGroupToModifyNumbers() as $groupNumber) {
+                $groupToModify = $getGroupToModifyCallable($groupNumber);
 
-                $column = $grid->getColumnByCell($cell);
-
-                if (\in_array($column->number, $already)) {
-                    continue;
-                }
-
-                $already[] = $column->number;
-
-                foreach ($column->getEmptyCells() as $fillableCell) {
+                foreach ($groupToModify->getEmptyCells() as $fillableCell) {
                     if ($xWing->contains($fillableCell)) {
                         continue;
                     }
@@ -114,6 +58,84 @@ final readonly class XWingMethod implements Method
         }
 
         return $map;
+    }
+
+    /**
+     * @return array{CellCandidatesMap, XWing[]}
+     */
+    private function buildXWings(Direction $direction, CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): array
+    {
+        $firstDirectionGroupCallable = match ($direction) {
+            Direction::Horizontal => $grid->getRowByCell(...),
+            Direction::Vertical => $grid->getColumnByCell(...),
+        };
+
+        $firstGroup = $firstDirectionGroupCallable($currentCell);
+
+        [$map, $currentCellCandidates] = $this->getCandidates($map, $grid, $currentCell);
+        [$map, $potentialSecondCells] = $this->getPotentialRelatedCellsInGroup($currentCellCandidates, $map, $grid, $firstGroup, $currentCell);
+
+        if ($potentialSecondCells === []) {
+            return [$map, []];
+        }
+
+        $otherDirectionGroup = match ($direction) {
+            Direction::Horizontal => $grid->getColumnByCell($currentCell),
+            Direction::Vertical => $grid->getRowByCell($currentCell),
+        };
+
+        foreach ($potentialSecondCells as $secondCellCoordinatesString => $secondCellCandidates) {
+            [$map, $potentialThirdCells] = $this->getPotentialRelatedCellsInGroup($secondCellCandidates, $map, $grid, $otherDirectionGroup, $currentCell, false);
+
+            if ($potentialThirdCells === []) {
+                continue;
+            }
+
+            foreach ($potentialThirdCells as $thirdCellCoordinatesString => $thirdCellCandidates) {
+                $thirdCellCoordinates = Coordinates::fromString($thirdCellCoordinatesString);
+                /** @var FillableCell $thirdCell */
+                $thirdCell = $grid->getCell($thirdCellCoordinates);
+
+                $secondGroup = $firstDirectionGroupCallable($thirdCell);
+
+                [$map, $potentialFourthCells] = $this->getPotentialRelatedCellsInGroup($thirdCellCandidates, $map, $grid, $secondGroup, $thirdCell);
+
+                if ($potentialFourthCells === []) {
+                    continue;
+                }
+
+                $secondCellCoordinates = Coordinates::fromString($secondCellCoordinatesString);
+
+                $fourthCellCoordinates = match ($direction) {
+                    Direction::Horizontal => new Coordinates($secondCellCoordinates->x, $secondGroup->number),
+                    Direction::Vertical => new Coordinates($secondGroup->number, $secondCellCoordinates->y),
+                };
+
+                $fourthCellCandidates = $potentialFourthCells[$fourthCellCoordinates->toString()] ?? null;
+                if ($fourthCellCandidates === null) {
+                    continue;
+                }
+
+                $allCandidatesIntersect = $thirdCellCandidates->intersect($fourthCellCandidates);
+
+                if ($allCandidatesIntersect->count() !== 1) {
+                    continue;
+                }
+
+                $xWings[] = new XWing(
+                    $direction,
+                    [
+                        $currentCell->coordinates,
+                        $secondCellCoordinates,
+                        $thirdCellCoordinates,
+                        $fourthCellCoordinates,
+                    ],
+                    $allCandidatesIntersect->first(),
+                );
+            }
+        }
+
+        return [$map, $xWings ?? []];
     }
 
     /**
@@ -197,10 +219,10 @@ final readonly class XWingMethod implements Method
         return [$map, $partialMap];
     }
 
-    private function filterDuplicateValues(CellCandidatesMap $mapForRow, Candidates $carry, string $a, string $b): Candidates
+    private function filterDuplicateValues(CellCandidatesMap $mapForGroup, Candidates $carry, string $a, string $b): Candidates
     {
-        $aCandidates = $mapForRow->get($a);
-        $bCandidates = $mapForRow->get($b);
+        $aCandidates = $mapForGroup->get($a);
+        $bCandidates = $mapForGroup->get($b);
 
         $intersect = $aCandidates->intersect($bCandidates);
 

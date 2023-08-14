@@ -1,5 +1,6 @@
 <?php
 
+use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Cell\FixedValueCell;
 use SudokuSolver\Grid\GridFactory;
 use SudokuSolver\Grid\GridGenerator;
@@ -15,7 +16,7 @@ use SudokuSolver\Solver\Solver;
 require './vendor/autoload.php';
 
 $stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
-//$stringGrid = file_get_contents('./tests/data/grid/x_wing/horizontal.csv');
+$stringGrid = file_get_contents('./tests/data/grid/x_wing/vertical.csv');
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($stringGrid);
@@ -24,7 +25,6 @@ $inclusiveMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $inclusiveMethod,
-    new XWingMethod($inclusiveMethod),
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
         [
@@ -33,6 +33,7 @@ $solver = new Solver([
             new PairExtractor(),
         ]
     ),
+    new XWingMethod($inclusiveMethod),
     new ExclusiveMethod($inclusiveMethod),
 ]);
 
@@ -103,14 +104,14 @@ dump($result);
     <div class="container">
         <table>
             <tbody>
-            <?php for ($i = 1; $i < 10; $i++): ?>
+            <?php foreach ($grid->rows as $row): ?>
                 <tr>
-                    <?php foreach ($grid->getCellsByRow($i) as $cell) : ?>
+                    <?php foreach ($row->cells as $cell) : ?>
                         <?php if ($cell instanceof FixedValueCell): ?>
                             <td class="fixed">
                                 <?= $cell->getCellValue() ?>
                             </td>
-                        <?php else: ?>
+                        <?php elseif ($cell instanceof FillableCell): ?>
                             <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
                                 <span><?= $cell->getCellValue() ?></span>
                                 <?php if ($result->map->has($cell)) : ?>
@@ -122,9 +123,9 @@ dump($result);
                                 <?php endif; ?>
                             </td>
                         <?php endif ?>
-                    <?php endforeach;?>
+                    <?php endforeach; ?>
                 </tr>
-            <?php endfor;?>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>

@@ -7,21 +7,38 @@ namespace SudokuSolver\Solver;
 use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\CellValue;
 use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Solver\XWing\Direction;
 use Webmozart\Assert\Assert;
 
 final readonly class XWing
 {
+    /** @var int<Coordinates::MIN, Coordinates::MAX>[] */
+    public array $columnNumbers;
+    /** @var int<Coordinates::MIN, Coordinates::MAX>[] */
+    public array $rowNumbers;
+
     /**
      * @param Coordinates[] $coordinatesList
      */
     public function __construct(
+        public Direction $direction,
         public array $coordinatesList,
         public CellValue $value,
     ) {
         Assert::count($this->coordinatesList, 4);
 
-        // TODO: Check coordinates
-        Assert::count(array_merge(...array_map(static fn (Coordinates $c) => ['x' . $c->x => 0, 'y' . $c->y => 0], $this->coordinatesList)), 4);
+        $columnNumbers = [];
+        $rowNumbers = [];
+        foreach ($this->coordinatesList as $coordinates) {
+            $columnNumbers[$coordinates->x] = 0;
+            $rowNumbers[$coordinates->y] = 0;
+        }
+
+        $this->columnNumbers = \array_keys($columnNumbers);
+        $this->rowNumbers = \array_keys($rowNumbers);
+
+        Assert::count($this->columnNumbers, 2);
+        Assert::count($this->rowNumbers, 2);
     }
 
     public function contains(Cell $cell): bool
@@ -33,6 +50,17 @@ final readonly class XWing
         }
 
         return false;
+    }
+
+    /**
+     * @return int<Coordinates::MIN, Coordinates::MAX>[]
+     */
+    public function getGroupToModifyNumbers(): array
+    {
+        return match ($this->direction) {
+            Direction::Horizontal => $this->columnNumbers,
+            Direction::Vertical => $this->rowNumbers,
+        };
     }
 
     public function toString(): string

@@ -25,7 +25,7 @@ final readonly class ExclusiveAssociationMethod implements Method
 
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
-        foreach ($grid->getGroupForCell($currentCell) as $group) {
+        foreach ($grid->getGroupsForCell($currentCell) as $group) {
             [$map, $mapForGroup] = $this->getMapForGroup($map, $grid, $group);
 
             foreach ($this->extractors as $extractor) {

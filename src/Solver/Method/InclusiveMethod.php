@@ -23,7 +23,7 @@ final readonly class InclusiveMethod implements Method
 
     private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
-        $groups = $grid->getGroupForCell($currentCell);
+        $groups = $grid->getGroupsForCell($currentCell);
 
         $candidatesByGroup = [];
 

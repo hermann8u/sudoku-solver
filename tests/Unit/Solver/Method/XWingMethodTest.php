@@ -5,7 +5,7 @@ use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Solver\Method\InclusiveMethod;
 use SudokuSolver\Solver\Method\XWingMethod;
 
-it('exclude candidates thanks to X-Wing', function () {
+it('exclude candidates thanks to horizontal X-Wing', function () {
     // Arrange
     $map = buildMapFrom([
         '(2,1)' => '2,4,6,9',
@@ -31,4 +31,34 @@ it('exclude candidates thanks to X-Wing', function () {
 
     $candidates = $updatedMap->get('(2,8)');
     expect($candidates->toString())->toBe('3,6,8');
+});
+
+it('exclude candidates thanks to vertical X-Wing', function () {
+    // Arrange
+    $map = buildMapFrom([
+        '(1,2)' => '6,9',
+        '(1,5)' => '6,9',
+        '(7,2)' => '2,9',
+        '(7,5)' => '6,9',
+        '(2,2)' => '3,6,8,9',
+        '(9,2)' => '2,4,8,9',
+    ]);
+
+    $grid = buildGridFromFilePath('x_wing/vertical.csv');
+    /** @var FillableCell $cell */
+    $cell = $grid->getCell(Coordinates::fromString('(1,2)'));
+
+    // Act
+    $method = new XWingMethod(
+        new InclusiveMethod(),
+    );
+
+    $updatedMap = $method->apply($map, $grid, $cell);
+
+    // Assert
+    $candidates = $updatedMap->get('(2,2)');
+    expect($candidates->toString())->toBe('3,6,8');
+
+    $candidates = $updatedMap->get('(9,2)');
+    expect($candidates->toString())->toBe('2,4,8');
 });

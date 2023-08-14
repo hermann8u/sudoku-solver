@@ -21,7 +21,7 @@ final readonly class ExclusiveMethod implements Method
     {
         [$map, $initialCandidates] = $this->getCandidates($map, $grid, $currentCell);
 
-        foreach ($grid->getGroupForCell($currentCell) as $group) {
+        foreach ($grid->getGroupsForCell($currentCell) as $group) {
             $candidates = $initialCandidates;
 
             foreach ($group->getEmptyCells() as $relatedCell) {

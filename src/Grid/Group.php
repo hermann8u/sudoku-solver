@@ -17,7 +17,7 @@ abstract readonly class Group implements \IteratorAggregate
     public const CELLS_COUNT = 9;
 
     /** @var Cell[] */
-    private array $cells;
+    public array $cells;
 
     /**
      * @param Cell[] $cells
