@@ -24,6 +24,7 @@ $inclusiveMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $inclusiveMethod,
+    new ExclusiveMethod($inclusiveMethod),
     new XWingMethod($inclusiveMethod),
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
@@ -33,7 +34,6 @@ $solver = new Solver([
             new PairExtractor(),
         ]
     ),
-    new ExclusiveMethod($inclusiveMethod),
 ]);
 
 $result = $solver->solve($grid);
@@ -106,7 +106,7 @@ dump($result);
             position: absolute;
             padding: 0 2px;
             top: 0;
-            left: 0;
+            right: 0;
             background: #444;
             color: white;
         }

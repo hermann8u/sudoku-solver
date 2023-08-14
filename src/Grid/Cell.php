@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid;
 
-use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Group\RegionNumber;
+use SudokuSolver\Grid\Cell\Value;
+use SudokuSolver\Grid\Group\Number\RegionNumber;
 
 abstract readonly class Cell
 {
@@ -16,7 +16,7 @@ abstract readonly class Cell
         public Coordinates $coordinates,
         public Value $value,
     ) {
-        $this->regionNumber = RegionNumber::fromCoordinates($this->coordinates);
+        $this->regionNumber = RegionNumber::fromCell($this);
     }
 
     public function isEmpty(): bool

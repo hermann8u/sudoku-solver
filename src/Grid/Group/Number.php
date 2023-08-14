@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid\Group;
 
+use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;
 
-final readonly class RegionNumber
+abstract readonly class Number implements \Stringable
 {
     public const MIN = 1;
     public const MAX = 9;
@@ -22,16 +23,17 @@ final readonly class RegionNumber
         Assert::lessThanEq($this->value, self::MAX);
     }
 
-    public static function fromCoordinates(Coordinates $coordinates): self
-    {
-        /** @var int<self::MIN, self::MAX> $number */
-        $number = (int) (ceil($coordinates->x / Region::WIDTH) + (ceil($coordinates->y / Region::HEIGHT) - 1) * Region::HEIGHT);
+    abstract public static function fromCell(Cell $cell): static;
 
-        return new self($number);
+    abstract public static function fromCoordinates(Coordinates $coordinates): static;
+
+    public function toString(): string
+    {
+        return (string) $this->value;
     }
 
-    public function is(RegionNumber $regionNumber): bool
+    public function __toString(): string
     {
-        return $this->value === $regionNumber->value;
+        return $this->toString();
     }
 }

@@ -6,6 +6,7 @@ namespace SudokuSolver\Grid\Group;
 
 use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Group;
+use SudokuSolver\Grid\Group\Number\RegionNumber;
 
 final readonly class Region extends Group
 {
@@ -14,15 +15,15 @@ final readonly class Region extends Group
 
     private function __construct(
         array $cells,
-        public RegionNumber $number,
+        RegionNumber $number,
     ) {
-        parent::__construct($cells);
+        parent::__construct($cells, $number);
     }
 
     /**
      * @param Cell[] $cells
      */
-    public static function fromCells(array $cells, RegionNumber $number): self
+    public static function fromAllCells(array $cells, RegionNumber $number): self
     {
         return new self(
             array_values(array_filter($cells, static fn (Cell $cell) => $cell->regionNumber->value === $number->value)),

@@ -7,33 +7,28 @@ namespace SudokuSolver\Grid\Group;
 use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Group;
-use Webmozart\Assert\Assert;
+use SudokuSolver\Grid\Group\Number\RowNumber;
 
 final readonly class Row extends Group
 {
     /**
      * @param Cell[] $cells
-     * @param int<Coordinates::MIN, Coordinates::MAX> $number
      */
     private function __construct(
         array $cells,
-        public int $number,
+        RowNumber $number,
     ) {
-        Assert::greaterThanEq($this->number, Coordinates::MIN);
-        Assert::lessThanEq($this->number, Coordinates::MAX);
-
-        parent::__construct($cells);
+        parent::__construct($cells, $number);
     }
 
     /**
      * @param Cell[] $cells
-     * @param int<Coordinates::MIN, Coordinates::MAX> $y
      */
-    public static function fromCells(array $cells, int $y): self
+    public static function fromAllCells(array $cells, RowNumber $number): self
     {
         return new self(
-            array_values(array_filter($cells, static fn (Cell $cell) => $cell->coordinates->y === $y)),
-            $y,
+            array_values(array_filter($cells, static fn (Cell $cell) => $cell->coordinates->y === $number->value)),
+            $number
         );
     }
 }

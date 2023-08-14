@@ -42,8 +42,12 @@ final readonly class XWingMethod implements Method
                 Direction::Vertical => $grid->getRow(...),
             };
 
-            foreach ($xWing->getGroupToModifyNumbers() as $groupNumber) {
-                /** @var Group $groupToModify */
+            foreach ($xWing->getGroupNumbersToModify() as $groupNumber) {
+
+                /**
+                 * @var Group $groupToModify
+                 * @phpstan-ignore-next-line
+                 */
                 $groupToModify = $getGroupToModifyCallable($groupNumber);
 
                 foreach ($groupToModify->getEmptyCells() as $fillableCell) {
@@ -102,6 +106,7 @@ final readonly class XWingMethod implements Method
                 /** @var FillableCell $thirdCell */
                 $thirdCell = $grid->getCell($thirdCellCoordinates);
 
+                /** @var Group $secondGroup */
                 $secondGroup = $firstDirectionGroupCallable($thirdCell);
 
                 [$map, $potentialFourthCells] = $this->getPotentialRelatedCellsInGroup($thirdCellCandidates, $map, $grid, $secondGroup, $thirdCell);
@@ -113,8 +118,8 @@ final readonly class XWingMethod implements Method
                 $secondCellCoordinates = Coordinates::fromString($secondCellCoordinatesString);
 
                 $fourthCellCoordinates = match ($direction) {
-                    Direction::Horizontal => new Coordinates($secondCellCoordinates->x, $secondGroup->number),
-                    Direction::Vertical => new Coordinates($secondGroup->number, $secondCellCoordinates->y),
+                    Direction::Horizontal => Coordinates::from($secondCellCoordinates->x, $secondGroup->number->value),
+                    Direction::Vertical => Coordinates::from($secondGroup->number->value, $secondCellCoordinates->y),
                 };
 
                 $fourthCellCandidates = $potentialFourthCells[$fourthCellCoordinates->toString()] ?? null;

@@ -4,25 +4,28 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid;
 
-use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Group\Column;
+use SudokuSolver\Grid\Group\Number\ColumnNumber;
+use SudokuSolver\Grid\Group\Number\RegionNumber;
+use SudokuSolver\Grid\Group\Number\RowNumber;
 use SudokuSolver\Grid\Group\Region;
-use SudokuSolver\Grid\Group\RegionNumber;
 use SudokuSolver\Grid\Group\Row;
 use Webmozart\Assert\Assert;
 
 final readonly class Grid
 {
-    /** @var Cell[] */
-    private array $cells;
     /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Column> */
     public array $columns;
     /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Row> */
     public array $rows;
     /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Region> */
-    private array $regions;
+    public array $regions;
+
+    /** @var Cell[] */
+    private array $cells;
 
     /**
      * @param Cell[] $cells
@@ -31,8 +34,8 @@ final readonly class Grid
     {
         Assert::count($cells, Coordinates::MAX * Coordinates::MAX);
 
-        $this->cells = $cells;
         [$this->columns, $this->rows, $this->regions] = $this->prepareGroups($cells);
+        $this->cells = $cells;
     }
 
     public function getCell(Coordinates $coordinates): Cell
@@ -57,20 +60,14 @@ final readonly class Grid
         ));
     }
 
-    /**
-     * @param int<Coordinates::MIN, Coordinates::MAX> $number
-     */
-    public function getColumn(int $number): Column
+    public function getColumn(ColumnNumber $number): Column
     {
-        return $this->columns[$number];
+        return $this->columns[$number->value];
     }
 
-    /**
-     * @param int<Coordinates::MIN, Coordinates::MAX> $number
-     */
-    public function getRow(int $number): Row
+    public function getRow(RowNumber $number): Row
     {
-        return $this->rows[$number];
+        return $this->rows[$number->value];
     }
 
     public function getRegion(RegionNumber $number): Region
@@ -90,12 +87,12 @@ final readonly class Grid
 
     public function getRowByCell(Cell $cell): Row
     {
-        return $this->getRow($cell->coordinates->y);
+        return $this->getRow(RowNumber::fromCell($cell));
     }
 
     public function getColumnByCell(Cell $cell): Column
     {
-        return $this->getColumn($cell->coordinates->x);
+        return $this->getColumn(ColumnNumber::fromCell($cell));
     }
 
     public function getRegionByCell(Cell $cell): Region
@@ -147,7 +144,7 @@ final readonly class Grid
         $string = '';
 
         foreach ($this->cells as $cell) {
-            $string .= $cell->value . ($cell->coordinates->x === 9 ? PHP_EOL : ';');
+            $string .= $cell->value . ($cell->coordinates->x === Coordinates::MAX ? PHP_EOL : ';');
         }
 
         return $string;
@@ -188,19 +185,19 @@ final readonly class Grid
         $regions = [];
 
         foreach ($cells as $cell) {
-            $x = $cell->coordinates->x;
-            if (! isset($columns[$x])) {
-                $columns[$x] = Column::fromCells($cells, $x);
+            $columnNumber = ColumnNumber::fromCell($cell);
+            if (! isset($columns[$columnNumber->value])) {
+                $columns[$columnNumber->value] = Column::fromAllCells($cells, $columnNumber);
             }
 
-            $y = $cell->coordinates->y;
-            if (! isset($rows[$y])) {
-                $rows[$y] = Row::fromCells($cells, $y);
+            $rowNumber = RowNumber::fromCell($cell);
+            if (! isset($rows[$rowNumber->value])) {
+                $rows[$rowNumber->value] = Row::fromAllCells($cells, $rowNumber);
             }
 
             $regionNumber = $cell->regionNumber;
             if (! isset($regions[$regionNumber->value])) {
-                $regions[$regionNumber->value] = Region::fromCells($cells, $regionNumber);
+                $regions[$regionNumber->value] = Region::fromAllCells($cells, $regionNumber);
             }
         }
 

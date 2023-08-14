@@ -6,6 +6,7 @@ namespace SudokuSolver\Grid;
 
 use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Group\Number;
 use Traversable;
 use Webmozart\Assert\Assert;
 
@@ -18,17 +19,19 @@ abstract readonly class Group implements \IteratorAggregate
 
     /** @var Cell[] */
     public array $cells;
+    public Number $number;
 
     /**
      * @param Cell[] $cells
      */
-    protected function __construct(array $cells)
+    public function __construct(array $cells, Number $number)
     {
         Assert::count($cells, self::CELLS_COUNT);
 
         usort($cells, static fn (Cell $a, Cell $b) => $a->coordinates->compare($b->coordinates));
 
         $this->cells = $cells;
+        $this->number = $number;
     }
 
     public function isValid(): bool

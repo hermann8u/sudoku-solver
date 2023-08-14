@@ -8,7 +8,6 @@ use Webmozart\Assert\Assert;
 
 final readonly class Coordinates implements \Stringable
 {
-
     public const MIN = 1;
     public const MAX = 9;
 
@@ -16,7 +15,7 @@ final readonly class Coordinates implements \Stringable
      * @param int<self::MIN, self::MAX> $x
      * @param int<self::MIN, self::MAX> $y
      */
-    public function __construct(
+    private function __construct(
         public int $x,
         public int $y,
     ) {
@@ -30,7 +29,7 @@ final readonly class Coordinates implements \Stringable
      * @param int<self::MIN, self::MAX> $x
      * @param int<self::MIN, self::MAX> $y
      */
-    public static function fromInt(int $x, int $y): self
+    public static function from(int $x, int $y): self
     {
         return new self($x, $y);
     }
@@ -43,7 +42,7 @@ final readonly class Coordinates implements \Stringable
          */
         [$x, $y] = explode(',', trim($coordinates, '()'));
 
-        return self::fromInt((int) $x, (int) $y);
+        return self::from((int) $x, (int) $y);
     }
 
     /**

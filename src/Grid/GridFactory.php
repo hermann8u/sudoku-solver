@@ -18,7 +18,7 @@ final readonly class GridFactory
     {
         foreach ($gridAsArray as $y => $row) {
             foreach ($row as $x => $value) {
-                $coordinates = Coordinates::fromInt($x + 1, $y + 1);
+                $coordinates = Coordinates::from($x + 1, $y + 1);
 
                 if ($value === '') {
                     $cells[] = new FillableCell($coordinates);

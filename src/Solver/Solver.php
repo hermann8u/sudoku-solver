@@ -10,7 +10,7 @@ use SudokuSolver\Solver\Result\Step;
 
 final readonly class Solver
 {
-    private const MAX_ITERATION = 500;
+    private const MAX_ITERATION = 50;
 
     /**
      * @param iterable<Method> $methods

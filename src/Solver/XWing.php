@@ -7,14 +7,17 @@ namespace SudokuSolver\Solver;
 use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Group\Number;
+use SudokuSolver\Grid\Group\Number\ColumnNumber;
+use SudokuSolver\Grid\Group\Number\RowNumber;
 use SudokuSolver\Solver\XWing\Direction;
 use Webmozart\Assert\Assert;
 
 final readonly class XWing
 {
-    /** @var int<Coordinates::MIN, Coordinates::MAX>[] */
+    /** @var ColumnNumber[] */
     public array $columnNumbers;
-    /** @var int<Coordinates::MIN, Coordinates::MAX>[] */
+    /** @var RowNumber[] */
     public array $rowNumbers;
 
     /**
@@ -29,13 +32,14 @@ final readonly class XWing
 
         $columnNumbers = [];
         $rowNumbers = [];
+
         foreach ($this->coordinatesList as $coordinates) {
-            $columnNumbers[$coordinates->x] = 0;
-            $rowNumbers[$coordinates->y] = 0;
+            $columnNumbers[] = ColumnNumber::fromCoordinates($coordinates);
+            $rowNumbers[] = RowNumber::fromCoordinates($coordinates);
         }
 
-        $this->columnNumbers = \array_keys($columnNumbers);
-        $this->rowNumbers = \array_keys($rowNumbers);
+        $this->columnNumbers = array_values(array_unique($columnNumbers));
+        $this->rowNumbers = array_values(array_unique($rowNumbers));
 
         Assert::count($this->columnNumbers, 2);
         Assert::count($this->rowNumbers, 2);
@@ -53,9 +57,9 @@ final readonly class XWing
     }
 
     /**
-     * @return int<Coordinates::MIN, Coordinates::MAX>[]
+     * @return ColumnNumber[]|RowNumber[]
      */
-    public function getGroupToModifyNumbers(): array
+    public function getGroupNumbersToModify(): array
     {
         return match ($this->direction) {
             Direction::Horizontal => $this->columnNumbers,
