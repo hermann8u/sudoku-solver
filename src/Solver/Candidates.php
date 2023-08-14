@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
-use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\Value;
 
 /**
- * @implements \IteratorAggregate<int, CellValue>
+ * @implements \IteratorAggregate<int, Value>
  */
 final readonly class Candidates implements \IteratorAggregate, \Stringable
 {
-    /** @var CellValue[] */
+    /** @var Value[] */
     public array $values;
 
     /**
-     * @param CellValue[] $values
+     * @param Value[] $values
      */
     private function __construct(array $values)
     {
@@ -24,13 +24,13 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
 
     public static function all(): self
     {
-        return self::fromInt(...range(CellValue::MIN, CellValue::MAX));
+        return self::fromInt(...range(Value::MIN, Value::MAX));
     }
 
     public static function fromString(string $valuesString): self
     {
         $values = explode(',', $valuesString);
-        /** @var array<int<CellValue::MIN, CellValue::MAX>> $values */
+        /** @var array<int<Value::MIN, Value::MAX>> $values */
         $values = array_map(static fn (string $v) => (int) $v, $values);
 
         return self::fromInt(...$values);
@@ -67,7 +67,7 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return count($this->values) === 1;
     }
 
-    public function first(): CellValue
+    public function first(): Value
     {
         $value = current($this->values);
         if ($value === false) {
@@ -107,7 +107,7 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * @param CellValue[] $values
+     * @param Value[] $values
      */
     public function hasOneOf(array $values): bool
     {
@@ -120,12 +120,12 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return false;
     }
 
-    public function has(CellValue $value): bool
+    public function has(Value $value): bool
     {
         return \in_array($value->value, $this->toIntegers());
     }
 
-    public function withRemovedValues(CellValue ...$cellValues): self
+    public function withRemovedValues(Value ...$cellValues): self
     {
         $currentValues = $this->toIntegers();
 
@@ -159,18 +159,18 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * @param int<CellValue::MIN, CellValue::MAX> ...$values
+     * @param int<Value::MIN, Value::MAX> ...$values
      */
     private static function fromInt(int ...$values): self
     {
         return new self(array_map(
-            static fn (int $v) => CellValue::from($v),
+            static fn (int $v) => Value::from($v),
             $values,
         ));
     }
 
     /**
-     * @return array<int<CellValue::MIN, CellValue::MAX>>
+     * @return array<int<Value::MIN, Value::MAX>>
      */
     private function toIntegers(): array
     {

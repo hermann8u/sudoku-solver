@@ -124,11 +124,11 @@ dump($result);
                     <?php foreach ($row->cells as $cell) : ?>
                         <?php if ($cell instanceof FixedValueCell): ?>
                             <td class="fixed">
-                                <?= $cell->getCellValue() ?>
+                                <?= $cell->value ?>
                             </td>
                         <?php elseif ($cell instanceof FillableCell): ?>
                             <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
-                                <span><?= $cell->getCellValue() ?></span>
+                                <span><?= $cell->value ?></span>
                                 <?php $step = $result->getStep($cell->coordinates);
                                     if ($step) :
                                 ?>

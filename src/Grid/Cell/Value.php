@@ -6,7 +6,7 @@ namespace SudokuSolver\Grid\Cell;
 
 use Webmozart\Assert\Assert;
 
-final readonly class CellValue implements \Stringable
+final readonly class Value implements \Stringable
 {
     public const MIN = 1;
     public const MAX = 9;

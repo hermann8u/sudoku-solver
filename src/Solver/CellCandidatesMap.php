@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SudokuSolver\Solver;
 
 use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 
@@ -112,7 +112,7 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
     }
 
     /**
-     * @return array{?Coordinates, ?CellValue}
+     * @return array{?Coordinates, ?Value}
      */
     public function findUniqueValue(): array
     {

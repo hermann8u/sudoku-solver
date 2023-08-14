@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SudokuSolver\Solver;
 
 use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Solver\XWing\Direction;
 use Webmozart\Assert\Assert;
@@ -23,7 +23,7 @@ final readonly class XWing
     public function __construct(
         public Direction $direction,
         public array $coordinatesList,
-        public CellValue $value,
+        public Value $value,
     ) {
         Assert::count($this->coordinatesList, 4);
 

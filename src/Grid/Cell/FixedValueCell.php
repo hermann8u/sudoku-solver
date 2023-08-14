@@ -9,7 +9,7 @@ use SudokuSolver\Grid\Cell;
 
 final readonly class FixedValueCell extends Cell
 {
-    public function __construct(Coordinates $coordinates, CellValue $cellValue)
+    public function __construct(Coordinates $coordinates, Value $cellValue)
     {
         if ($cellValue->isEmpty()) {
             throw new \DomainException();

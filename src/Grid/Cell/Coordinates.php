@@ -26,6 +26,15 @@ final readonly class Coordinates implements \Stringable
         Assert::lessThanEq($this->y, self::MAX);
     }
 
+    /**
+     * @param int<self::MIN, self::MAX> $x
+     * @param int<self::MIN, self::MAX> $y
+     */
+    public static function fromInt(int $x, int $y): self
+    {
+        return new self($x, $y);
+    }
+
     public static function fromString(string $coordinates): self
     {
         /**
@@ -34,7 +43,7 @@ final readonly class Coordinates implements \Stringable
          */
         [$x, $y] = explode(',', trim($coordinates, '()'));
 
-        return new self((int) $x, (int) $y);
+        return self::fromInt((int) $x, (int) $y);
     }
 
     /**

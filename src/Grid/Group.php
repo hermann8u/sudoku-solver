@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid;
 
-use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\FillableCell;
 use Traversable;
 use Webmozart\Assert\Assert;
@@ -57,14 +57,14 @@ abstract readonly class Group implements \IteratorAggregate
     }
 
     /**
-     * @return CellValue[]
+     * @return Value[]
      */
     public function getPresentValues(): array
     {
         $cellsWithValue = array_filter($this->cells, static fn (Cell $cell) => ! $cell->isEmpty());
 
         return array_map(
-            static fn (Cell $cell) => $cell->getCellValue(),
+            static fn (Cell $cell) => $cell->value,
             array_values($cellsWithValue),
         );
     }

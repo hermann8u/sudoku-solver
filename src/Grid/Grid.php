@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid;
 
-use SudokuSolver\Grid\Cell\CellValue;
+use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Group\Column;
@@ -147,13 +147,13 @@ final readonly class Grid
         $string = '';
 
         foreach ($this->cells as $cell) {
-            $string .= $cell->getCellValue()->value . ($cell->coordinates->x === 9 ? PHP_EOL : ';');
+            $string .= $cell->value . ($cell->coordinates->x === 9 ? PHP_EOL : ';');
         }
 
         return $string;
     }
 
-    public function withUpdatedCell(Coordinates $coordinates, CellValue $value): self
+    public function withUpdatedCell(Coordinates $coordinates, Value $value): self
     {
         foreach ($this->cells as $key => $cell) {
             if ($cell->coordinates->is($coordinates)) {
