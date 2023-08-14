@@ -35,6 +35,15 @@ abstract readonly class Association
         );
     }
 
+    public function toString(): string
+    {
+        return sprintf(
+            '%s => %s',
+            $this->candidates->toString(),
+            implode(' ', array_map(static fn (Coordinates $c) => $c->toString(), $this->coordinatesList)),
+        );
+    }
+
     public function contains(Cell $cell): bool
     {
         foreach ($this->coordinatesList as $coordinates) {

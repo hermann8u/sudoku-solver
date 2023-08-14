@@ -31,6 +31,10 @@ final readonly class ExclusiveAssociationMethod implements Method
             foreach ($this->extractors as $extractor) {
                 $associations = $extractor->getAssociationsForGroup($mapForGroup);
 
+                /*if ($associations) {
+                    dump(array_map(static fn (Association $a) => $a->toString(), $associations));
+                }*/
+
                 foreach ($associations as $association) {
                     foreach ($group->getEmptyCells() as $cell) {
                         if ($association->contains($cell)) {

@@ -16,7 +16,6 @@ use SudokuSolver\Solver\Solver;
 require './vendor/autoload.php';
 
 $stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
-$stringGrid = file_get_contents('./tests/data/grid/x_wing/vertical.csv');
 
 $generator = new GridGenerator(new GridFactory());
 $grid = $generator->generate($stringGrid);
@@ -25,6 +24,7 @@ $inclusiveMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $inclusiveMethod,
+    new XWingMethod($inclusiveMethod),
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
         [
@@ -33,7 +33,6 @@ $solver = new Solver([
             new PairExtractor(),
         ]
     ),
-    new XWingMethod($inclusiveMethod),
     new ExclusiveMethod($inclusiveMethod),
 ]);
 

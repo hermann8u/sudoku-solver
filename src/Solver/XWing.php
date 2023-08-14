@@ -66,7 +66,8 @@ final readonly class XWing
     public function toString(): string
     {
         return sprintf(
-            '%d => %s',
+            '%s => %d => %s',
+            $this->direction->name,
             $this->value->value,
             implode(' ', array_map(static fn (Coordinates $c) => $c->toString(), $this->coordinatesList)),
         );

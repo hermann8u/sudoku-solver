@@ -31,6 +31,12 @@ final readonly class XWingMethod implements Method
             $xWings = [...$xWings, ...$xWingsByDirection];
         }
 
+        /*if ($xWings) {
+            dump(
+                array_map(static fn (XWing $xWing) => $xWing->toString(), $xWings),
+            );
+        }*/
+
         foreach ($xWings as $xWing) {
             $getGroupToModifyCallable = match ($xWing->direction) {
                 Direction::Horizontal => $grid->getColumn(...),
@@ -38,6 +44,7 @@ final readonly class XWingMethod implements Method
             };
 
             foreach ($xWing->getGroupToModifyNumbers() as $groupNumber) {
+                /** @var Group $groupToModify */
                 $groupToModify = $getGroupToModifyCallable($groupNumber);
 
                 foreach ($groupToModify->getEmptyCells() as $fillableCell) {
