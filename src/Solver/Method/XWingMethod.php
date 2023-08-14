@@ -21,6 +21,11 @@ final readonly class XWingMethod implements Method
     ) {
     }
 
+    public static function getName(): string
+    {
+        return 'x_wing';
+    }
+
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         /** @var XWing[] $xWings */
@@ -30,12 +35,6 @@ final readonly class XWingMethod implements Method
             [$map, $xWingsByDirection] = $this->buildXWings($direction, $map, $grid, $currentCell);
             $xWings = [...$xWings, ...$xWingsByDirection];
         }
-
-        /*if ($xWings) {
-            dump(
-                array_map(static fn (XWing $xWing) => $xWing->toString(), $xWings),
-            );
-        }*/
 
         foreach ($xWings as $xWing) {
             $getGroupToModifyCallable = match ($xWing->direction) {

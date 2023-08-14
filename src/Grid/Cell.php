@@ -8,15 +8,14 @@ use SudokuSolver\Grid\Cell\CellValue;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Group\RegionNumber;
 
-abstract class Cell
+abstract readonly class Cell
 {
-    protected CellValue $cellValue;
-    public readonly RegionNumber $regionNumber;
+    public RegionNumber $regionNumber;
 
     public function __construct(
-        public readonly Coordinates $coordinates,
+        public Coordinates $coordinates,
+        public CellValue $cellValue,
     ) {
-        $this->cellValue = CellValue::empty();
         $this->regionNumber = RegionNumber::fromCoordinates($this->coordinates);
     }
 

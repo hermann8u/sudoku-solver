@@ -17,6 +17,11 @@ final readonly class ExclusiveMethod implements Method
     ) {
     }
 
+    public static function getName(): string
+    {
+        return 'exclusive';
+    }
+
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         [$map, $initialCandidates] = $this->getCandidates($map, $grid, $currentCell);

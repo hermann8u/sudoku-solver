@@ -16,6 +16,11 @@ final readonly class DebugMethod implements Method
     ) {
     }
 
+    public static function getName(): string
+    {
+        return 'debug';
+    }
+
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         $previous = $map;

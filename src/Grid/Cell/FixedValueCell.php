@@ -7,17 +7,15 @@ namespace SudokuSolver\Grid\Cell;
 
 use SudokuSolver\Grid\Cell;
 
-final class FixedValueCell extends Cell
+final readonly class FixedValueCell extends Cell
 {
     public function __construct(Coordinates $coordinates, CellValue $cellValue)
     {
-        parent::__construct($coordinates);
-
         if ($cellValue->isEmpty()) {
             throw new \DomainException();
         }
 
-        $this->cellValue = $cellValue;
+        parent::__construct($coordinates, $cellValue);
     }
 
     public function isEmpty(): bool

@@ -6,10 +6,11 @@ namespace SudokuSolver\Solver;
 
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Grid;
+use SudokuSolver\Solver\Result\Step;
 
 final readonly class Solver
 {
-    private const MAX_ITERATION = 20;
+    private const MAX_ITERATION = 500;
 
     /**
      * @param iterable<Method> $methods
@@ -23,7 +24,7 @@ final readonly class Solver
     {
         $i = 0;
 
-        $methodNamesCount = [];
+        $steps = [];
         $map = CellCandidatesMap::empty();
 
         do {
@@ -31,12 +32,12 @@ final readonly class Solver
 
             $previousMap = $map;
 
-            foreach ($grid->getFillableCells() as $currentCell) {
-                if ($currentCell->isEmpty() === false) {
-                    continue;
-                }
+            foreach ($this->methods as $method) {
+                foreach ($grid->getFillableCells() as $currentCell) {
+                    if ($currentCell->isEmpty() === false) {
+                        continue;
+                    }
 
-                foreach ($this->methods as $method) {
                     $map = $method->apply($map, $grid, $currentCell);
 
                     [$coordinates, $cellValue] = $map->findUniqueValue();
@@ -50,17 +51,21 @@ final readonly class Solver
                         throw new \LogicException();
                     }
 
-                    $methodName = $method::class;
-                    $methodNamesCount[$methodName] = ($methodNamesCount[$methodName] ?? 0) + 1;
-
-                    $cell->updateValue($cellValue);
+                    $grid = $grid->withUpdatedCell($coordinates, $cellValue);
 
                     if ($grid->containsDuplicate()) {
-                        dump([$cell->coordinates->toString(), $methodName, $cellValue->value, $map->display()]);
+                        dump([$cell->coordinates->toString(), $method::getName(), $cellValue->value, $map->display()]);
                         break 3;
                     }
 
                     $map = CellCandidatesMap::empty();
+
+                    $steps[] = new Step(
+                        count($steps) + 1,
+                        $method::getName(),
+                        $coordinates,
+                        $cellValue,
+                    );
 
                     break;
                 }
@@ -70,7 +75,7 @@ final readonly class Solver
         return new Result(
             $i,
             memory_get_peak_usage(),
-            $methodNamesCount,
+            $steps,
             $map,
             $grid,
         );

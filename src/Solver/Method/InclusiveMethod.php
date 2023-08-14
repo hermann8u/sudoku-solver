@@ -12,6 +12,11 @@ use SudokuSolver\Solver\Method;
 
 final readonly class InclusiveMethod implements Method
 {
+    public static function getName(): string
+    {
+        return 'inclusive';
+    }
+
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         if (! $map->has($currentCell)) {

@@ -50,12 +50,17 @@ dump($result);
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
+        body {
+            font-family: sans-serif;
+        }
         .container {
             margin-left: auto;
             margin-right: auto;
             width: 100%;
             display: flex;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
         }
         table {
             border-collapse: collapse;
@@ -97,13 +102,24 @@ dump($result);
         .fillable .candidates small {
             padding: 0 2px;
         }
+        .fillable .step-number {
+            position: absolute;
+            padding: 0 2px;
+            top: 0;
+            left: 0;
+            background: #444;
+            color: white;
+        }
+        .steps li {
+            padding: 0.5rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <table>
             <tbody>
-            <?php foreach ($grid->rows as $row): ?>
+            <?php foreach ($result->grid->rows as $row): ?>
                 <tr>
                     <?php foreach ($row->cells as $cell) : ?>
                         <?php if ($cell instanceof FixedValueCell): ?>
@@ -113,6 +129,11 @@ dump($result);
                         <?php elseif ($cell instanceof FillableCell): ?>
                             <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
                                 <span><?= $cell->getCellValue() ?></span>
+                                <?php $step = $result->getStep($cell->coordinates);
+                                    if ($step) :
+                                ?>
+                                    <small class="step-number"><?= $step->number ?></small>
+                                <?php endif; ?>
                                 <?php if ($result->map->has($cell)) : ?>
                                     <div class="candidates">
                                         <?php foreach ($result->map->get($cell) as $value) : ?>
@@ -127,6 +148,11 @@ dump($result);
             <?php endforeach; ?>
             </tbody>
         </table>
+        <ol class="steps">
+            <?php foreach ($result->steps as $step) : ?>
+                <li><?= $step->methodName ?> : <?= $step->coordinates ?> => <?=$step->value ?></li>
+            <?php endforeach; ?>
+        </ol>
     </div>
 </body>
 </html>

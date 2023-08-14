@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid;
 
+use SudokuSolver\Grid\Cell\CellValue;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Group\Column;
@@ -150,6 +151,25 @@ final readonly class Grid
         }
 
         return $string;
+    }
+
+    public function withUpdatedCell(Coordinates $coordinates, CellValue $value): self
+    {
+        foreach ($this->cells as $key => $cell) {
+            if ($cell->coordinates->is($coordinates)) {
+                if (! $cell instanceof FillableCell) {
+                    throw new \LogicException();
+                }
+
+                $cells = $this->cells;
+
+                $cells[$key] = new FillableCell($coordinates, $value);
+
+                return new self($cells);
+            }
+        }
+
+        throw new \DomainException();
     }
 
     /**

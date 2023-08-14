@@ -23,6 +23,11 @@ final readonly class ExclusiveAssociationMethod implements Method
     ) {
     }
 
+    public static function getName(): string
+    {
+        return 'exclusive_association';
+    }
+
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         foreach ($grid->getGroupsForCell($currentCell) as $group) {
@@ -30,10 +35,6 @@ final readonly class ExclusiveAssociationMethod implements Method
 
             foreach ($this->extractors as $extractor) {
                 $associations = $extractor->getAssociationsForGroup($mapForGroup);
-
-                /*if ($associations) {
-                    dump(array_map(static fn (Association $a) => $a->toString(), $associations));
-                }*/
 
                 foreach ($associations as $association) {
                     foreach ($group->getEmptyCells() as $cell) {
