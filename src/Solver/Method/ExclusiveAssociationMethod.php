@@ -11,7 +11,7 @@ use SudokuSolver\Solver\Association\AssociationExtractor;
 use SudokuSolver\Solver\CellCandidatesMap;
 use SudokuSolver\Solver\Method;
 
-final class ExclusiveAssociationMethod implements Method
+final readonly class ExclusiveAssociationMethod implements Method
 {
     /**
      * @param InclusiveMethod $inclusiveMethod

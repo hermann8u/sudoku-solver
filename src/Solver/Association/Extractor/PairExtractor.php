@@ -12,7 +12,7 @@ use SudokuSolver\Solver\Association\AssociationExtractor;
 /**
  * @implements AssociationExtractor<Pair>
  */
-final class PairExtractor implements AssociationExtractor
+final readonly class PairExtractor implements AssociationExtractor
 {
     public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
     {

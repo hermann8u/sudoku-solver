@@ -7,10 +7,10 @@ namespace SudokuSolver\Grid;
 use SudokuSolver\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;
 
-final class GridGenerator
+final readonly class GridGenerator
 {
     public function __construct(
-        private readonly GridFactory $gridFactory,
+        private GridFactory $gridFactory,
     ) {
     }
 

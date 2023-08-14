@@ -9,7 +9,7 @@ use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Cell\FixedValueCell;
 
-final class GridFactory
+final readonly class GridFactory
 {
     /**
      * @param array<int<0, 8>, array<int<0, 8>, string>> $gridAsArray

@@ -10,7 +10,7 @@ use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CellCandidatesMap;
 use SudokuSolver\Solver\Method;
 
-final class InclusiveMethod implements Method
+final readonly class InclusiveMethod implements Method
 {
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {

@@ -13,7 +13,7 @@ use SudokuSolver\Solver\CellCandidatesMap;
 use SudokuSolver\Solver\Method;
 use SudokuSolver\Solver\XWing;
 
-final class XWingMethod implements Method
+final readonly class XWingMethod implements Method
 {
     public function __construct(
         private InclusiveMethod $inclusiveMethod,
@@ -82,15 +82,6 @@ final class XWingMethod implements Method
             }
         }
 
-        if ($xWings) {
-            dump(
-                array_map(fn (XWing $xWing) => $xWing->toString(), $xWings),
-                $grid->toString(),
-            );
-
-            //return $map;
-        }
-
         foreach ($xWings as $xWing) {
             $already = [];
 
@@ -128,34 +119,27 @@ final class XWingMethod implements Method
     /**
      * @return array{CellCandidatesMap, array<string, Candidates>}
      */
-    private function getPotentialRelatedCellsInGroup(Candidates $currentFilteredCandidates, CellCandidatesMap $map, Grid $grid, Group $currentGroup, FillableCell $currentCell, bool $withFilter = true): array
-    {
-        $currentCellCoordinatesString = $currentCell->coordinates->toString();
-        [$map, $mapForRow] = $this->getMapForGroup($map, $grid, $currentGroup/*, withoutCell: $currentCell*/);
+    private function getPotentialRelatedCellsInGroup(
+        Candidates $currentFilteredCandidates,
+        CellCandidatesMap $map,
+        Grid $grid,
+        Group $currentGroup,
+        FillableCell $currentCell,
+        bool $withFilter = true,
+    ): array {
+        [$map, $mapForGroup] = $this->getMapForGroup($map, $grid, $currentGroup);
 
-        if ($mapForRow->isEmpty()) {
+        $currentCoordinatesAsString = $currentCell->coordinates->toString();
+        $mapForGroup = $mapForGroup->filter(
+            static fn (Candidates $candidates, string $coordinatesAsString) => $coordinatesAsString !== $currentCoordinatesAsString,
+        );
+
+        if ($mapForGroup->isEmpty()) {
             return [$map, []];
         }
 
         if ($withFilter) {
-            $expectedValues = $mapForRow->multidimensionalKeyLoop(function (CellCandidatesMap $mapForRow, Candidates $carry, string $a, string $b) use ($currentCellCoordinatesString) {
-                if (\in_array($currentCellCoordinatesString, [$a, $b])) {
-                    return $carry;
-                }
-
-                $aCandidates = $mapForRow->get($a);
-                $bCandidates = $mapForRow->get($b);
-
-                $intersect = $aCandidates->intersect($bCandidates);
-
-                if ($intersect->count() === 0) {
-                    return $carry;
-                }
-
-                return $carry->withRemovedValues(...$intersect);
-            }, $currentFilteredCandidates);
-        } else {
-            $expectedValues = Candidates::all();
+            $expectedValues = $mapForGroup->multidimensionalKeyLoop($this->filterDuplicateValues(...), $currentFilteredCandidates);
         }
 
         $potentialRelatedCells = [];
@@ -165,7 +149,7 @@ final class XWingMethod implements Method
                 continue;
             }
 
-            $relatedCellCandidates = $mapForRow->get($relatedCell);
+            $relatedCellCandidates = $mapForGroup->get($relatedCell);
 
             $intersectCellCandidates = $currentFilteredCandidates->intersect($relatedCellCandidates);
 
@@ -198,15 +182,11 @@ final class XWingMethod implements Method
     /**
      * @return array{CellCandidatesMap, CellCandidatesMap}
      */
-    private function getMapForGroup(CellCandidatesMap $map, Grid $grid, Group $group, ?FillableCell $withoutCell = null): array
+    private function getMapForGroup(CellCandidatesMap $map, Grid $grid, Group $group): array
     {
         $partialMap = CellCandidatesMap::empty();
 
         foreach ($group->getEmptyCells() as $cell) {
-            if ($withoutCell instanceof FillableCell && $cell->is($withoutCell)) {
-                continue;
-            }
-
             if (! $map->has($cell)) {
                 $map = $this->inclusiveMethod->apply($map, $grid, $cell);
             }
@@ -215,5 +195,19 @@ final class XWingMethod implements Method
         }
 
         return [$map, $partialMap];
+    }
+
+    private function filterDuplicateValues(CellCandidatesMap $mapForRow, Candidates $carry, string $a, string $b): Candidates
+    {
+        $aCandidates = $mapForRow->get($a);
+        $bCandidates = $mapForRow->get($b);
+
+        $intersect = $aCandidates->intersect($bCandidates);
+
+        if ($intersect->count() === 0) {
+            return $carry;
+        }
+
+        return $carry->withRemovedValues(...$intersect);
     }
 }
