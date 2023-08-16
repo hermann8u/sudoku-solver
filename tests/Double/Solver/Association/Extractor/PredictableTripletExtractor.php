@@ -11,7 +11,7 @@ use SudokuSolver\Solver\Association\Triplet;
 /**
  * @implements AssociationExtractor<Triplet>
  */
-final class PredictableTripletExtractor implements AssociationExtractor
+final readonly class PredictableTripletExtractor implements AssociationExtractor
 {
     use PredictableExtractorBehavior;
 

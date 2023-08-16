@@ -9,6 +9,7 @@ use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Grid;
 use SudokuSolver\Grid\Group;
 use SudokuSolver\Solver\Candidates;
+use SudokuSolver\Solver\CandidatesProvider;
 use SudokuSolver\Solver\CellCandidatesMap;
 use SudokuSolver\Solver\Method;
 use SudokuSolver\Solver\XWing;
@@ -16,8 +17,11 @@ use SudokuSolver\Solver\XWing\Direction;
 
 final readonly class XWingMethod implements Method
 {
+    use GetCandidatesBehavior;
+    use GetMapForGroupBehavior;
+
     public function __construct(
-        private InclusiveMethod $inclusiveMethod,
+        private CandidatesProvider $candidatesProvider,
     ) {
     }
 
@@ -198,36 +202,6 @@ final readonly class XWingMethod implements Method
         }
 
         return [$map, $potentialRelatedCells];
-    }
-
-    /**
-     * @return array{CellCandidatesMap, Candidates}
-     */
-    private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $cell): array
-    {
-        if (! $map->has($cell)) {
-            $map = $this->inclusiveMethod->apply($map, $grid, $cell);
-        }
-
-        return [$map, $map->get($cell)];
-    }
-
-    /**
-     * @return array{CellCandidatesMap, CellCandidatesMap}
-     */
-    private function getMapForGroup(CellCandidatesMap $map, Grid $grid, Group $group): array
-    {
-        $partialMap = CellCandidatesMap::empty();
-
-        foreach ($group->getEmptyCells() as $cell) {
-            if (! $map->has($cell)) {
-                $map = $this->inclusiveMethod->apply($map, $grid, $cell);
-            }
-
-            $partialMap = $partialMap->merge($cell, $map->get($cell));
-        }
-
-        return [$map, $partialMap];
     }
 
     private function filterDuplicateValues(CellCandidatesMap $mapForGroup, Candidates $carry, string $a, string $b): Candidates

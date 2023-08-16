@@ -67,14 +67,6 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
     }
 
     /**
-     * @return Candidates[]
-     */
-    public function getAllCandidates(): array
-    {
-        return array_values($this->map);
-    }
-
-    /**
      * @template T of mixed
      *
      * @param callable(self $map, T $carry, string $a, string $b): T $callable

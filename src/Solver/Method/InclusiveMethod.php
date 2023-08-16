@@ -7,10 +7,11 @@ namespace SudokuSolver\Solver\Method;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Grid;
 use SudokuSolver\Solver\Candidates;
+use SudokuSolver\Solver\CandidatesProvider;
 use SudokuSolver\Solver\CellCandidatesMap;
 use SudokuSolver\Solver\Method;
 
-final readonly class InclusiveMethod implements Method
+final readonly class InclusiveMethod implements Method, CandidatesProvider
 {
     public static function getName(): string
     {
@@ -20,15 +21,15 @@ final readonly class InclusiveMethod implements Method
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         if (! $map->has($currentCell)) {
-            $map = $this->getCandidates($map, $grid, $currentCell);
+            $map = $map->merge($currentCell, $this->getCandidates($grid, $currentCell));
         }
 
         return $map;
     }
 
-    private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
+    public function getCandidates(Grid $grid, FillableCell $cell): Candidates
     {
-        $groups = $grid->getGroupsForCell($currentCell);
+        $groups = $grid->getGroupsForCell($cell);
 
         $candidatesByGroup = [];
 
@@ -36,12 +37,12 @@ final readonly class InclusiveMethod implements Method
             $candidates = Candidates::all()->withRemovedValues(...$group->getPresentValues());
 
             if ($candidates->hasUniqueValue()) {
-                return $map->merge($currentCell, $candidates);
+                return $candidates;
             }
 
             $candidatesByGroup[] = $candidates;
         }
 
-        return $map->merge($currentCell, Candidates::fromIntersect(...$candidatesByGroup));
+        return Candidates::fromIntersect(...$candidatesByGroup);
     }
 }

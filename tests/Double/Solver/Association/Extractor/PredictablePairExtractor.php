@@ -10,7 +10,7 @@ use SudokuSolver\Solver\Association\Pair;
 /**
  * @implements AssociationExtractor<Pair>
  */
-final class PredictablePairExtractor implements AssociationExtractor
+final readonly class PredictablePairExtractor implements AssociationExtractor
 {
     use PredictableExtractorBehavior;
 
