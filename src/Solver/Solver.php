@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
-use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Grid;
 use SudokuSolver\Solver\Result\Step;
 
 final readonly class Solver
 {
-    private const MAX_ITERATION = 50;
+    private const MAX_ITERATION = 100;
 
     /**
      * @param iterable<Method> $methods
@@ -29,47 +30,26 @@ final readonly class Solver
 
         do {
             $i++;
-
             $previousMap = $map;
 
-            foreach ($this->methods as $method) {
-                foreach ($grid->getFillableCells() as $currentCell) {
-                    if ($currentCell->isEmpty() === false) {
-                        continue;
-                    }
+            [$map, $solution] = $this->getNextSolution($map, $grid);
 
-                    $map = $method->apply($map, $grid, $currentCell);
-
-                    [$coordinates, $cellValue] = $map->findUniqueValue();
-
-                    if ($coordinates === null || $cellValue === null) {
-                        continue;
-                    }
-
-                    $cell = $grid->getCell($coordinates);
-                    if (! $cell instanceof FillableCell) {
-                        throw new \LogicException();
-                    }
-
-                    $grid = $grid->withUpdatedCell($coordinates, $cellValue);
-
-                    if ($grid->containsDuplicate()) {
-                        dump([$cell->coordinates->toString(), $method::getName(), $cellValue->value, $map->display()]);
-                        break 3;
-                    }
-
-                    $map = CellCandidatesMap::empty();
-
-                    $steps[] = new Step(
-                        count($steps) + 1,
-                        $method::getName(),
-                        $coordinates,
-                        $cellValue,
-                    );
-
-                    break;
-                }
+            if ($solution === null) {
+                // Continue here to try to reapply some methods with the updated map
+                continue;
             }
+
+            [$method, $coordinates, $value] = $solution;
+
+            $grid = $grid->withUpdatedCell($coordinates, $value);
+            $map = CellCandidatesMap::empty();
+
+            $steps[] = new Step(
+                count($steps) + 1,
+                $method,
+                $coordinates,
+                $value,
+            );
         } while (false === $this->shouldStop($i, $grid, $previousMap, $map));
 
         return new Result(
@@ -79,6 +59,32 @@ final readonly class Solver
             $map,
             $grid,
         );
+    }
+
+    /**
+     * @return array{CellCandidatesMap, ?array{string, Coordinates, Value}}
+     */
+    private function getNextSolution(CellCandidatesMap $map, Grid $grid): array
+    {
+        foreach ($this->methods as $method) {
+            foreach ($grid->getFillableCells() as $currentCell) {
+                if ($currentCell->isEmpty() === false) {
+                    continue;
+                }
+
+                $map = $method->apply($map, $grid, $currentCell);
+
+                [$coordinates, $cellValue] = $map->findUniqueValue();
+
+                if ($coordinates === null || $cellValue === null) {
+                    continue;
+                }
+
+                return [$map, [$method::getName(), $coordinates, $cellValue]];
+            }
+        }
+
+        return [$map, null];
     }
 
     private function shouldStop(int $iteration, Grid $grid, CellCandidatesMap $previousMap, CellCandidatesMap $currentMap): bool
@@ -95,7 +101,7 @@ final readonly class Solver
             return true;
         }
 
-        if ($iteration > self::MAX_ITERATION) {
+        if ($iteration >= self::MAX_ITERATION) {
             return true;
         }
 

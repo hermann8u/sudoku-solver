@@ -36,27 +36,6 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$values);
     }
 
-    public static function fromIntersect(Candidates $candidates, Candidates ...$others): self
-    {
-        return $candidates->intersect(...array_values($others));
-    }
-
-    public static function fromValuesOnlyPresentOnceIn(Candidates $candidates, Candidates ...$others): self
-    {
-        $values = array_values(array_map(static fn (Candidates $c) => $c->toIntegers(), [$candidates, ...$others]));
-
-        $acceptedValues = array_merge(...$values);
-
-        $count = [];
-        foreach ($acceptedValues as $value) {
-            $count[$value] = ($count[$value] ?? 0) + 1;
-        }
-
-        $count = array_filter($count, static fn (int $v) => $v === 1);
-
-        return self::fromInt(...array_keys($count));
-    }
-
     public static function empty(): self
     {
         return new self([]);

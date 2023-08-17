@@ -25,7 +25,6 @@ $inclusiveMethod = new InclusiveMethod();
 $solver = new Solver([
     $inclusiveMethod,
     new ExclusiveMethod($inclusiveMethod),
-    new XWingMethod($inclusiveMethod),
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
         [
@@ -34,6 +33,7 @@ $solver = new Solver([
             new PairExtractor(),
         ]
     ),
+    new XWingMethod($inclusiveMethod),
 ]);
 
 $result = $solver->solve($grid);
@@ -117,37 +117,47 @@ dump($result);
 </head>
 <body>
     <div class="container">
-        <table>
-            <tbody>
-            <?php foreach ($result->grid->rows as $row): ?>
-                <tr>
-                    <?php foreach ($row->cells as $cell) : ?>
-                        <?php if ($cell instanceof FixedValueCell): ?>
-                            <td class="fixed">
-                                <?= $cell->value ?>
-                            </td>
-                        <?php elseif ($cell instanceof FillableCell): ?>
-                            <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
-                                <span><?= $cell->value ?></span>
-                                <?php $step = $result->getStep($cell->coordinates);
-                                    if ($step) :
-                                ?>
-                                    <small class="step-number"><?= $step->number ?></small>
-                                <?php endif; ?>
-                                <?php if ($result->map->has($cell)) : ?>
-                                    <div class="candidates">
-                                        <?php foreach ($result->map->get($cell) as $value) : ?>
-                                            <small><?= $value ?></small>
-                                        <?php endforeach;?>
-                                    </div>
-                                <?php endif; ?>
-                            </td>
-                        <?php endif ?>
-                    <?php endforeach; ?>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+        <?php foreach ($result->steps as $step) : ?>
+
+            <?php if (count($result->steps) !== $step->number) { $grid = $result->grid; continue; } ?>
+
+            <?php $grid = $grid->withUpdatedCell($step->coordinates, $step->value); ?>
+            <p><strong><?= $step->number ?></strong> <?= $step->methodName ?> : <?= $step->coordinates ?> => <?=$step->value ?></p>
+
+            <table>
+                <tbody>
+                <?php foreach ($grid->rows as $row) : ?>
+                    <tr>
+                        <?php foreach ($row->cells as $cell) : ?>
+                            <?php if ($cell instanceof FixedValueCell): ?>
+                                <td class="fixed">
+                                    <?= $cell->value ?>
+                                </td>
+                            <?php elseif ($cell instanceof FillableCell) : ?>
+                                <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
+                                    <span><?= $cell->value ?></span>
+                                    <?php $step = $result->getStep($cell->coordinates);
+                                        if ($step && ! $cell->isEmpty()) :
+                                    ?>
+                                        <small class="step-number"><?= $step->number ?></small>
+                                    <?php endif; ?>
+                                    <?php if ($result->map->has($cell)) : ?>
+                                        <div class="candidates">
+                                            <?php foreach ($result->map->get($cell) as $value) : ?>
+                                                <small><?= $value ?></small>
+                                            <?php endforeach;?>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                            <?php endif ?>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <br><br>
+        <?php endforeach; ?>
+
         <ol class="steps">
             <?php foreach ($result->steps as $step) : ?>
                 <li><?= $step->methodName ?> : <?= $step->coordinates ?> => <?=$step->value ?></li>

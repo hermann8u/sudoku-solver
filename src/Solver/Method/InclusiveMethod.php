@@ -29,20 +29,12 @@ final readonly class InclusiveMethod implements Method, CandidatesProvider
 
     public function getCandidates(Grid $grid, FillableCell $cell): Candidates
     {
-        $groups = $grid->getGroupsForCell($cell);
+        $candidates = Candidates::all();
 
-        $candidatesByGroup = [];
-
-        foreach ($groups as $group) {
-            $candidates = Candidates::all()->withRemovedValues(...$group->getPresentValues());
-
-            if ($candidates->hasUniqueValue()) {
-                return $candidates;
-            }
-
-            $candidatesByGroup[] = $candidates;
+        foreach ($grid->getGroupsForCell($cell) as $group) {
+            $candidates = $candidates->withRemovedValues(...$group->getPresentValues());
         }
 
-        return Candidates::fromIntersect(...$candidatesByGroup);
+        return $candidates;
     }
 }
