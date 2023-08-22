@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Grid;
+use SudokuSolver\Solver\Result\Solution;
 use SudokuSolver\Solver\Result\Step;
 
 final readonly class Solver
@@ -34,27 +33,20 @@ final readonly class Solver
 
             [$map, $solution] = $this->getNextSolution($map, $grid);
 
-            if ($solution === null) {
-                // Continue here to try to reapply some methods with the updated map
+            if (! $solution instanceof Solution) {
+                // Continue here to try to reapply methods with the updated map
                 continue;
             }
 
-            [$method, $coordinates, $value] = $solution;
-
-            $grid = $grid->withUpdatedCell($coordinates, $value);
+            $grid = $grid->withUpdatedCell($solution->coordinates, $solution->value);
             $map = CellCandidatesMap::empty();
 
-            $steps[] = new Step(
-                count($steps) + 1,
-                $method,
-                $coordinates,
-                $value,
-            );
+            $steps[] = Step::fromSolution(count($steps) + 1, $solution);
+
         } while (false === $this->shouldStop($i, $grid, $previousMap, $map));
 
         return new Result(
             $i,
-            memory_get_peak_usage(),
             $steps,
             $map,
             $grid,
@@ -62,16 +54,12 @@ final readonly class Solver
     }
 
     /**
-     * @return array{CellCandidatesMap, ?array{string, Coordinates, Value}}
+     * @return array{CellCandidatesMap, ?Solution}
      */
     private function getNextSolution(CellCandidatesMap $map, Grid $grid): array
     {
         foreach ($this->methods as $method) {
-            foreach ($grid->getFillableCells() as $currentCell) {
-                if ($currentCell->isEmpty() === false) {
-                    continue;
-                }
-
+            foreach ($grid->getEmptyCells() as $currentCell) {
                 $map = $method->apply($map, $grid, $currentCell);
 
                 [$coordinates, $cellValue] = $map->findUniqueValue();
@@ -80,7 +68,7 @@ final readonly class Solver
                     continue;
                 }
 
-                return [$map, [$method::getName(), $coordinates, $cellValue]];
+                return [$map, new Solution($method::getName(), $coordinates, $cellValue)];
             }
         }
 

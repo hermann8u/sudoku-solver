@@ -9,6 +9,7 @@ use SudokuSolver\Grid\Grid;
 use SudokuSolver\Solver\CandidatesProvider;
 use SudokuSolver\Solver\CellCandidatesMap;
 use SudokuSolver\Solver\Method;
+use SudokuSolver\Solver\Method\Behavior\GetCandidatesBehavior;
 
 final readonly class ExclusiveMethod implements Method
 {
@@ -37,11 +38,6 @@ final readonly class ExclusiveMethod implements Method
                 }
 
                 [$map, $relatedCellCandidates] = $this->getCandidates($map, $grid, $relatedCell);
-
-                // Short circuit : When related cell has only one candidate
-                if ($relatedCellCandidates->hasUniqueValue()) {
-                    return $map->merge($relatedCell, $relatedCellCandidates);
-                }
 
                 $candidates = $candidates->withRemovedValues(...$relatedCellCandidates);
             }

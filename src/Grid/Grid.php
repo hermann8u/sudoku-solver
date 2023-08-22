@@ -60,6 +60,28 @@ final readonly class Grid
         ));
     }
 
+    /**
+     * @return FillableCell[]
+     */
+    public function getEmptyCells(): array
+    {
+        return array_values(array_filter(
+            $this->cells,
+            static fn (Cell $cell) => $cell->isEmpty() && $cell instanceof FillableCell,
+        ));
+    }
+
+    /**
+     * @return FillableCell[]
+     */
+    public function getFilledCells(): array
+    {
+        return array_values(array_filter(
+            $this->cells,
+            static fn (Cell $cell) => ! $cell->isEmpty() && $cell instanceof FillableCell,
+        ));
+    }
+
     public function getColumn(ColumnNumber $number): Column
     {
         return $this->columns[$number->value];
@@ -118,36 +140,16 @@ final readonly class Grid
 
     public function containsDuplicate(): bool
     {
-        foreach ($this->columns as $column) {
-            if ($column->containsDuplicate()) {
-                return true;
-            }
-        }
+        /** @var Group[] $groups */
+        $groups = [...$this->columns, ...$this->rows, ...$this->regions];
 
-        foreach ($this->rows as $row) {
-            if ($row->containsDuplicate()) {
-                return true;
-            }
-        }
-
-        foreach ($this->regions as $region) {
-            if ($region->containsDuplicate()) {
+        foreach ($groups as $group) {
+            if ($group->containsDuplicate()) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    public function toString(): string
-    {
-        $string = '';
-
-        foreach ($this->cells as $cell) {
-            $string .= $cell->value . ($cell->coordinates->x === Coordinates::MAX ? PHP_EOL : ';');
-        }
-
-        return $string;
     }
 
     public function withUpdatedCell(Coordinates $coordinates, Value $value): self
@@ -167,6 +169,17 @@ final readonly class Grid
         }
 
         throw new \DomainException();
+    }
+
+    public function toString(): string
+    {
+        $string = '';
+
+        foreach ($this->cells as $cell) {
+            $string .= $cell->value . ($cell->coordinates->x === Coordinates::MAX ? PHP_EOL : ';');
+        }
+
+        return $string;
     }
 
     /**

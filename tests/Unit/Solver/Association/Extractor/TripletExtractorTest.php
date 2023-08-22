@@ -35,7 +35,7 @@ it('is able to find triplets', function (array $mapForGroupData, array $expected
             '(9,2)' => '1,2,3,5,9',
             '(9,4)' => '1,3,8',
             '(9,5)' => '1,3,8',
-            '(9,6)' => '1,3,8',
+            '(9,6)' => '1,3',
             '(9,9)' => '1,2',
         ],
         [

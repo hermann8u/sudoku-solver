@@ -108,24 +108,13 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
      */
     public function findUniqueValue(): array
     {
-        $coordinates = $this->findCoordinatesForCandidatesWithUniqueValue();
-
-        if (! $coordinates instanceof Coordinates) {
-            return [null, null];
-        }
-
-        return [$coordinates, $this->map[$coordinates->toString()]->first()];
-    }
-
-    public function findCoordinatesForCandidatesWithUniqueValue(): ?Coordinates
-    {
         foreach ($this->map as $coordinateAsString => $candidates) {
             if ($candidates->hasUniqueValue()) {
-                return Coordinates::fromString($coordinateAsString);
+                return [Coordinates::fromString($coordinateAsString), $candidates->first()];
             }
         }
 
-        return null;
+        return [null, null];
     }
 
     /**

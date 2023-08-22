@@ -16,4 +16,14 @@ final readonly class Step
         public Value $value,
     ) {
     }
+
+    public static function fromSolution(int $number, Solution $solution): self
+    {
+        return new self(
+            $number,
+            $solution->method,
+            $solution->coordinates,
+            $solution->value,
+        );
+    }
 }

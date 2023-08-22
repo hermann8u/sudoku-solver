@@ -12,6 +12,8 @@ use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CandidatesProvider;
 use SudokuSolver\Solver\CellCandidatesMap;
 use SudokuSolver\Solver\Method;
+use SudokuSolver\Solver\Method\Behavior\GetCandidatesBehavior;
+use SudokuSolver\Solver\Method\Behavior\GetMapForGroupBehavior;
 use SudokuSolver\Solver\XWing;
 use SudokuSolver\Solver\XWing\Direction;
 
@@ -175,8 +177,10 @@ final readonly class XWingMethod implements Method
             return [$map, []];
         }
 
+        $expectedValues = $currentFilteredCandidates;
+
         if ($withFilter) {
-            $expectedValues = $mapForGroup->multidimensionalKeyLoop($this->filterDuplicateValues(...), $currentFilteredCandidates);
+            $expectedValues = $mapForGroup->multidimensionalKeyLoop($this->filterDuplicateValues(...), $expectedValues);
         }
 
         $potentialRelatedCells = [];
@@ -186,15 +190,13 @@ final readonly class XWingMethod implements Method
                 continue;
             }
 
-            $relatedCellCandidates = $mapForGroup->get($relatedCell);
-
-            $intersectCellCandidates = $currentFilteredCandidates->intersect($relatedCellCandidates);
+            $intersectCellCandidates = $currentFilteredCandidates->intersect($mapForGroup->get($relatedCell));
 
             if ($intersectCellCandidates->count() === 0) {
                 continue;
             }
 
-            if ($withFilter && ! $intersectCellCandidates->hasOneOf($expectedValues->values)) {
+            if ($intersectCellCandidates->intersect($expectedValues)->count() === 0) {
                 continue;
             }
 
@@ -209,12 +211,6 @@ final readonly class XWingMethod implements Method
         $aCandidates = $mapForGroup->get($a);
         $bCandidates = $mapForGroup->get($b);
 
-        $intersect = $aCandidates->intersect($bCandidates);
-
-        if ($intersect->count() === 0) {
-            return $carry;
-        }
-
-        return $carry->withRemovedValues(...$intersect);
+        return $carry->withRemovedValues(...$aCandidates->intersect($bCandidates));
     }
 }

@@ -80,36 +80,21 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$values);
     }
 
-    public function hasAll(Candidates $other): bool
+    public function contains(Candidates $other): bool
     {
         return $this->intersect($other)->count() === $other->count();
     }
 
-    /**
-     * @param Value[] $values
-     */
-    public function hasOneOf(array $values): bool
+    public function withRemovedValues(Value ...$values): self
     {
-        foreach ($values as $value) {
-            if ($this->has($value)) {
-                return true;
-            }
+        if ($values === []) {
+            return $this;
         }
 
-        return false;
-    }
-
-    public function has(Value $value): bool
-    {
-        return \in_array($value->value, $this->toIntegers());
-    }
-
-    public function withRemovedValues(Value ...$cellValues): self
-    {
         $currentValues = $this->toIntegers();
 
-        foreach ($cellValues as $cell) {
-            $index = array_search($cell->value, $currentValues, true);
+        foreach ($values as $value) {
+            $index = array_search($value->value, $currentValues, true);
 
             if (\is_int($index)) {
                 unset($currentValues[$index]);

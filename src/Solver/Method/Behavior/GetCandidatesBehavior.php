@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver\Method;
+namespace SudokuSolver\Solver\Method\Behavior;
 
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Grid;

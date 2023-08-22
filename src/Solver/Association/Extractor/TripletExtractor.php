@@ -56,7 +56,7 @@ final readonly class TripletExtractor implements AssociationExtractor
             return $carry;
         }
 
-        if (! $candidatesWithBiggerCount->hasAll($candidatesWithSmallerCount)) {
+        if (! $candidatesWithBiggerCount->contains($candidatesWithSmallerCount)) {
             return $carry;
         }
 
