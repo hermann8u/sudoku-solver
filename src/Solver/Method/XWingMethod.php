@@ -8,6 +8,7 @@ use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Grid;
 use SudokuSolver\Grid\Group;
+use SudokuSolver\Grid\Group\Number\RegionNumber;
 use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CandidatesProvider;
 use SudokuSolver\Solver\CellCandidatesMap;
@@ -66,7 +67,7 @@ final readonly class XWingMethod implements Method
 
                     $map = $map->merge($fillableCell, $candidates);
 
-                    if ($candidates->hasUniqueValue()) {
+                    if ($candidates->hasUniqueCandidate()) {
                         return $map;
                     }
                 }
@@ -185,8 +186,10 @@ final readonly class XWingMethod implements Method
 
         $potentialRelatedCells = [];
 
+        $currentCellRegionNumber = RegionNumber::fromCell($currentCell);
+
         foreach ($currentGroup->getEmptyCells() as $relatedCell) {
-            if ($currentCell->regionNumber->is($relatedCell->regionNumber)) {
+            if ($currentCellRegionNumber->is(RegionNumber::fromCell($relatedCell))) {
                 continue;
             }
 

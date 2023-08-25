@@ -24,18 +24,15 @@ final readonly class Grid
     /** @var array<int<Coordinates::MIN, Coordinates::MAX>, Region> */
     public array $regions;
 
-    /** @var Cell[] */
-    private array $cells;
-
     /**
      * @param Cell[] $cells
      */
-    public function __construct(array $cells)
-    {
-        Assert::count($cells, Coordinates::MAX * Coordinates::MAX);
+    public function __construct(
+        private array $cells,
+    ) {
+        Assert::count($this->cells, Coordinates::MAX * Coordinates::MAX);
 
-        [$this->columns, $this->rows, $this->regions] = $this->prepareGroups($cells);
-        $this->cells = $cells;
+        [$this->columns, $this->rows, $this->regions] = $this->prepareGroups($this->cells);
     }
 
     public function getCell(Coordinates $coordinates): Cell
@@ -72,14 +69,28 @@ final readonly class Grid
     }
 
     /**
-     * @return FillableCell[]
+     * @return iterable<Group>
      */
-    public function getFilledCells(): array
+    public function getGroupsForCell(Cell $cell): iterable
     {
-        return array_values(array_filter(
-            $this->cells,
-            static fn (Cell $cell) => ! $cell->isEmpty() && $cell instanceof FillableCell,
-        ));
+        yield $this->getColumnByCell($cell);
+        yield $this->getRowByCell($cell);
+        yield $this->getRegionByCell($cell);
+    }
+
+    public function getColumnByCell(Cell $cell): Column
+    {
+        return $this->getColumn(ColumnNumber::fromCell($cell));
+    }
+
+    public function getRowByCell(Cell $cell): Row
+    {
+        return $this->getRow(RowNumber::fromCell($cell));
+    }
+
+    public function getRegionByCell(Cell $cell): Region
+    {
+        return $this->getRegion(RegionNumber::fromCell($cell));
     }
 
     public function getColumn(ColumnNumber $number): Column
@@ -95,31 +106,6 @@ final readonly class Grid
     public function getRegion(RegionNumber $number): Region
     {
         return $this->regions[$number->value];
-    }
-
-    /**
-     * @return iterable<Group>
-     */
-    public function getGroupsForCell(Cell $cell): iterable
-    {
-        yield $this->getColumnByCell($cell);
-        yield $this->getRowByCell($cell);
-        yield $this->getRegionByCell($cell);
-    }
-
-    public function getRowByCell(Cell $cell): Row
-    {
-        return $this->getRow(RowNumber::fromCell($cell));
-    }
-
-    public function getColumnByCell(Cell $cell): Column
-    {
-        return $this->getColumn(ColumnNumber::fromCell($cell));
-    }
-
-    public function getRegionByCell(Cell $cell): Region
-    {
-        return $this->getRegion($cell->regionNumber);
     }
 
     public function isValid(): bool
@@ -155,17 +141,19 @@ final readonly class Grid
     public function withUpdatedCell(Coordinates $coordinates, Value $value): self
     {
         foreach ($this->cells as $key => $cell) {
-            if ($cell->coordinates->is($coordinates)) {
-                if (! $cell instanceof FillableCell) {
-                    throw new \LogicException();
-                }
-
-                $cells = $this->cells;
-
-                $cells[$key] = new FillableCell($coordinates, $value);
-
-                return new self($cells);
+            if (! $cell->coordinates->is($coordinates)) {
+                continue;
             }
+
+            if (! $cell instanceof FillableCell) {
+                throw new \LogicException();
+            }
+
+            $cells = $this->cells;
+
+            $cells[$key] = new FillableCell($coordinates, $value);
+
+            return new self($cells);
         }
 
         throw new \DomainException();
@@ -186,8 +174,8 @@ final readonly class Grid
      * @param Cell[] $cells
      *
      * @return array{
-     *     array<int<Coordinates::MIN, Coordinates::MAX>, Column>,
-     *     array<int<Coordinates::MIN, Coordinates::MAX>, Row>,
+     *     array<int<ColumnNumber::MIN, ColumnNumber::MAX>, Column>,
+     *     array<int<RowNumber::MIN, RowNumber::MAX>, Row>,
      *     array<int<RegionNumber::MIN, RegionNumber::MAX>, Region>,
      * }
      */
@@ -208,7 +196,7 @@ final readonly class Grid
                 $rows[$rowNumber->value] = Row::fromAllCells($cells, $rowNumber);
             }
 
-            $regionNumber = $cell->regionNumber;
+            $regionNumber = RegionNumber::fromCell($cell);
             if (! isset($regions[$regionNumber->value])) {
                 $regions[$regionNumber->value] = Region::fromAllCells($cells, $regionNumber);
             }

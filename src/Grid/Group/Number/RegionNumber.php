@@ -19,7 +19,11 @@ final readonly class RegionNumber extends Number
     public static function fromCoordinates(Coordinates $coordinates): static
     {
         /** @var int<self::MIN, self::MAX> $number */
-        $number = (int) (ceil($coordinates->x / Region::WIDTH) + (ceil($coordinates->y / Region::HEIGHT) - 1) * Region::HEIGHT);
+        $number = (int) (
+            ceil($coordinates->x / Region::WIDTH)
+            + (ceil($coordinates->y / Region::HEIGHT) - 1)
+            * Region::HEIGHT
+        );
 
         return new self($number);
     }

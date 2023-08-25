@@ -28,6 +28,6 @@ it('exclude candidates present in pair', function () {
     // Assert
     $candidates = $updatedMap->get('(4,1)');
 
-    expect($candidates->hasUniqueValue())->toBeTrue();
+    expect($candidates->hasUniqueCandidate())->toBeTrue();
     expect($candidates->toString())->toBe('6');
 });

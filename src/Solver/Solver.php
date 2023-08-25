@@ -62,13 +62,13 @@ final readonly class Solver
             foreach ($grid->getEmptyCells() as $currentCell) {
                 $map = $method->apply($map, $grid, $currentCell);
 
-                [$coordinates, $cellValue] = $map->findUniqueValue();
+                $uniqueValue = $map->findFirstUniqueCandidate();
 
-                if ($coordinates === null || $cellValue === null) {
+                if ($uniqueValue === null) {
                     continue;
                 }
 
-                return [$map, new Solution($method::getName(), $coordinates, $cellValue)];
+                return [$map, new Solution($method::getName(), ...$uniqueValue)];
             }
         }
 

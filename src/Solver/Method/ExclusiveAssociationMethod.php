@@ -48,7 +48,7 @@ final readonly class ExclusiveAssociationMethod implements Method
 
                     $map = $map->merge($cell, $candidates);
 
-                    if ($candidates->hasUniqueValue()) {
+                    if ($candidates->hasUniqueCandidate()) {
                         return $map;
                     }
                 }

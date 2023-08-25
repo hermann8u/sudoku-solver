@@ -35,8 +35,8 @@ final readonly class Result
         $this->filled = $this->grid->isFilled();
         $this->containsDuplicate = $this->grid->containsDuplicate();
         $this->cellToFill = count($this->grid->getFillableCells());
-        $this->filledCells = count($this->grid->getFilledCells());
         $this->remainingCells = count($this->grid->getEmptyCells());
+        $this->filledCells = $this->cellToFill - $this->remainingCells;
     }
 
     public function getStep(Coordinates $coordinates): ?Step

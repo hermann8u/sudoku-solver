@@ -42,7 +42,7 @@ final readonly class ExclusiveMethod implements Method
                 $candidates = $candidates->withRemovedValues(...$relatedCellCandidates);
             }
 
-            if ($candidates->hasUniqueValue()) {
+            if ($candidates->hasUniqueCandidate()) {
                 return $map->merge($currentCell, $candidates);
             }
         }
