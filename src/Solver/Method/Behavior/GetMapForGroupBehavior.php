@@ -18,17 +18,16 @@ trait GetMapForGroupBehavior
      */
     private function getMapForGroup(CellCandidatesMap $map, Grid $grid, Group $group): array
     {
-        $partialMap = CellCandidatesMap::empty();
+        $mapForGroup = CellCandidatesMap::empty();
 
         foreach ($group->getEmptyCells() as $cell) {
             if (! $map->has($cell)) {
                 $map = $map->merge($cell, $this->candidatesProvider->getCandidates($grid, $cell));
             }
 
-            $partialMap = $partialMap->merge($cell, $map->get($cell));
+            $mapForGroup = $mapForGroup->merge($cell, $map->get($cell));
         }
 
-        return [$map, $partialMap];
+        return [$map, $mapForGroup];
     }
-
 }

@@ -24,7 +24,7 @@ abstract readonly class Group implements \IteratorAggregate
     /**
      * @param Cell[] $cells
      */
-    public function __construct(array $cells, Number $number)
+    protected function __construct(array $cells, Number $number)
     {
         Assert::count($cells, self::CELLS_COUNT);
 

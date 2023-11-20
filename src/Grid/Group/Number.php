@@ -16,14 +16,17 @@ abstract readonly class Number implements \Stringable
     /**
      * @param int<self::MIN, self::MAX> $value
      */
-    public function __construct(
+    protected function __construct(
         public int $value,
     ) {
         Assert::greaterThanEq($this->value, self::MIN);
         Assert::lessThanEq($this->value, self::MAX);
     }
 
-    abstract public static function fromCell(Cell $cell): static;
+    public static function fromCell(Cell $cell): static
+    {
+        return static::fromCoordinates($cell->coordinates);
+    }
 
     abstract public static function fromCoordinates(Coordinates $coordinates): static;
 

@@ -118,10 +118,10 @@ dump($result);
 <body>
     <div class="container">
         <?php foreach ($result->steps as $step) : ?>
-
-            <?php if (count($result->steps) !== $step->number) { $grid = $result->grid; continue; } ?>
-
             <?php $grid = $grid->withUpdatedCell($step->coordinates, $step->value); ?>
+
+            <?php if (count($result->steps) !== $step->number) { continue; } ?>
+
             <p><strong><?= $step->number ?></strong> <?= $step->methodName ?> : <?= $step->coordinates ?> => <?=$step->value ?></p>
 
             <table>

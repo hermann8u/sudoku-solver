@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace SudokuSolver\Solver;
 
 use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Group\Number;
+use SudokuSolver\Grid\Cell\Value;
+use SudokuSolver\Grid\Grid;
+use SudokuSolver\Grid\Group;
 use SudokuSolver\Grid\Group\Number\ColumnNumber;
 use SudokuSolver\Grid\Group\Number\RowNumber;
 use SudokuSolver\Solver\XWing\Direction;
@@ -57,13 +58,19 @@ final readonly class XWing
     }
 
     /**
-     * @return ColumnNumber[]|RowNumber[]
+     * @return Group[]
      */
-    public function getGroupNumbersToModify(): array
+    public function provideGroupsToModify(Grid $grid): array
     {
         return match ($this->direction) {
-            Direction::Horizontal => $this->columnNumbers,
-            Direction::Vertical => $this->rowNumbers,
+            Direction::Horizontal => array_map(
+                static fn (ColumnNumber $n) => $grid->getColumn($n),
+                $this->columnNumbers,
+            ),
+            Direction::Vertical => array_map(
+                static fn (RowNumber $n) => $grid->getRow($n),
+                $this->rowNumbers,
+            ),
         };
     }
 

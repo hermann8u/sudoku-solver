@@ -9,7 +9,7 @@ use SudokuSolver\Grid\Cell\Value;
 
 abstract readonly class Cell
 {
-    public function __construct(
+    protected function __construct(
         public Coordinates $coordinates,
         public Value $value,
     ) {

@@ -11,11 +11,6 @@ use SudokuSolver\Grid\Group\Region;
 
 final readonly class RegionNumber extends Number
 {
-    public static function fromCell(Cell $cell): static
-    {
-        return self::fromCoordinates($cell->coordinates);
-    }
-
     public static function fromCoordinates(Coordinates $coordinates): static
     {
         /** @var int<self::MIN, self::MAX> $number */

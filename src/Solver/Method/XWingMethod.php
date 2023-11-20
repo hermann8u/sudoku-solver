@@ -44,20 +44,8 @@ final readonly class XWingMethod implements Method
         }
 
         foreach ($xWings as $xWing) {
-            $getGroupToModifyCallable = match ($xWing->direction) {
-                Direction::Horizontal => $grid->getColumn(...),
-                Direction::Vertical => $grid->getRow(...),
-            };
-
-            foreach ($xWing->getGroupNumbersToModify() as $groupNumber) {
-
-                /**
-                 * @var Group $groupToModify
-                 * @phpstan-ignore-next-line
-                 */
-                $groupToModify = $getGroupToModifyCallable($groupNumber);
-
-                foreach ($groupToModify->getEmptyCells() as $fillableCell) {
+            foreach ($xWing->provideGroupsToModify($grid) as $group) {
+                foreach ($group->getEmptyCells() as $fillableCell) {
                     if ($xWing->contains($fillableCell)) {
                         continue;
                     }
