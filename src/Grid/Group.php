@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid;
 
-use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Group\Number;
 use Traversable;
 use Webmozart\Assert\Assert;

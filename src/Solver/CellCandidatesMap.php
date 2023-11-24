@@ -4,97 +4,112 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
-use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\Value;
-use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Cell\Value;
 
 /**
- * @implements \IteratorAggregate<string, Candidates>
+ * @implements \IteratorAggregate<FillableCell, Candidates>
  */
 final readonly class CellCandidatesMap implements \IteratorAggregate
 {
     /**
-     * @param array<string, Candidates> $map
+     * @param \WeakMap<FillableCell, Candidates> $map
      */
-    public function __construct(
-        private array $map,
+    private function __construct(
+        private \WeakMap $map,
     ) {
     }
 
     public static function empty(): self
     {
-        return new self([]);
+        /** @var \WeakMap<FillableCell, Candidates> $map */
+        $map = new \WeakMap();
+
+        return new self($map);
     }
 
     public function isEmpty(): bool
     {
-        return $this->map === [];
+        return $this->map->count() === 0;
     }
 
     public function isSame(CellCandidatesMap $otherMap): bool
     {
-        return array_diff($this->display(), $otherMap->display()) === [];
-    }
-
-    public function get(FillableCell|Coordinates|string $key): Candidates
-    {
-        $coordinatesString = $this->getCoordinatesString($key);
-
-        if (! $this->has($coordinatesString)) {
-            throw new \DomainException();
+        if ($this->map->count() !== $otherMap->map->count()) {
+            return false;
         }
 
-        return $this->map[$coordinatesString];
+        foreach ($this->map as $cell => $candidates) {
+            if (! $otherMap->has($cell)) {
+                return false;
+            }
+
+            if (! $otherMap->get($cell)->equals($candidates)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    public function has(FillableCell|Coordinates|string $key): bool
+    public function get(FillableCell $cell): Candidates
     {
-        return isset($this->map[$this->getCoordinatesString($key)]);
+        return $this->map[$cell] ?? throw new \DomainException();
+    }
+
+    public function has(FillableCell $cell): bool
+    {
+        return $this->map->offsetExists($cell);
     }
 
     public function merge(FillableCell $cell, Candidates $candidates): self
     {
-        $map = $this->map;
-        $map[$cell->coordinates->toString()] = $candidates;
+        $map = clone $this->map;
+        $map[$cell] = $candidates;
 
         return new self($map);
     }
 
     public function filter(callable $filter): self
     {
-        return new self(array_filter($this->map, $filter, ARRAY_FILTER_USE_BOTH));
+        /** @var \WeakMap<FillableCell, Candidates> $filtered */
+        $filtered = new \WeakMap();
+
+        foreach ($this->map as $cell => $candidates) {
+            if ($filter($candidates, $cell)) {
+                $filtered[$cell] = $candidates;
+            }
+        }
+
+        return new self($filtered);
     }
 
     /**
      * @template T of mixed
      *
-     * @param callable(self $map, T $carry, string $a, string $b): T $callable
+     * @param callable(self $map, T $carry, FillableCell $a, FillableCell $b): T $callable
      * @param T $carry
      *
      * @return T
      */
-    public function multidimensionalKeyLoop(callable $callable, mixed $carry = []): mixed
+    public function multidimensionalLoop(callable $callable, mixed $carry = []): mixed
     {
-        $keys = array_keys($this->map);
-
         $alreadyLooped = [];
 
-        foreach ($keys as $a) {
-            foreach ($keys as $b) {
-                if ($a === $b) {
+        foreach ($this->map as $a => $candidatesA) {
+            foreach ($this->map as $b => $candidatesB) {
+                $aCoordinates = $a->coordinates->toString();
+                $bCoordinates = $b->coordinates->toString();
+
+                if ($aCoordinates === $bCoordinates) {
                     continue;
                 }
 
-                $ab = $a.$b;
-                $ba = $b.$a;
-
-                if (\in_array($ba, $alreadyLooped, true) || \in_array($ab, $alreadyLooped, true)) {
+                if (\in_array($aCoordinates . $bCoordinates, $alreadyLooped, true)) {
                     continue;
                 }
 
-                $alreadyLooped[] = $ba;
-                $alreadyLooped[] = $ab;
+                $alreadyLooped[] = $bCoordinates . $aCoordinates;
 
                 $carry = $callable($this, $carry, $a, $b);
             }
@@ -104,13 +119,13 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
     }
 
     /**
-     * @return ?array{Coordinates, Value}
+     * @return ?array{FillableCell, Value}
      */
     public function findFirstUniqueCandidate(): ?array
     {
-        foreach ($this->map as $coordinateAsString => $candidates) {
+        foreach ($this->map as $cell => $candidates) {
             if ($candidates->hasUniqueCandidate()) {
-                return [Coordinates::fromString($coordinateAsString), $candidates->first()];
+                return [$cell, $candidates->first()];
             }
         }
 
@@ -122,26 +137,19 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
      */
     public function display(): array
     {
-        $map = $this->map;
-        ksort($map);
+        $data = [];
 
-        return array_map(
-            static fn (Candidates $candidates) => $candidates->toString(),
-            $map,
-        );
+        foreach ($this->map as $cell => $candidates) {
+            $data[$cell->coordinates->toString()] = $candidates->toString();
+        }
+
+        ksort($data);
+
+        return $data;
     }
 
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator($this->map);
-    }
-
-    private function getCoordinatesString(Cell|Coordinates|string $key): string
-    {
-        return match (true) {
-            $key instanceof Cell => $key->coordinates->toString(),
-            $key instanceof Coordinates => $key->toString(),
-            default => $key,
-        };
+        return $this->map;
     }
 }

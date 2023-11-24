@@ -157,9 +157,8 @@ final readonly class XWingMethod implements Method
     ): array {
         [$map, $mapForGroup] = $this->getMapForGroup($map, $grid, $currentGroup);
 
-        $currentCoordinatesAsString = $currentCell->coordinates->toString();
         $mapForGroup = $mapForGroup->filter(
-            static fn (Candidates $candidates, string $coordinatesAsString) => $coordinatesAsString !== $currentCoordinatesAsString,
+            static fn (Candidates $candidates, FillableCell $c) => ! $c->is($currentCell),
         );
 
         if ($mapForGroup->isEmpty()) {
@@ -169,7 +168,7 @@ final readonly class XWingMethod implements Method
         $expectedValues = $currentFilteredCandidates;
 
         if ($withFilter) {
-            $expectedValues = $mapForGroup->multidimensionalKeyLoop($this->filterDuplicateValues(...), $expectedValues);
+            $expectedValues = $mapForGroup->multidimensionalLoop($this->filterDuplicateValues(...), $expectedValues);
         }
 
         $potentialRelatedCells = [];
@@ -197,7 +196,7 @@ final readonly class XWingMethod implements Method
         return [$map, $potentialRelatedCells];
     }
 
-    private function filterDuplicateValues(CellCandidatesMap $mapForGroup, Candidates $carry, string $a, string $b): Candidates
+    private function filterDuplicateValues(CellCandidatesMap $mapForGroup, Candidates $carry, FillableCell $a, FillableCell $b): Candidates
     {
         $aCandidates = $mapForGroup->get($a);
         $bCandidates = $mapForGroup->get($b);

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver\Association\Extractor;
 
+use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Solver\Association\AssociationExtractor;
+use SudokuSolver\Solver\Association\Pair;
 use SudokuSolver\Solver\Association\Triplet;
 use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CellCandidatesMap;
@@ -16,16 +18,16 @@ final readonly class HiddenTripletExtractor implements AssociationExtractor
 {
     public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
     {
-        $mapForGroup = $mapForGroup->filter(static fn (Candidates $c) => $c->count() < Triplet::COUNT);
+        $mapForGroup = $mapForGroup->filter(static fn (Candidates $c) => $c->count() === Pair::COUNT);
 
-        $coordinatesByCandidates = $mapForGroup->multidimensionalKeyLoop($this->tryToAssociateCells(...));
+        $cellsByCandidates = $mapForGroup->multidimensionalLoop($this->tryToAssociateCells(...));
 
-        foreach ($coordinatesByCandidates as $valuesString => $coordinatesTriplet) {
-            if (count($coordinatesTriplet) !== Triplet::COUNT) {
+        foreach ($cellsByCandidates as $candidatesString => $cells) {
+            if (count($cells) !== Triplet::COUNT) {
                 continue;
             }
 
-            $triplets[] = Triplet::fromStrings($coordinatesTriplet, $valuesString);
+            $triplets[] = new Triplet(array_values($cells), Candidates::fromString($candidatesString));
         }
 
         return $triplets ?? [];
@@ -37,15 +39,15 @@ final readonly class HiddenTripletExtractor implements AssociationExtractor
     }
 
     /**
-     * @param array<string, string[]> $carry
+     * @param array<string, FillableCell[]> $carry
      *
-     * @return array<string, string[]>
+     * @return array<string, FillableCell[]>
      */
     private function tryToAssociateCells(
         CellCandidatesMap $mapForGroup,
         array $carry,
-        string $a,
-        string $b,
+        FillableCell $a,
+        FillableCell $b,
     ): array {
         $candidatesA = $mapForGroup->get($a);
         $candidatesB = $mapForGroup->get($b);
@@ -58,10 +60,8 @@ final readonly class HiddenTripletExtractor implements AssociationExtractor
 
         $key = $candidates->toString();
 
-        $carry[$key][] = $a;
-        $carry[$key][] = $b;
-
-        $carry[$key] = array_unique($carry[$key]);
+        $carry[$key][$a->coordinates->toString()] = $a;
+        $carry[$key][$b->coordinates->toString()] = $b;
 
         return $carry;
     }

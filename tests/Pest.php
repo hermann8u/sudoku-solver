@@ -61,7 +61,7 @@ expect()->extend('toHaveSameCoordinatesList', function (Association $other) {
     $coordinatesStrings = array_map(static fn (Coordinates $c) => $c->toString(), $coordinatesList);
     sort($coordinatesStrings);
 
-    $otherCoordinatesStrings = array_map(static fn (Coordinates $c) => $c->toString(), $other->coordinatesList);
+    $otherCoordinatesStrings = array_map(static fn (Coordinates $c) => $c->toString(), $other->cells);
     sort($otherCoordinatesStrings);
 
     expect($coordinatesStrings)->toBe($otherCoordinatesStrings);

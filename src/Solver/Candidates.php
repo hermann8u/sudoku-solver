@@ -19,6 +19,7 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
      */
     private function __construct(array $values)
     {
+        sort($values);
         $this->values = array_values($values);
     }
 
@@ -104,10 +105,14 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$currentValues);
     }
 
+    public function equals(Candidates $other): bool
+    {
+        return $this->toIntegers() === $other->toIntegers();
+    }
+
     public function toString(): string
     {
         $values = $this->toIntegers();
-        sort($values);
 
         return implode(',', $values);
     }
@@ -134,10 +139,10 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * @return array<int<Value::MIN, Value::MAX>>
+     * @return int<Value::MIN, Value::MAX>[]
      */
     private function toIntegers(): array
     {
-        return array_filter(array_column($this->values, 'value'));
+        return array_values(array_filter(array_column($this->values, 'value')));
     }
 }

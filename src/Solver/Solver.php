@@ -38,7 +38,7 @@ final readonly class Solver
                 continue;
             }
 
-            $grid = $grid->withUpdatedCell($solution->coordinates, $solution->value);
+            $grid = $grid->withUpdatedCell($solution->cell->coordinates, $solution->value);
             $map = CellCandidatesMap::empty();
 
             $steps[] = Step::fromSolution(count($steps) + 1, $solution);

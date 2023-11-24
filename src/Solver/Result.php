@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
-use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Grid;
 use SudokuSolver\Solver\Result\Step;

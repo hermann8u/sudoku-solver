@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver\Result;
 
-use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\Value;
 
 final readonly class Step
 {
@@ -22,7 +22,7 @@ final readonly class Step
         return new self(
             $number,
             $solution->method,
-            $solution->coordinates,
+            $solution->cell->coordinates,
             $solution->value,
         );
     }

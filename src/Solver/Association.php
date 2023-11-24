@@ -5,34 +5,20 @@ declare(strict_types=1);
 namespace SudokuSolver\Solver;
 
 use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\FillableCell;
 use Webmozart\Assert\Assert;
 
 abstract readonly class Association
 {
     /**
-     * @param Coordinates[] $coordinatesList
+     * @param FillableCell[] $cells
      */
-    final protected function __construct(
-        public array $coordinatesList,
+    public function __construct(
+        public array $cells,
         public Candidates $candidates,
     ) {
-        Assert::count($this->coordinatesList, $this->getAssociationCount());
+        Assert::count($this->cells, $this->getAssociationCount());
         Assert::same($this->candidates->count(), $this->getAssociationCount());
-    }
-
-    /**
-     * @param string[] $coordinatesStrings
-     */
-    public static function fromStrings(array $coordinatesStrings, string $valuesString): static
-    {
-        return new static(
-            array_map(
-                static fn (string $coordinates) => Coordinates::fromString($coordinates),
-                $coordinatesStrings,
-            ),
-            Candidates::fromString($valuesString),
-        );
     }
 
     public function toString(): string
@@ -40,14 +26,14 @@ abstract readonly class Association
         return sprintf(
             '%s => %s',
             $this->candidates->toString(),
-            implode(' ', array_map(static fn (Coordinates $c) => $c->toString(), $this->coordinatesList)),
+            implode(' ', array_map(static fn (FillableCell $c) => $c->coordinates->toString(), $this->cells)),
         );
     }
 
-    public function contains(Cell $cell): bool
+    public function contains(Cell $other): bool
     {
-        foreach ($this->coordinatesList as $coordinates) {
-            if ($cell->coordinates->is($coordinates)) {
+        foreach ($this->cells as $cell) {
+            if ($cell->is($other)) {
                 return true;
             }
         }

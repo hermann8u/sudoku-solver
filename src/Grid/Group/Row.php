@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SudokuSolver\Grid\Group;
 
 use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Group;
 use SudokuSolver\Grid\Group\Number\RowNumber;
 
