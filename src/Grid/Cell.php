@@ -22,6 +22,6 @@ abstract readonly class Cell
 
     public function is(Cell $cell): bool
     {
-        return $this->coordinates->is($cell->coordinates);
+        return $this->coordinates->equals($cell->coordinates);
     }
 }

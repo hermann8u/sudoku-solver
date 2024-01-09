@@ -85,7 +85,7 @@ final readonly class Solver
             return true;
         }
 
-        if (! $previousMap->isEmpty() && ! $currentMap->isEmpty() && $currentMap->isSame($previousMap)) {
+        if (! $previousMap->isEmpty() && ! $currentMap->isEmpty() && $currentMap->equals($previousMap)) {
             return true;
         }
 

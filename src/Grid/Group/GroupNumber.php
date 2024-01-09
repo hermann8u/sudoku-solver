@@ -8,7 +8,8 @@ use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;
 
-abstract readonly class Number implements \Stringable
+
+abstract readonly class GroupNumber implements \Stringable
 {
     public const MIN = 1;
     public const MAX = 9;

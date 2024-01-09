@@ -26,7 +26,7 @@ final readonly class Region extends Group
     public static function fromAllCells(array $cells, RegionNumber $number): self
     {
         return new self(
-            array_values(array_filter($cells, static fn (Cell $cell) => RegionNumber::fromCell($cell)->is($number))),
+            array_values(array_filter($cells, static fn (Cell $cell) => $number->equals(RegionNumber::fromCell($cell)))),
             $number,
         );
     }

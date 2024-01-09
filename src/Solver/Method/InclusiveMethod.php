@@ -21,7 +21,7 @@ final readonly class InclusiveMethod implements Method, CandidatesProvider
     public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
     {
         if (! $map->has($currentCell)) {
-            $map = $map->merge($currentCell, $this->getCandidates($grid, $currentCell));
+            $map = $map->with($currentCell, $this->getCandidates($grid, $currentCell));
         }
 
         return $map;

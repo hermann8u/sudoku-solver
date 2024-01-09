@@ -49,7 +49,7 @@ final readonly class XWing
     public function contains(Cell $cell): bool
     {
         foreach ($this->coordinatesList as $coordinates) {
-            if ($cell->coordinates->is($coordinates)) {
+            if ($cell->coordinates->equals($coordinates)) {
                 return true;
             }
         }
@@ -60,15 +60,15 @@ final readonly class XWing
     /**
      * @return Group[]
      */
-    public function provideGroupsToModify(Grid $grid): array
+    public function getGroupsToModify(Grid $grid): array
     {
         return match ($this->direction) {
             Direction::Horizontal => array_map(
-                static fn (ColumnNumber $n) => $grid->getColumn($n),
+                static fn (ColumnNumber $n) => $grid->columns->get($n),
                 $this->columnNumbers,
             ),
             Direction::Vertical => array_map(
-                static fn (RowNumber $n) => $grid->getRow($n),
+                static fn (RowNumber $n) => $grid->rows->get($n),
                 $this->rowNumbers,
             ),
         };

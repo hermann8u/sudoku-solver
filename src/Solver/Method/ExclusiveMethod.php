@@ -43,7 +43,7 @@ final readonly class ExclusiveMethod implements Method
             }
 
             if ($candidates->hasUniqueCandidate()) {
-                return $map->merge($currentCell, $candidates);
+                return $map->with($currentCell, $candidates);
             }
         }
 

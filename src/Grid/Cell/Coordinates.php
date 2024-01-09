@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid\Cell;
 
+use SudokuSolver\Comparable;
 use Webmozart\Assert\Assert;
 
-final readonly class Coordinates implements \Stringable
+/**
+ * @implements Comparable<Coordinates>
+ */
+final readonly class Coordinates implements Comparable, \Stringable
 {
     public const MIN = 1;
     public const MAX = 9;
@@ -63,8 +67,8 @@ final readonly class Coordinates implements \Stringable
         return sprintf('(%d,%d)', $this->x, $this->y);
     }
 
-    public function is(Coordinates $coordinates): bool
+    public function equals(Comparable $other): bool
     {
-        return $this->x === $coordinates->x && $this->y === $coordinates->y;
+        return $this->x === $other->x && $this->y === $other->y;
     }
 }

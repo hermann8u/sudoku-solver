@@ -98,7 +98,7 @@ function buildMapFrom(array $mapData): CellCandidatesMap
 {
     $map = CellCandidatesMap::empty();
     foreach ($mapData as $coordinatesString => $candidates) {
-        $map = $map->merge(
+        $map = $map->with(
             buildFillableCellFromCoordinatesString($coordinatesString),
             Candidates::fromString($candidates),
         );

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver\Association\Extractor;
 
+use SudokuSolver\DataStructure\Map;
+use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Solver\Association\AssociationExtractor;
 use SudokuSolver\Solver\Association\Pair;
 use SudokuSolver\Solver\Candidates;
@@ -18,16 +20,27 @@ final readonly class PairExtractor implements AssociationExtractor
     {
         $mapForGroup = $mapForGroup->filter(static fn (Candidates $c) => $c->count() === Pair::COUNT);
 
+        /** @var Map<Candidates, FillableCell[]> $cellsByCandidates */
+        $cellsByCandidates = Map::empty();
+
         foreach ($mapForGroup as $cell => $candidates) {
-            $cellsByCandidates[$candidates->toString()][] = $cell;
+            try {
+                $cells = $cellsByCandidates->get($candidates);
+            } catch (\OutOfBoundsException) {
+                $cells = [];
+            }
+
+            $cells[] = $cell;
+
+            $cellsByCandidates = $cellsByCandidates->with($candidates, $cells);
         }
 
-        foreach ($cellsByCandidates ?? [] as $candidatesString => $cells) {
-            if (count($cells) !== Pair::COUNT) {
+        foreach ($cellsByCandidates as $candidates => $cells) {
+            if (\count($cells) !== Pair::COUNT) {
                 continue;
             }
 
-            $pairs[] = new Pair($cells, Candidates::fromString($candidatesString));
+            $pairs[] = new Pair($cells, $candidates);
         }
 
         return $pairs ?? [];

@@ -20,7 +20,7 @@ trait GetCandidatesBehavior
     private function getCandidates(CellCandidatesMap $map, Grid $grid, FillableCell $cell): array
     {
         if (! $map->has($cell)) {
-            $map = $map->merge($cell, $this->candidatesProvider->getCandidates($grid, $cell));
+            $map = $map->with($cell, $this->candidatesProvider->getCandidates($grid, $cell));
         }
 
         return [$map, $map->get($cell)];

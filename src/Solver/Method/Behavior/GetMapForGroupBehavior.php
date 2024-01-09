@@ -22,10 +22,10 @@ trait GetMapForGroupBehavior
 
         foreach ($group->getEmptyCells() as $cell) {
             if (! $map->has($cell)) {
-                $map = $map->merge($cell, $this->candidatesProvider->getCandidates($grid, $cell));
+                $map = $map->with($cell, $this->candidatesProvider->getCandidates($grid, $cell));
             }
 
-            $mapForGroup = $mapForGroup->merge($cell, $map->get($cell));
+            $mapForGroup = $mapForGroup->with($cell, $map->get($cell));
         }
 
         return [$map, $mapForGroup];

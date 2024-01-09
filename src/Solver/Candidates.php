@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
+use SudokuSolver\Comparable;
 use SudokuSolver\Grid\Cell\Value;
 
 /**
+ * @implements Comparable<Candidates>
  * @implements \IteratorAggregate<int, Value>
  */
-final readonly class Candidates implements \IteratorAggregate, \Stringable
+final readonly class Candidates implements Comparable, \IteratorAggregate, \Stringable
 {
     /** @var Value[] */
     public array $values;
@@ -105,7 +107,7 @@ final readonly class Candidates implements \IteratorAggregate, \Stringable
         return self::fromInt(...$currentValues);
     }
 
-    public function equals(Candidates $other): bool
+    public function equals(Comparable $other): bool
     {
         return $this->toIntegers() === $other->toIntegers();
     }

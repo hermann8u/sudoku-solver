@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
+use SudokuSolver\Comparable;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Cell\Value;
 
 /**
+ * @implements Comparable<CellCandidatesMap>
  * @implements \IteratorAggregate<FillableCell, Candidates>
  */
-final readonly class CellCandidatesMap implements \IteratorAggregate
+final readonly class CellCandidatesMap implements Comparable, \IteratorAggregate
 {
     /**
      * @param \WeakMap<FillableCell, Candidates> $map
@@ -33,18 +35,18 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
         return $this->map->count() === 0;
     }
 
-    public function isSame(CellCandidatesMap $otherMap): bool
+    public function equals(Comparable $other): bool
     {
-        if ($this->map->count() !== $otherMap->map->count()) {
+        if ($this->map->count() !== $other->map->count()) {
             return false;
         }
 
         foreach ($this->map as $cell => $candidates) {
-            if (! $otherMap->has($cell)) {
+            if (! $other->has($cell)) {
                 return false;
             }
 
-            if (! $otherMap->get($cell)->equals($candidates)) {
+            if (! $candidates->equals($other->get($cell))) {
                 return false;
             }
         }
@@ -62,7 +64,7 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
         return $this->map->offsetExists($cell);
     }
 
-    public function merge(FillableCell $cell, Candidates $candidates): self
+    public function with(FillableCell $cell, Candidates $candidates): self
     {
         $map = clone $this->map;
         $map[$cell] = $candidates;

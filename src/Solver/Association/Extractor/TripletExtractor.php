@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver\Association\Extractor;
 
+use SudokuSolver\DataStructure\Map;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Solver\Association\AssociationExtractor;
 use SudokuSolver\Solver\Association\Triplet;
@@ -19,14 +20,16 @@ final readonly class TripletExtractor implements AssociationExtractor
     {
         $mapForGroup = $mapForGroup->filter(static fn (Candidates $c) => $c->count() <= Triplet::COUNT);
 
-        $cellsByCandidates = $mapForGroup->multidimensionalLoop($this->tryToAssociateCells(...));
+        /** @var Map<Candidates, array<string, FillableCell>> $cellsByCandidates */
+        $cellsByCandidates = Map::empty();
+        $cellsByCandidates = $mapForGroup->multidimensionalLoop($this->tryToAssociateCells(...), $cellsByCandidates);
 
-        foreach ($cellsByCandidates as $candidatesString => $cells) {
-            if (count($cells) !== Triplet::COUNT) {
+        foreach ($cellsByCandidates as $candidates => $cells) {
+            if (\count($cells) !== Triplet::COUNT) {
                 continue;
             }
 
-            $triplets[] = new Triplet(array_values($cells), Candidates::fromString($candidatesString));
+            $triplets[] = new Triplet(array_values($cells), $candidates);
         }
 
         return $triplets ?? [];
@@ -38,16 +41,16 @@ final readonly class TripletExtractor implements AssociationExtractor
     }
 
     /**
-     * @param array<string, FillableCell[]> $carry
+     * @param Map<Candidates, array<string, FillableCell>> $carry
      *
-     * @return array<string, FillableCell[]>
+     * @return Map<Candidates, array<string, FillableCell>>
      */
     private function tryToAssociateCells(
         CellCandidatesMap $mapForGroup,
-        array $carry,
+        Map $carry,
         FillableCell $a,
         FillableCell $b,
-    ): array {
+    ): Map {
         [$candidatesWithSmallerCount, $candidatesWithBiggerCount] = $this->sortByCount(
             $mapForGroup->get($a),
             $mapForGroup->get($b),
@@ -61,12 +64,16 @@ final readonly class TripletExtractor implements AssociationExtractor
             return $carry;
         }
 
-        $key = $candidatesWithBiggerCount->toString();
+        try {
+            $cells = $carry->get($candidatesWithBiggerCount);
+        } catch (\OutOfBoundsException) {
+            $cells = [];
+        }
 
-        $carry[$key][$a->coordinates->toString()] = $a;
-        $carry[$key][$b->coordinates->toString()] = $b;
+        $cells[$a->coordinates->toString()] = $a;
+        $cells[$b->coordinates->toString()] = $b;
 
-        return $carry;
+        return $carry->with($candidatesWithBiggerCount, $cells);
     }
 
     /**

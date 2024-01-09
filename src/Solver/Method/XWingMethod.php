@@ -44,7 +44,7 @@ final readonly class XWingMethod implements Method
         }
 
         foreach ($xWings as $xWing) {
-            foreach ($xWing->provideGroupsToModify($grid) as $group) {
+            foreach ($xWing->getGroupsToModify($grid) as $group) {
                 foreach ($group->getEmptyCells() as $fillableCell) {
                     if ($xWing->contains($fillableCell)) {
                         continue;
@@ -53,7 +53,7 @@ final readonly class XWingMethod implements Method
                     [$map, $candidates] = $this->getCandidates($map, $grid, $fillableCell);
                     $candidates = $candidates->withRemovedValues($xWing->value);
 
-                    $map = $map->merge($fillableCell, $candidates);
+                    $map = $map->with($fillableCell, $candidates);
 
                     if ($candidates->hasUniqueCandidate()) {
                         return $map;
@@ -176,7 +176,7 @@ final readonly class XWingMethod implements Method
         $currentCellRegionNumber = RegionNumber::fromCell($currentCell);
 
         foreach ($currentGroup->getEmptyCells() as $relatedCell) {
-            if ($currentCellRegionNumber->is(RegionNumber::fromCell($relatedCell))) {
+            if ($currentCellRegionNumber->equals(RegionNumber::fromCell($relatedCell))) {
                 continue;
             }
 
