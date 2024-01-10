@@ -136,14 +136,14 @@ dump($result);
                             <?php elseif ($cell instanceof FillableCell) : ?>
                                 <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
                                     <span><?= $cell->value ?></span>
-                                    <?php $step = $result->getStep($cell->coordinates);
-                                        if ($step && ! $cell->isEmpty()) :
+                                    <?php $cellStep = $result->getCellStep($cell->coordinates);
+                                        if ($cellStep && ! $cell->isEmpty()) :
                                     ?>
-                                        <small class="step-number"><?= $step->number ?></small>
+                                        <small class="step-number"><?= $cellStep->number ?></small>
                                     <?php endif; ?>
-                                    <?php if ($result->map->has($cell)) : ?>
+                                    <?php if ($step->map->has($cell)) : ?>
                                         <div class="candidates">
-                                            <?php foreach ($result->map->get($cell) as $value) : ?>
+                                            <?php foreach ($step->map->get($cell) as $value) : ?>
                                                 <small><?= $value ?></small>
                                             <?php endforeach;?>
                                         </div>

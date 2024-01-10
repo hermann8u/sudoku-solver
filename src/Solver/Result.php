@@ -25,9 +25,7 @@ final readonly class Result
      * @param Step[] $steps
      */
     public function __construct(
-        public int $iterationCount,
         public array $steps,
-        public CellCandidatesMap $map,
         public Grid $grid,
     ) {
         $this->memory = memory_get_peak_usage();
@@ -43,7 +41,7 @@ final readonly class Result
         $this->filledCells = $this->cellToFill - $this->remainingCells;
     }
 
-    public function getStep(Coordinates $coordinates): ?Step
+    public function getCellStep(Coordinates $coordinates): ?Step
     {
         foreach ($this->steps as $step) {
             if ($step->coordinates->toString() === $coordinates->toString()) {

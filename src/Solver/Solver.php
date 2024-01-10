@@ -7,10 +7,11 @@ namespace SudokuSolver\Solver;
 use SudokuSolver\Grid\Grid;
 use SudokuSolver\Solver\Result\Solution;
 use SudokuSolver\Solver\Result\Step;
+use Traversable;
 
 final readonly class Solver
 {
-    private const MAX_ITERATION = 100;
+    private const MAX_ITERATION = 80;
 
     /**
      * @param iterable<Method> $methods
@@ -22,42 +23,40 @@ final readonly class Solver
 
     public function solve(Grid $grid): Result
     {
-        $i = 0;
-
-        $steps = [];
-        $map = CellCandidatesMap::empty();
-
-        do {
-            $i++;
-            $previousMap = $map;
-
-            [$map, $solution] = $this->getNextSolution($map, $grid);
-
-            if (! $solution instanceof Solution) {
-                // Continue here to try to reapply methods with the updated map
-                continue;
-            }
-
-            $grid = $grid->withUpdatedCell($solution->cell->coordinates, $solution->value);
-            $map = CellCandidatesMap::empty();
-
-            $steps[] = Step::fromSolution(count($steps) + 1, $solution);
-
-        } while (false === $this->shouldStop($i, $grid, $previousMap, $map));
-
         return new Result(
-            $i,
-            $steps,
-            $map,
+            iterator_to_array($this->getResolutionSteps($grid)),
             $grid,
         );
     }
 
     /**
-     * @return array{CellCandidatesMap, ?Solution}
+     * @param positive-int $stopAtStepNumber
+     *
+     * @return Traversable<Step>
      */
-    private function getNextSolution(CellCandidatesMap $map, Grid $grid): array
+    public function getResolutionSteps(Grid $grid, int $stopAtStepNumber = self::MAX_ITERATION): Traversable
     {
+        $i = 0;
+
+        do {
+            $i++;
+            $solution = $this->getNextSolution($grid);
+
+            if (! $solution instanceof Solution) {
+                break;
+            }
+
+            $grid = $grid->withUpdatedCell($solution->cell->coordinates, $solution->value);
+
+            yield Step::fromSolution($i, $solution);
+
+        } while (! $this->shouldStop($stopAtStepNumber, $i, $grid));
+    }
+
+    public function getNextSolution(Grid $grid): ?Solution
+    {
+        $map = CellCandidatesMap::empty();
+
         foreach ($this->methods as $method) {
             foreach ($grid->getEmptyCells() as $currentCell) {
                 $map = $method->apply($map, $grid, $currentCell);
@@ -68,14 +67,17 @@ final readonly class Solver
                     continue;
                 }
 
-                return [$map, new Solution($method::getName(), ...$uniqueValue)];
+                return new Solution($method::getName(), $map, ...$uniqueValue);
             }
         }
 
-        return [$map, null];
+        return null;
     }
 
-    private function shouldStop(int $iteration, Grid $grid, CellCandidatesMap $previousMap, CellCandidatesMap $currentMap): bool
+    /**
+     * @param positive-int $stopAtStepNumber
+     */
+    private function shouldStop(int $stopAtStepNumber, int $iteration, Grid $grid): bool
     {
         if ($grid->containsDuplicate()) {
             return true;
@@ -85,11 +87,7 @@ final readonly class Solver
             return true;
         }
 
-        if (! $previousMap->isEmpty() && ! $currentMap->isEmpty() && $currentMap->equals($previousMap)) {
-            return true;
-        }
-
-        if ($iteration >= self::MAX_ITERATION) {
+        if ($iteration >= min($stopAtStepNumber, self::MAX_ITERATION)) {
             return true;
         }
 

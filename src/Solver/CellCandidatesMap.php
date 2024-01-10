@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
-use SudokuSolver\Comparable;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Cell\Value;
 
 /**
- * @implements Comparable<CellCandidatesMap>
  * @implements \IteratorAggregate<FillableCell, Candidates>
  */
-final readonly class CellCandidatesMap implements Comparable, \IteratorAggregate
+final readonly class CellCandidatesMap implements \IteratorAggregate
 {
     /**
      * @param \WeakMap<FillableCell, Candidates> $map
@@ -33,25 +31,6 @@ final readonly class CellCandidatesMap implements Comparable, \IteratorAggregate
     public function isEmpty(): bool
     {
         return $this->map->count() === 0;
-    }
-
-    public function equals(Comparable $other): bool
-    {
-        if ($this->map->count() !== $other->map->count()) {
-            return false;
-        }
-
-        foreach ($this->map as $cell => $candidates) {
-            if (! $other->has($cell)) {
-                return false;
-            }
-
-            if (! $candidates->equals($other->get($cell))) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public function get(FillableCell $cell): Candidates
