@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid;
 
+use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Cell\FixedValueCell;
@@ -16,6 +17,9 @@ final readonly class GridFactory
      */
     public function create(array $gridAsArray): Grid
     {
+        /** @var Cell[] $cells */
+        $cells = [];
+
         foreach ($gridAsArray as $y => $row) {
             foreach ($row as $x => $value) {
                 $coordinates = Coordinates::from($x + 1, $y + 1);
@@ -36,6 +40,6 @@ final readonly class GridFactory
             }
         }
 
-        return new Grid($cells ?? []);
+        return new Grid(ArrayList::fromList($cells));
     }
 }

@@ -34,6 +34,29 @@ final readonly class Map implements \Countable, \IteratorAggregate
     }
 
     /**
+     * @template UKey of Comparable
+     * @template UValue of mixed
+     *
+     * @param array<array{UKey, UValue}> $tuples
+     *
+     * @return self<UKey, UValue>
+     */
+    public static function fromTuples(array $tuples): self
+    {
+        $keys = [];
+        $values = [];
+
+        foreach ($tuples as $tuple) {
+            [$key, $value] = $tuple;
+
+            $keys[] = $key;
+            $values[] = $value;
+        }
+
+        return new self($keys, $values);
+    }
+
+    /**
      * @param TKey $key
      */
     public function has(Comparable $key): bool

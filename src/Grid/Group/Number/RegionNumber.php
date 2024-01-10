@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid\Group\Number;
 
-use SudokuSolver\Comparable;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Group\GroupNumber;
 use SudokuSolver\Grid\Group\Region;
 
 /**
- * @implements Comparable<RegionNumber>
+ * @extends GroupNumber<RegionNumber>
  */
-final readonly class RegionNumber extends GroupNumber implements Comparable
+final readonly class RegionNumber extends GroupNumber
 {
     public static function fromCoordinates(Coordinates $coordinates): static
     {
@@ -24,10 +23,5 @@ final readonly class RegionNumber extends GroupNumber implements Comparable
         );
 
         return new self($number);
-    }
-
-    public function equals(Comparable $other): bool
-    {
-        return $this->value === $other->value;
     }
 }

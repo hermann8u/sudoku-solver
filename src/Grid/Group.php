@@ -4,76 +4,71 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid;
 
+use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Group\GroupNumber;
-use Traversable;
 use Webmozart\Assert\Assert;
 
 /**
- * @implements \IteratorAggregate<int, Cell>
+ * @template TGroupNumber of GroupNumber
  */
-abstract readonly class Group implements \IteratorAggregate
+abstract readonly class Group
 {
     public const CELLS_COUNT = 9;
 
-    /** @var Cell[] */
-    public array $cells;
-    public GroupNumber $number;
+    /** @var ArrayList<Cell> */
+    public ArrayList $cells;
 
     /**
-     * @param Cell[] $cells
+     * @param TGroupNumber $number
+     * @param ArrayList<Cell> $cells
      */
-    protected function __construct(array $cells, GroupNumber $number)
-    {
+    public function __construct(
+        public GroupNumber $number,
+        ArrayList $cells,
+    ) {
         Assert::count($cells, self::CELLS_COUNT);
+        Assert::allTrue($cells->map(static fn (Cell $cell) => $number::fromCell($cell)->equals($number)));
 
-        usort($cells, static fn (Cell $a, Cell $b) => $a->coordinates->compare($b->coordinates));
-
-        $this->cells = $cells;
-        $this->number = $number;
+        $this->cells = $cells->sorted(static fn (Cell $a, Cell $b) => $a->coordinates->compare($b->coordinates));
     }
+
+    /**
+     * @return class-string<TGroupNumber>
+     */
+    abstract public static function getNumberType(): string;
 
     public function isValid(): bool
     {
-        return $this->isFilled() && $this->containsDuplicate() === false;
-    }
-
-    public function isFilled(): bool
-    {
-        return count($this->getEmptyCells()) === 0;
+        return $this->getEmptyCells()->isEmpty() && $this->containsDuplicate() === false;
     }
 
     public function containsDuplicate(): bool
     {
         $presentValues = $this->getPresentValues();
 
-        return count($presentValues) !== count(array_unique(array_column($presentValues, 'value')));
+        return $presentValues->count() !== $presentValues->map(static fn (Value $v) => $v->value)->unique()->count();
     }
 
     /**
-     * @return FillableCell[]
+     * @return ArrayList<FillableCell>
      */
-    public function getEmptyCells(): array
+    public function getEmptyCells(): ArrayList
     {
-        return array_filter($this->cells, static fn (Cell $cell) => $cell->isEmpty() && $cell instanceof FillableCell);
+        /** @var ArrayList<FillableCell> $emptyCells */
+        $emptyCells = $this->cells->filter(static fn (Cell $cell) => $cell->isEmpty() && $cell instanceof FillableCell);
+
+        return $emptyCells;
     }
 
     /**
-     * @return Value[]
+     * @return ArrayList<Value>
      */
-    public function getPresentValues(): array
+    public function getPresentValues(): ArrayList
     {
-        $cellsWithValue = array_filter($this->cells, static fn (Cell $cell) => ! $cell->isEmpty());
-
-        return array_map(
-            static fn (Cell $cell) => $cell->value,
-            array_values($cellsWithValue),
-        );
-    }
-
-    public function getIterator(): Traversable
-    {
-        return new \ArrayIterator($this->cells);
+        return $this->cells
+            ->filter(static fn (Cell $cell) => ! $cell->isEmpty())
+            ->map(static fn (Cell $cell) => $cell->value);
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
+use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Grid;
 use SudokuSolver\Solver\Result\Step;
 
@@ -33,8 +35,11 @@ final readonly class Result
         $this->valid = $this->grid->isValid();
         $this->filled = $this->grid->isFilled();
         $this->containsDuplicate = $this->grid->containsDuplicate();
-        $this->cellToFill = count($this->grid->getFillableCells());
-        $this->remainingCells = count($this->grid->getEmptyCells());
+        $this->cellToFill = $this->grid
+            ->cells
+            ->filter(static fn (Cell $cell) => $cell instanceof FillableCell)
+            ->count();
+        $this->remainingCells = $this->grid->getEmptyCells()->count();
         $this->filledCells = $this->cellToFill - $this->remainingCells;
     }
 
