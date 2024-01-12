@@ -145,6 +145,6 @@ final readonly class Candidates implements Comparable, \IteratorAggregate, \Stri
      */
     private function toIntegers(): array
     {
-        return array_values(array_filter(array_column($this->values, 'value')));
+        return array_column($this->values, 'value');
     }
 }

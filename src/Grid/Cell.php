@@ -9,15 +9,15 @@ use SudokuSolver\Grid\Cell\Value;
 
 abstract readonly class Cell
 {
-    protected function __construct(
+    public function __construct(
         public Coordinates $coordinates,
-        public Value $value,
+        public ?Value $value = null,
     ) {
     }
 
     public function isEmpty(): bool
     {
-        return $this->value->isEmpty();
+        return $this->value === null;
     }
 
     public function is(Cell $cell): bool

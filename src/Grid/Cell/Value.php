@@ -12,22 +12,13 @@ final readonly class Value implements \Stringable
     public const MAX = 9;
 
     /**
-     * @param int<self::MIN, self::MAX>|null $value
+     * @param int<self::MIN, self::MAX> $value
      */
     private function __construct(
-        public ?int $value,
+        public int $value,
     ) {
-        if ($this->value === null) {
-            return;
-        }
-
         Assert::greaterThanEq($this->value, self::MIN);
         Assert::lessThanEq($this->value, self::MAX);
-    }
-
-    public static function empty(): self
-    {
-        return new self(null);
     }
 
     /**
@@ -36,11 +27,6 @@ final readonly class Value implements \Stringable
     public static function from(int $value): self
     {
         return new self($value);
-    }
-
-    public function isEmpty(): bool
-    {
-        return $this->value === null;
     }
 
     public function __toString(): string

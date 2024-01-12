@@ -67,8 +67,11 @@ abstract readonly class Group
      */
     public function getPresentValues(): ArrayList
     {
-        return $this->cells
-            ->filter(static fn (Cell $cell) => ! $cell->isEmpty())
-            ->map(static fn (Cell $cell) => $cell->value);
+        /** @var ArrayList<Value> $values */
+        $values = $this->cells
+            ->map(static fn (Cell $cell) => $cell->value)
+            ->filter(static fn (?Value $value) => $value instanceof Value);
+
+        return $values;
     }
 }

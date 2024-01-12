@@ -10,10 +10,6 @@ final readonly class FixedValueCell extends Cell
 {
     public function __construct(Coordinates $coordinates, Value $cellValue)
     {
-        if ($cellValue->isEmpty()) {
-            throw new \DomainException();
-        }
-
         parent::__construct($coordinates, $cellValue);
     }
 
