@@ -124,9 +124,38 @@ final readonly class ArrayList implements Countable, IteratorAggregate
         return new self($items);
     }
 
-    public function unique(): self
+    /**
+     * @param ?callable(TItem, TItem): bool $comparisonCallable
+     *
+     * @return self<TItem>
+     */
+    public function unique(callable $comparisonCallable = null): self
     {
-        return new self(array_values(array_unique($this->items)));
+        if ($comparisonCallable === null) {
+            return new self(array_values(array_unique($this->items)));
+        }
+
+        $carry = $this;
+
+        $newList = ArrayList::empty();
+
+        foreach ($this->items as $item) {
+            $previousCount = $carry->count();
+
+            $carry = $carry->filter(static fn (mixed $other) => ! $comparisonCallable($item, $other));
+
+            $filteredCount = $carry->count();
+
+            if ($filteredCount !== $previousCount) {
+                $newList = $newList->merge($item);
+            }
+
+            if ($filteredCount === 0) {
+                return $newList;
+            }
+        }
+
+        return $newList;
     }
 
     /**

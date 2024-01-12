@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver\Method;
 
+use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Grid;
@@ -130,12 +131,12 @@ final readonly class XWingMethod implements Method
 
                 $xWings[] = new XWing(
                     $direction,
-                    [
+                    ArrayList::fromList([
                         $currentCell->coordinates,
                         $secondCellCoordinates,
                         $thirdCellCoordinates,
                         $fourthCellCoordinates,
-                    ],
+                    ]),
                     $allCandidatesIntersect->first(),
                 );
             }

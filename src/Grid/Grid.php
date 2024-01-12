@@ -148,22 +148,10 @@ final readonly class Grid
     {
         $groupNumberType = $groupType::getNumberType();
 
-        /** @var ArrayList<GroupNumber> $groupNumbers */
-        $groupNumbers = $cells->map(static fn (Cell $cell) => $groupNumberType::fromCell($cell));
-
-        $alreadyPresent = [];
-        $groupNumbers = $groupNumbers
-            ->filter(static function (GroupNumber $number) use (&$alreadyPresent) {
-                if (\in_array($number->value, $alreadyPresent, true)) {
-                    return false;
-                }
-
-                $alreadyPresent[] = $number->value;
-
-                return true;
-            })
-            ->sorted(static fn (GroupNumber $a, GroupNumber $b) => $a->value <=> $b->value)
-        ;
+        $groupNumbers = $cells
+            ->map(static fn (Cell $cell) => $groupNumberType::fromCell($cell))
+            ->unique(static fn (GroupNumber $a, GroupNumber $b) => $a->value === $b->value)
+            ->sorted(static fn (GroupNumber $a, GroupNumber $b) => $a->value <=> $b->value);
 
         $groupsTuples = $groupNumbers->map(static fn (GroupNumber $number) => [
             $number,
