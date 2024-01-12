@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver\Association\Extractor;
 
+use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\DataStructure\Map;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Solver\Association\AssociationExtractor;
+use SudokuSolver\Solver\Association\Pair;
 use SudokuSolver\Solver\Association\Triplet;
 use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CellCandidatesMap;
@@ -18,18 +20,19 @@ final readonly class TripletExtractor implements AssociationExtractor
 {
     public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
     {
-        $mapForGroup = $mapForGroup->filter(static fn (Candidates $c) => $c->count() <= Triplet::COUNT);
-
-        /** @var Map<Candidates, array<string, FillableCell>> $cellsByCandidates */
+        /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
         $cellsByCandidates = Map::empty();
-        $cellsByCandidates = $mapForGroup->multidimensionalLoop($this->tryToAssociateCells(...), $cellsByCandidates);
+
+        $cellsByCandidates = $mapForGroup
+            ->filter(static fn (Candidates $c) => \in_array($c->count(), [Pair::COUNT, Triplet::COUNT], true))
+            ->multidimensionalLoop($this->tryToAssociateCells(...), $cellsByCandidates);
 
         foreach ($cellsByCandidates as $candidates => $cells) {
-            if (\count($cells) !== Triplet::COUNT) {
+            if ($cells->count() !== Triplet::COUNT) {
                 continue;
             }
 
-            $triplets[] = new Triplet(array_values($cells), $candidates);
+            $triplets[] = new Triplet($cells, $candidates);
         }
 
         return $triplets ?? [];
@@ -41,9 +44,9 @@ final readonly class TripletExtractor implements AssociationExtractor
     }
 
     /**
-     * @param Map<Candidates, array<string, FillableCell>> $carry
+     * @param Map<Candidates, ArrayList<FillableCell>> $carry
      *
-     * @return Map<Candidates, array<string, FillableCell>>
+     * @return Map<Candidates, ArrayList<FillableCell>>
      */
     private function tryToAssociateCells(
         CellCandidatesMap $mapForGroup,
@@ -51,29 +54,40 @@ final readonly class TripletExtractor implements AssociationExtractor
         FillableCell $a,
         FillableCell $b,
     ): Map {
+        $candidatesA = $mapForGroup->get($a);
+        $candidatesB = $mapForGroup->get($b);
+
         [$candidatesWithSmallerCount, $candidatesWithBiggerCount] = $this->sortByCount(
-            $mapForGroup->get($a),
-            $mapForGroup->get($b),
+            $candidatesA,
+            $candidatesB,
         );
 
-        if ($candidatesWithBiggerCount->count() < Triplet::COUNT) {
-            return $carry;
-        }
+        $candidates = match ($candidatesWithBiggerCount->count()) {
+            Pair::COUNT => $this->getCandidatesForHiddenTriplet($candidatesWithBiggerCount, $candidatesWithSmallerCount),
+            Triplet::COUNT => $this->getCandidatesForOtherTriplet($candidatesWithBiggerCount, $candidatesWithSmallerCount),
+            default => throw new \LogicException(),
+        };
 
-        if (! $candidatesWithBiggerCount->contains($candidatesWithSmallerCount)) {
+        if ($candidates === null) {
             return $carry;
         }
 
         try {
-            $cells = $carry->get($candidatesWithBiggerCount);
+            $cells = $carry->get($candidates);
         } catch (\OutOfBoundsException) {
-            $cells = [];
+            /** @var ArrayList<FillableCell> $cells */
+            $cells = ArrayList::empty();
         }
 
-        $cells[$a->coordinates->toString()] = $a;
-        $cells[$b->coordinates->toString()] = $b;
+        if (! $cells->contains($a)) {
+            $cells = $cells->merge($a);
+        }
 
-        return $carry->with($candidatesWithBiggerCount, $cells);
+        if (! $cells->contains($b)) {
+            $cells = $cells->merge($b);
+        }
+
+        return $carry->with($candidates, $cells);
     }
 
     /**
@@ -88,5 +102,23 @@ final readonly class TripletExtractor implements AssociationExtractor
         usort($v, static fn (Candidates $a, Candidates $b) => $a->count() <=> $b->count());
 
         return $v;
+    }
+
+    private function getCandidatesForHiddenTriplet(Candidates $candidatesA, Candidates $candidatesB): ?Candidates
+    {
+        if ($candidatesA->intersect($candidatesB)->count() !== 1) {
+            return null;
+        }
+
+        return $candidatesA->merge($candidatesB);
+    }
+
+    private function getCandidatesForOtherTriplet(Candidates $candidatesWithBiggerCount, Candidates $candidatesWithSmallerCount): ?Candidates
+    {
+        if (! $candidatesWithBiggerCount->contains($candidatesWithSmallerCount)) {
+            return null;
+        }
+
+        return $candidatesWithBiggerCount;
     }
 }

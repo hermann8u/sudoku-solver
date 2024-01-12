@@ -4,7 +4,6 @@ use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Cell\FixedValueCell;
 use SudokuSolver\Grid\GridFactory;
 use SudokuSolver\Grid\GridGenerator;
-use SudokuSolver\Solver\Association\Extractor\HiddenTripletExtractor;
 use SudokuSolver\Solver\Association\Extractor\PairExtractor;
 use SudokuSolver\Solver\Association\Extractor\TripletExtractor;
 use SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
@@ -28,7 +27,6 @@ $solver = new Solver([
     new ExclusiveAssociationMethod(
         $inclusiveMethod,
         [
-            new HiddenTripletExtractor(),
             new TripletExtractor(),
             new PairExtractor(),
         ]
