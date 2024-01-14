@@ -9,9 +9,8 @@ use SudokuSolver\Grid\Cell\Value;
 
 /**
  * @implements Comparable<Candidates>
- * @implements \IteratorAggregate<int, Value>
  */
-final readonly class Candidates implements Comparable, \IteratorAggregate, \Stringable
+final readonly class Candidates implements Comparable, \Stringable
 {
     /** @var Value[] */
     public array $values;
@@ -122,11 +121,6 @@ final readonly class Candidates implements Comparable, \IteratorAggregate, \Stri
     public function __toString(): string
     {
        return $this->toString();
-    }
-
-    public function getIterator(): \Traversable
-    {
-        return new \ArrayIterator($this->values);
     }
 
     /**

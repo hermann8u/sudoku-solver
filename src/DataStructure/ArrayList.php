@@ -112,14 +112,19 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
-     * @param callable(TItem, TItem): int<-1, 1> $callable
+     * @param ?callable(TItem, TItem): int<-1, 1> $callable
      *
      * @return self<TItem>
      */
-    public function sorted(callable $callable): self
+    public function sorted(?callable $callable = null): self
     {
         $items = $this->items;
-        usort($items, $callable);
+
+        if ($callable) {
+            usort($items, $callable);
+        } else {
+            sort($items);
+        }
 
         return new self($items);
     }

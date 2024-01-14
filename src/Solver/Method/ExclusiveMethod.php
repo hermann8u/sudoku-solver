@@ -39,7 +39,7 @@ final readonly class ExclusiveMethod implements Method
 
                 [$map, $relatedCellCandidates] = $this->getCandidates($map, $grid, $relatedCell);
 
-                $candidates = $candidates->withRemovedValues(...$relatedCellCandidates);
+                $candidates = $candidates->withRemovedValues(...$relatedCellCandidates->values);
             }
 
             if ($candidates->hasUniqueCandidate()) {

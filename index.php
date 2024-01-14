@@ -141,7 +141,7 @@ dump($result);
                                     <?php endif; ?>
                                     <?php if ($step->map->has($cell)) : ?>
                                         <div class="candidates">
-                                            <?php foreach ($step->map->get($cell) as $value) : ?>
+                                            <?php foreach ($step->map->get($cell)->values as $value) : ?>
                                                 <small><?= $value ?></small>
                                             <?php endforeach;?>
                                         </div>

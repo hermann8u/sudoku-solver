@@ -202,6 +202,6 @@ final readonly class XWingMethod implements Method
         $aCandidates = $mapForGroup->get($a);
         $bCandidates = $mapForGroup->get($b);
 
-        return $carry->withRemovedValues(...$aCandidates->intersect($bCandidates));
+        return $carry->withRemovedValues(...$aCandidates->intersect($bCandidates)->values);
     }
 }

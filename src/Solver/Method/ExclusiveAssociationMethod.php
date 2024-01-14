@@ -44,7 +44,7 @@ final readonly class ExclusiveAssociationMethod implements Method
                     }
 
                     $candidates = $map->get($cell);
-                    $candidates = $candidates->withRemovedValues(...$association->candidates);
+                    $candidates = $candidates->withRemovedValues(...$association->candidates->values);
 
                     $map = $map->with($cell, $candidates);
 
