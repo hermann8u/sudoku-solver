@@ -164,6 +164,25 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
+     * @param ArrayList<TItem> ...$others
+     *
+     * @return self<TItem>
+     */
+    public function intersect(ArrayList ...$others): self
+    {
+        if ($others === []) {
+            return $this;
+        }
+
+        $intersect = array_intersect($this->items, ...array_map(
+            static fn (ArrayList $other) => $other->items,
+            $others,
+        ));
+
+        return new self(array_values($intersect));
+    }
+
+    /**
      * @param TItem $item
      */
     public function contains(mixed $item): bool
@@ -221,13 +240,14 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
+     * @param positive-int $length
+     * @param int<0, max> $offset
+     *
      * @return self<TItem>
      */
-    public function takes(int $length): self
+    public function takes(int $length, int $offset = 0): self
     {
-        Assert::positiveInteger($length);
-
-        return new self(array_slice($this->items, 0, $length));
+        return new self(array_slice($this->items, $offset, $length));
     }
 
     public function count(): int

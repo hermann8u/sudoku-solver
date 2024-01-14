@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SudokuSolver\Solver;
 
 use SudokuSolver\Comparable;
+use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\Grid\Cell\Value;
 
 /**
@@ -12,74 +13,76 @@ use SudokuSolver\Grid\Cell\Value;
  */
 final readonly class Candidates implements Comparable, \Stringable
 {
-    /** @var Value[] */
-    public array $values;
+    /** @var ArrayList<Value> */
+    public ArrayList $values;
 
     /**
-     * @param Value[] $values
+     * @param ArrayList<Value> $values
      */
-    private function __construct(array $values)
+    private function __construct(ArrayList $values)
     {
-        sort($values);
-        $this->values = array_values($values);
+        $this->values = $values->sorted();
     }
 
     public static function all(): self
     {
-        return self::fromInt(...range(Value::MIN, Value::MAX));
+        /** @var ArrayList<int<Value::MIN, Value::MAX>> $allIntegers */
+        $allIntegers = ArrayList::fromList(range(Value::MIN, Value::MAX));
+
+        return self::fromIntegers($allIntegers);
     }
 
     public static function fromString(string $valuesString): self
     {
-        $values = explode(',', $valuesString);
-        /** @var array<int<Value::MIN, Value::MAX>> $values */
-        $values = array_map(static fn (string $v) => (int) $v, $values);
+        $valuesStrings = explode(',', $valuesString);
 
-        return self::fromInt(...$values);
+        /** @var ArrayList<int<Value::MIN, Value::MAX>> $values */
+        $values = ArrayList::fromList($valuesStrings)->map(static fn (string $v) => (int) $v);
+
+        return self::fromIntegers($values);
     }
 
     public static function empty(): self
     {
-        return new self([]);
+        return new self(ArrayList::empty());
     }
 
     public function hasUniqueCandidate(): bool
     {
-        return count($this->values) === 1;
+        return $this->values->count() === 1;
     }
 
     public function first(): Value
     {
-        $value = current($this->values);
-        if ($value === false) {
-            throw new \LogicException();
-        }
-
-        return $value;
+        return $this->values->first();
     }
 
     public function count(): int
     {
-        return count($this->values);
+        return $this->values->count();
     }
 
     public function intersect(Candidates ...$others): self
     {
-        $otherValues = array_map(
-            static fn (Candidates $c) => $c->toIntegers(),
-            $others,
-        );
+        /**
+         * @var ArrayList<ArrayList<int<Value::MIN, Value::MAX>>> $otherValues
+         * @phpstan-ignore-next-line
+         */
+        $otherValues = ArrayList::fromList($others)->map(static fn (Candidates $c) => $c->toIntegers());
 
-        $intersect = array_intersect($this->toIntegers(), ...$otherValues);
+        $intersect = $this->toIntegers()->intersect(...$otherValues);
 
-        return self::fromInt(...$intersect);
+        return self::fromIntegers($intersect);
     }
 
     public function merge(Candidates $other): self
     {
-        $values = array_unique([...$this->toIntegers(), ...$other->toIntegers()]);
+        $values = $this
+            ->toIntegers()
+            ->merge(...$other->toIntegers())
+            ->unique();
 
-        return self::fromInt(...$values);
+        return self::fromIntegers($values);
     }
 
     public function contains(Candidates $other): bool
@@ -93,27 +96,21 @@ final readonly class Candidates implements Comparable, \Stringable
             return $this;
         }
 
-        $currentValues = $this->toIntegers();
+        $integers = ArrayList::fromList($values)->map(static fn (Value $v) => $v->value);
 
-        foreach ($values as $value) {
-            $index = array_search($value->value, $currentValues, true);
-
-            if (\is_int($index)) {
-                unset($currentValues[$index]);
-            }
-        }
-
-        return self::fromInt(...$currentValues);
+        return self::fromIntegers($this->toIntegers()->filter(
+            static fn (mixed $item) => ! $integers->contains($item))
+        );
     }
 
     public function equals(Comparable $other): bool
     {
-        return $this->toIntegers() === $other->toIntegers();
+        return $this->toIntegers()->toArray() === $other->toIntegers()->toArray();
     }
 
     public function toString(): string
     {
-        $values = $this->toIntegers();
+        $values = $this->toIntegers()->toArray();
 
         return implode(',', $values);
     }
@@ -124,21 +121,21 @@ final readonly class Candidates implements Comparable, \Stringable
     }
 
     /**
-     * @param int<Value::MIN, Value::MAX> ...$values
+     * @param ArrayList<int<Value::MIN, Value::MAX>> $values
      */
-    private static function fromInt(int ...$values): self
+    private static function fromIntegers(ArrayList $values): self
     {
-        return new self(array_map(
-            static fn (int $v) => Value::from($v),
-            $values,
-        ));
+        return new self($values->map(static fn (int $v) => Value::from($v)));
     }
 
     /**
-     * @return int<Value::MIN, Value::MAX>[]
+     * @return ArrayList<int<Value::MIN, Value::MAX>>
      */
-    private function toIntegers(): array
+    private function toIntegers(): ArrayList
     {
-        return array_column($this->values, 'value');
+        /** @var ArrayList<int<Value::MIN, Value::MAX>> $values */
+        $values = $this->values->map(static fn (Value $v) => $v->value);
+
+        return $values;
     }
 }
