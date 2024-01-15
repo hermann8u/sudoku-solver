@@ -23,15 +23,14 @@ $inclusiveMethod = new InclusiveMethod();
 
 $solver = new Solver([
     $inclusiveMethod,
-    new ExclusiveMethod($inclusiveMethod),
+    new ExclusiveMethod(),
     new ExclusiveAssociationMethod(
-        $inclusiveMethod,
         [
             new TripletExtractor(),
             new PairExtractor(),
         ]
     ),
-    new XWingMethod($inclusiveMethod),
+    new XWingMethod(),
 ]);
 
 $result = $solver->solve($grid);

@@ -80,6 +80,29 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
+     * @template TCarry of mixed
+     *
+     * @param callable(TCarry $carry, TItem $a, TItem $b): TCarry $callable
+     * @param TCarry $carry
+     *
+     * @return TCarry
+     */
+    public function multidimensionalLoop(callable $callable, mixed $carry = []): mixed
+    {
+        $bItems = $this->items;
+
+        foreach ($this->items as $aKey => $a) {
+            unset($bItems[$aKey]);
+
+            foreach ($bItems as $b) {
+                $carry = $callable($carry, $a, $b);
+            }
+        }
+
+        return $carry;
+    }
+
+    /**
      * @param callable(TItem): bool $callable
      *
      * @return ?TItem

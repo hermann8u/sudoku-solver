@@ -57,13 +57,18 @@ final readonly class Grid
     }
 
     /**
-     * @return iterable<Group>
+     * @return ArrayList<Group>
      */
-    public function getGroupsForCell(Cell $cell): iterable
+    public function getGroupsForCell(Cell $cell): ArrayList
     {
-        yield $this->getColumnByCell($cell);
-        yield $this->getRowByCell($cell);
-        yield $this->regions->get(RegionNumber::fromCell($cell));
+        /** @var ArrayList<Group> $groups */
+        $groups = ArrayList::fromList([
+            $this->getColumnByCell($cell),
+            $this->getRowByCell($cell),
+            $this->regions->get(RegionNumber::fromCell($cell)),
+        ]);
+
+        return $groups;
     }
 
     public function getColumnByCell(Cell $cell): Column

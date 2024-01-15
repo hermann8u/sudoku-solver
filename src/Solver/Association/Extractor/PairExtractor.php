@@ -7,6 +7,7 @@ namespace SudokuSolver\Solver\Association\Extractor;
 use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\DataStructure\Map;
 use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Group;
 use SudokuSolver\Solver\Association\AssociationExtractor;
 use SudokuSolver\Solver\Association\Pair;
 use SudokuSolver\Solver\Candidates;
@@ -17,35 +18,40 @@ use SudokuSolver\Solver\CellCandidatesMap;
  */
 final readonly class PairExtractor implements AssociationExtractor
 {
-    public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
+    public function getAssociationsInGroup(CellCandidatesMap $map, Group $group): ArrayList
     {
-        $mapForGroup = $mapForGroup->filter(static fn (Candidates $c) => $c->count() === Pair::COUNT);
+        $pairs = ArrayList::empty();
+
+        $groupCells = $group->getEmptyCells();
 
         /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
-        $cellsByCandidates = Map::empty();
+        $cellsByCandidates = $groupCells->reduce(function (Map $carry, FillableCell $cell) use ($map) {
+            $candidates = $map->get($cell);
 
-        foreach ($mapForGroup as $cell => $candidates) {
+            if ($candidates->count() !== 2) {
+                return $carry;
+            }
+
+
             try {
-                $cells = $cellsByCandidates->get($candidates);
-            } catch (\OutOfBoundsException) {
                 /** @var ArrayList<FillableCell> $cells */
+                $cells = $carry->get($candidates);
+            } catch (\OutOfBoundsException) {
                 $cells = ArrayList::empty();
             }
 
-            $cells = $cells->merge($cell);
-
-            $cellsByCandidates = $cellsByCandidates->with($candidates, $cells);
-        }
+            return $carry->with($candidates, $cells->merge($cell));
+        }, Map::empty());
 
         foreach ($cellsByCandidates as $candidates => $cells) {
             if ($cells->count() !== Pair::COUNT) {
                 continue;
             }
 
-            $pairs[] = new Pair($cells, $candidates);
+            $pairs = $pairs->merge(new Pair($group, $candidates, $cells));
         }
 
-        return $pairs ?? [];
+        return $pairs;
     }
 
     public static function getAssociationType(): string

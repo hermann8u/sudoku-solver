@@ -1,16 +1,16 @@
 <?php
 
+use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Solver\Association\Pair;
 use SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
-use SudokuSolver\Solver\Method\InclusiveMethod;
 use SudokuSolver\Tests\Double\Solver\Association\Extractor\PredictablePairExtractor;
 
 it('exclude candidates present in pair', function () {
     // Arrange
     $pair = Pair::fromStrings(['(4,3)', '(4,9)'], '3,7');
-    $pairExtractor = new PredictablePairExtractor([$pair]);
+    $pairExtractor = new PredictablePairExtractor(ArrayList::fromList([$pair]));
 
     $map = buildMapFrom(['(4,1)' => '6,7']);
     $grid = buildGridFromFilePath('exclusive_association/exclusive_pair.csv');
@@ -19,7 +19,6 @@ it('exclude candidates present in pair', function () {
 
     // Act
     $method = new ExclusiveAssociationMethod(
-        new InclusiveMethod(),
         [$pairExtractor],
     );
 

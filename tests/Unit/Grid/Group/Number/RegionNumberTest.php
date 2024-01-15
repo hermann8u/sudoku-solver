@@ -6,9 +6,7 @@ use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Group\Number\RegionNumber;
 
 it('has the expected number when built from coordinates', function (string $coordinatesString, int $expectedNumber) {
-    $coordinates = Coordinates::fromString($coordinatesString);
-
-    $regionNumber = RegionNumber::fromCoordinates($coordinates);
+    $regionNumber = RegionNumber::fromCoordinates(Coordinates::fromString($coordinatesString));
 
     expect($regionNumber->value)->toBe($expectedNumber);
 })->with([

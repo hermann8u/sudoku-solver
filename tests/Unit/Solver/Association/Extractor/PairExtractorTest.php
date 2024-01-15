@@ -7,11 +7,11 @@ it('is able to find pairs', function (array $mapForGroupData, array $expectedAss
     $mapForGroup = buildMapFrom($mapForGroupData);
 
     $extractor = new PairExtractor();
-    $associations = $extractor->getAssociationsForGroup($mapForGroup);
+    $associations = $extractor->getAssociationsInGroup($mapForGroup);
 
     expect($associations)->toHaveCount(1);
 
-    $association = reset($associations);
+    $association = $associations->first();
 
     expect($association)->toBeAssociation(Pair::fromStrings(...$expectedAssociationStrings));
 })->with([

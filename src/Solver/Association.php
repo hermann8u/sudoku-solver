@@ -7,6 +7,7 @@ namespace SudokuSolver\Solver;
 use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Group;
 use Webmozart\Assert\Assert;
 
 abstract readonly class Association
@@ -15,8 +16,9 @@ abstract readonly class Association
      * @param ArrayList<FillableCell> $cells
      */
     public function __construct(
-        public ArrayList $cells,
+        public Group $group,
         public Candidates $candidates,
+        public ArrayList $cells,
     ) {
         Assert::count($this->cells, $this->getAssociationCount());
         Assert::same($this->candidates->count(), $this->getAssociationCount());

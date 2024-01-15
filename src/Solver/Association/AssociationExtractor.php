@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver\Association;
 
+use SudokuSolver\DataStructure\ArrayList;
+use SudokuSolver\Grid\Group;
 use SudokuSolver\Solver\Association;
 use SudokuSolver\Solver\CellCandidatesMap;
 
@@ -13,9 +15,9 @@ use SudokuSolver\Solver\CellCandidatesMap;
 interface AssociationExtractor
 {
     /**
-     * @return T[]
+     * @return ArrayList<T>
      */
-    public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array;
+    public function getAssociationsInGroup(CellCandidatesMap $map, Group $group): ArrayList;
 
     /**
      * @return class-string<T>

@@ -7,6 +7,7 @@ namespace SudokuSolver\Solver\Association\Extractor;
 use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\DataStructure\Map;
 use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Group;
 use SudokuSolver\Solver\Association\AssociationExtractor;
 use SudokuSolver\Solver\Association\Pair;
 use SudokuSolver\Solver\Association\Triplet;
@@ -18,24 +19,27 @@ use SudokuSolver\Solver\CellCandidatesMap;
  */
 final readonly class TripletExtractor implements AssociationExtractor
 {
-    public function getAssociationsForGroup(CellCandidatesMap $mapForGroup): array
+    public function getAssociationsInGroup(CellCandidatesMap $map, Group $group): ArrayList
     {
-        /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
-        $cellsByCandidates = Map::empty();
+        $triplets = ArrayList::empty();
 
-        $cellsByCandidates = $mapForGroup
-            ->filter(static fn (Candidates $c) => \in_array($c->count(), [Pair::COUNT, Triplet::COUNT], true))
-            ->multidimensionalLoop($this->tryToAssociateCells(...), $cellsByCandidates);
+        $groupCells = $group->getEmptyCells();
+
+        /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
+        $cellsByCandidates = $groupCells->multidimensionalLoop(
+            fn (Map $carry, FillableCell $a, FillableCell $b) => $this->tryToAssociateCells($map, $carry, $a, $b),
+            Map::empty(),
+        );
 
         foreach ($cellsByCandidates as $candidates => $cells) {
             if ($cells->count() !== Triplet::COUNT) {
                 continue;
             }
 
-            $triplets[] = new Triplet($cells, $candidates);
+            $triplets = $triplets->merge(new Triplet($group, $candidates, $cells));
         }
 
-        return $triplets ?? [];
+        return $triplets;
     }
 
     public static function getAssociationType(): string
@@ -49,13 +53,13 @@ final readonly class TripletExtractor implements AssociationExtractor
      * @return Map<Candidates, ArrayList<FillableCell>>
      */
     private function tryToAssociateCells(
-        CellCandidatesMap $mapForGroup,
+        CellCandidatesMap $map,
         Map $carry,
         FillableCell $a,
         FillableCell $b,
     ): Map {
-        $candidatesA = $mapForGroup->get($a);
-        $candidatesB = $mapForGroup->get($b);
+        $candidatesA = $map->get($a);
+        $candidatesB = $map->get($b);
 
         [$candidatesWithSmallerCount, $candidatesWithBiggerCount] = $this->sortByCount(
             $candidatesA,
@@ -65,7 +69,7 @@ final readonly class TripletExtractor implements AssociationExtractor
         $candidates = match ($candidatesWithBiggerCount->count()) {
             Pair::COUNT => $this->getCandidatesForHiddenTriplet($candidatesWithBiggerCount, $candidatesWithSmallerCount),
             Triplet::COUNT => $this->getCandidatesForOtherTriplet($candidatesWithBiggerCount, $candidatesWithSmallerCount),
-            default => throw new \LogicException(),
+            default => null,
         };
 
         if ($candidates === null) {
@@ -75,7 +79,6 @@ final readonly class TripletExtractor implements AssociationExtractor
         try {
             $cells = $carry->get($candidates);
         } catch (\OutOfBoundsException) {
-            /** @var ArrayList<FillableCell> $cells */
             $cells = ArrayList::empty();
         }
 
@@ -106,7 +109,7 @@ final readonly class TripletExtractor implements AssociationExtractor
 
     private function getCandidatesForHiddenTriplet(Candidates $candidatesA, Candidates $candidatesB): ?Candidates
     {
-        if ($candidatesA->intersect($candidatesB)->count() !== 1) {
+        if ($candidatesA->intersect($candidatesB)->count() === 0) {
             return null;
         }
 

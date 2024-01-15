@@ -7,11 +7,11 @@ it('is able to find triplets', function (array $mapForGroupData, array $expected
     $mapForGroup = buildMapFrom($mapForGroupData);
 
     $extractor = new TripletExtractor();
-    $associations = $extractor->getAssociationsForGroup($mapForGroup);
+    $associations = $extractor->getAssociationsInGroup($mapForGroup);
 
     expect($associations)->toHaveCount(1);
 
-    $association = reset($associations);
+    $association = $associations->first();
 
     expect($association)->toBeAssociation(Triplet::fromStrings(...$expectedAssociationStrings));
 })->with([
@@ -62,7 +62,7 @@ it('is able to find hidden triplets', function (array $mapForGroupData, array $e
     $mapForGroup = buildMapFrom($mapForGroupData);
 
     $extractor = new TripletExtractor();
-    $associations = $extractor->getAssociationsForGroup($mapForGroup);
+    $associations = $extractor->getAssociationsInGroup($mapForGroup);
 
     expect($associations)->toHaveCount(1);
 
