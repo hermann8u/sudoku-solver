@@ -75,23 +75,12 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
      */
     public function multidimensionalLoop(callable $callable, mixed $carry = []): mixed
     {
-        $alreadyLooped = [];
+        $bMap = clone $this->map;
 
         foreach ($this->map as $a => $candidatesA) {
-            foreach ($this->map as $b => $candidatesB) {
-                $aCoordinates = $a->coordinates->toString();
-                $bCoordinates = $b->coordinates->toString();
+            unset($bMap[$a]);
 
-                if ($aCoordinates === $bCoordinates) {
-                    continue;
-                }
-
-                if (\in_array($aCoordinates . $bCoordinates, $alreadyLooped, true)) {
-                    continue;
-                }
-
-                $alreadyLooped[] = $bCoordinates . $aCoordinates;
-
+            foreach ($bMap as $b => $candidatesB) {
                 $carry = $callable($this, $carry, $a, $b);
             }
         }
