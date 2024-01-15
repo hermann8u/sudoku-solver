@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid\Cell;
 
-use SudokuSolver\Comparable;
+use SudokuSolver\DataStructure\Comparable;
 use Webmozart\Assert\Assert;
 
 /**

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver;
 
-use SudokuSolver\Comparable;
 use SudokuSolver\DataStructure\ArrayList;
+use SudokuSolver\DataStructure\Comparable;
 use SudokuSolver\Grid\Cell\Value;
 
 /**
