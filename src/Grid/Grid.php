@@ -62,11 +62,11 @@ final readonly class Grid
     public function getGroupsForCell(Cell $cell): ArrayList
     {
         /** @var ArrayList<Group> $groups */
-        $groups = ArrayList::fromList([
+        $groups = ArrayList::fromItems(
             $this->getColumnByCell($cell),
             $this->getRowByCell($cell),
             $this->regions->get(RegionNumber::fromCell($cell)),
-        ]);
+        );
 
         return $groups;
     }
@@ -113,11 +113,9 @@ final readonly class Grid
 
     public function toString(): string
     {
-        $cellStrings = $this->cells
+        return $this->cells
             ->map(static fn (Cell $cell) => $cell->value . ($cell->coordinates->x === Coordinates::MAX ? PHP_EOL : ';'))
-            ->toArray();
-
-        return implode('', $cellStrings);
+            ->implode();
     }
 
     /**

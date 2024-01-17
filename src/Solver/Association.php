@@ -26,12 +26,12 @@ abstract readonly class Association
 
     public function toString(): string
     {
-        $coordinates = $this->cells->map(static fn (FillableCell $c) => $c->coordinates->toString())->toArray();
-
         return sprintf(
             '%s => %s',
             $this->candidates->toString(),
-            implode(' ', $coordinates),
+            $this->cells
+                ->map(static fn (FillableCell $c) => $c->coordinates->toString())
+                ->implode(' '),
         );
     }
 

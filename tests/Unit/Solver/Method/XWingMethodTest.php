@@ -19,9 +19,7 @@ it('exclude candidates thanks to horizontal X-Wing', function () {
     $cell = $grid->getCell(Coordinates::fromString('(2,3)'));
 
     // Act
-    $method = new XWingMethod(
-        new InclusiveMethod(),
-    );
+    $method = new XWingMethod();
 
     $updatedMap = $method->apply($map, $grid, $cell);
 
@@ -49,9 +47,7 @@ it('exclude candidates thanks to vertical X-Wing', function () {
     $cell = $grid->getCell(Coordinates::fromString('(1,2)'));
 
     // Act
-    $method = new XWingMethod(
-        new InclusiveMethod(),
-    );
+    $method = new XWingMethod();
 
     $updatedMap = $method->apply($map, $grid, $cell);
 

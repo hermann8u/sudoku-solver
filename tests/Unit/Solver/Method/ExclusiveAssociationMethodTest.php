@@ -10,7 +10,7 @@ use SudokuSolver\Tests\Double\Solver\Association\Extractor\PredictablePairExtrac
 it('exclude candidates present in pair', function () {
     // Arrange
     $pair = Pair::fromStrings(['(4,3)', '(4,9)'], '3,7');
-    $pairExtractor = new PredictablePairExtractor(ArrayList::fromList([$pair]));
+    $pairExtractor = new PredictablePairExtractor(ArrayList::fromItems($pair));
 
     $map = buildMapFrom(['(4,1)' => '6,7']);
     $grid = buildGridFromFilePath('exclusive_association/exclusive_pair.csv');

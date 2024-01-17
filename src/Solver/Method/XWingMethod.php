@@ -136,12 +136,12 @@ final readonly class XWingMethod implements Method
 
                 $xWings[] = new XWing(
                     $direction,
-                    ArrayList::fromList([
+                    ArrayList::fromItems(
                         $currentCell->coordinates,
                         $secondCellCoordinates,
                         $thirdCellCoordinates,
                         $fourthCellCoordinates,
-                    ]),
+                    ),
                     $allCandidatesIntersect->first(),
                 );
             }

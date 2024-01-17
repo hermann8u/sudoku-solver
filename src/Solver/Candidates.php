@@ -62,27 +62,19 @@ final readonly class Candidates implements Comparable, \Stringable
         return $this->values->count();
     }
 
-    public function intersect(Candidates ...$others): self
+    public function intersect(Candidates $other): self
     {
-        /**
-         * @var ArrayList<ArrayList<int<Value::MIN, Value::MAX>>> $otherValues
-         * @phpstan-ignore-next-line
-         */
-        $otherValues = ArrayList::fromList($others)->map(static fn (Candidates $c) => $c->toIntegers());
-
-        $intersect = $this->toIntegers()->intersect(...$otherValues);
+        $intersect = $this->toIntegers()->intersect($other->toIntegers());
 
         return self::fromIntegers($intersect);
     }
 
     public function merge(Candidates $other): self
     {
-        $values = $this
-            ->toIntegers()
-            ->merge(...$other->toIntegers())
-            ->unique();
-
-        return self::fromIntegers($values);
+        return new self($this->values
+            ->merge(...$other->values)
+            ->unique(static fn (Value $a, Value $b) => $a->equals($b)),
+        );
     }
 
     public function contains(Candidates $other): bool
@@ -96,11 +88,9 @@ final readonly class Candidates implements Comparable, \Stringable
             return $this;
         }
 
-        $integers = ArrayList::fromList($values)->map(static fn (Value $v) => $v->value);
+        $valuesToRemove = ArrayList::fromList($values);
 
-        return self::fromIntegers($this->toIntegers()->filter(
-            static fn (mixed $item) => ! $integers->contains($item))
-        );
+        return new self($this->values->filter(static fn (Value $v) => ! $valuesToRemove->exists($v->equals(...))));
     }
 
     public function equals(Comparable $other): bool
@@ -110,9 +100,7 @@ final readonly class Candidates implements Comparable, \Stringable
 
     public function toString(): string
     {
-        $values = $this->toIntegers()->toArray();
-
-        return implode(',', $values);
+        return $this->toIntegers()->implode(',');
     }
 
     public function __toString(): string

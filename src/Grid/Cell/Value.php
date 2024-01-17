@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Grid\Cell;
 
+use SudokuSolver\DataStructure\Comparable;
 use Webmozart\Assert\Assert;
 
-final readonly class Value implements \Stringable
+/**
+ * @implements Comparable<Value>
+ */
+final readonly class Value implements Comparable, \Stringable
 {
     public const MIN = 1;
     public const MAX = 9;
@@ -32,5 +36,10 @@ final readonly class Value implements \Stringable
     public function __toString(): string
     {
         return (string) $this->value;
+    }
+
+    public function equals(Comparable $other): bool
+    {
+        return $this->value === $other->value;
     }
 }

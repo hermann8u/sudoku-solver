@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace SudokuSolver\Solver\Method;
 
+use SudokuSolver\DataStructure\ArrayList;
 use SudokuSolver\Grid\Cell\FillableCell;
+use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Grid;
+use SudokuSolver\Grid\Group;
 use SudokuSolver\Solver\Candidates;
 use SudokuSolver\Solver\CandidatesProvider;
 use SudokuSolver\Solver\CellCandidatesMap;
@@ -25,12 +28,12 @@ final readonly class InclusiveMethod implements Method, CandidatesProvider
 
     public function getCandidates(Grid $grid, FillableCell $cell): Candidates
     {
-        $candidates = Candidates::all();
+        /** @var ArrayList<Value> $presentValuesInCellGroups */
+        $presentValuesInCellGroups = $grid->getGroupsForCell($cell)->reduce(
+            static fn (ArrayList $carry, Group $group) => $carry->merge(...$group->getPresentValues()),
+            ArrayList::empty(),
+        );
 
-        foreach ($grid->getGroupsForCell($cell) as $group) {
-            $candidates = $candidates->withRemovedValues(...$group->getPresentValues());
-        }
-
-        return $candidates;
+        return Candidates::all()->withRemovedValues(...$presentValuesInCellGroups);
     }
 }

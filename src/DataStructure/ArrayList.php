@@ -45,6 +45,19 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
+     * @template UItem of mixed
+     *
+     * @param UItem $item
+     * @param UItem ...$items
+     *
+     * @return self<UItem>
+     */
+    public static function fromItems(mixed $item, mixed ...$items): self
+    {
+        return new self([$item, ...$items]);
+    }
+
+    /**
      * @template UItem
      *
      * @param callable(TItem): UItem $callable
@@ -276,6 +289,14 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     public function count(): int
     {
         return count($this->items);
+    }
+
+    public function implode(string $separator = ''): string
+    {
+        return implode(
+            $separator,
+            $this->map(static fn (mixed $item) => (string) $item)->items,
+        );
     }
 
     /**
