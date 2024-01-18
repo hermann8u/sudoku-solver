@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace SudokuSolver\Solver;
 
 use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\Coordinates;
+use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Cell\Value;
 use SudokuSolver\Grid\Grid;
 use SudokuSolver\Grid\Group\Column;
@@ -25,38 +24,32 @@ final readonly class XWing
     public ArrayList $rowNumbers;
 
     /**
-     * @param ArrayList<Coordinates> $coordinatesList
+     * @param ArrayList<FillableCell> $cells
      */
     public function __construct(
         public Direction $direction,
-        public ArrayList $coordinatesList,
+        public ArrayList $cells,
         public Value $value,
     ) {
-        Assert::count($this->coordinatesList, 4);
+        Assert::count($this->cells, 4);
 
         $uniqueCallable = static fn (GroupNumber $a, GroupNumber $b) => $a->value === $b->value;
 
-        $this->columnNumbers = $this->coordinatesList
-            ->map(static fn (Coordinates $coordinates) => ColumnNumber::fromCoordinates($coordinates))
+        $this->columnNumbers = $this->cells
+            ->map(ColumnNumber::fromCell(...))
             ->unique($uniqueCallable);
 
-        $this->rowNumbers = $this->coordinatesList
-            ->map(static fn (Coordinates $coordinates) => RowNumber::fromCoordinates($coordinates))
+        $this->rowNumbers = $this->cells
+            ->map(RowNumber::fromCell(...))
             ->unique($uniqueCallable);
 
         Assert::count($this->columnNumbers, 2);
         Assert::count($this->rowNumbers, 2);
     }
 
-    public function contains(Cell $cell): bool
+    public function contains(FillableCell $cell): bool
     {
-        foreach ($this->coordinatesList as $coordinates) {
-            if ($cell->coordinates->equals($coordinates)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->cells->exists($cell->is(...));
     }
 
     /**
@@ -80,8 +73,8 @@ final readonly class XWing
             '%s => %d => %s',
             $this->direction->name,
             $this->value->value,
-            $this->coordinatesList
-                ->map(static fn (Coordinates $c) => $c->toString())
+            $this->cells
+                ->map(static fn (FillableCell $c) => $c->coordinates->toString())
                 ->implode(' '),
         );
     }

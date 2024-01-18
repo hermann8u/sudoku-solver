@@ -8,10 +8,10 @@ use Traversable;
 use Webmozart\Assert\Assert;
 
 /**
- * A class that allows to map comparable value object to any value
+ * A class that allows to map object to any value
  *
- * @template TKey of Comparable
- * @template TValue
+ * @template TKey of object
+ * @template TValue of mixed
  * @implements \IteratorAggregate<TKey, TValue>
  */
 final readonly class Map implements \Countable, \IteratorAggregate
@@ -58,7 +58,7 @@ final readonly class Map implements \Countable, \IteratorAggregate
     /**
      * @param TKey $key
      */
-    public function has(Comparable $key): bool
+    public function has(mixed $key): bool
     {
         try {
             $this->search($key);
@@ -76,7 +76,7 @@ final readonly class Map implements \Countable, \IteratorAggregate
      *
      * @throws \OutOfBoundsException
      */
-    public function get(Comparable $key): mixed
+    public function get(mixed $key): mixed
     {
         return $this->values[$this->search($key)];
     }
@@ -87,7 +87,7 @@ final readonly class Map implements \Countable, \IteratorAggregate
      *
      * @return Map<TKey, TValue>
      */
-    public function with(Comparable $key, mixed $value): self
+    public function with(mixed $key, mixed $value): self
     {
         $keys = $this->keys;
         $values = $this->values;
@@ -110,6 +110,11 @@ final readonly class Map implements \Countable, \IteratorAggregate
         return new MapIterator($this->keys, $this->values);
     }
 
+    public function isEmpty(): bool
+    {
+        return $this->keys === [];
+    }
+
     public function count(): int
     {
         return count($this->keys);
@@ -120,10 +125,19 @@ final readonly class Map implements \Countable, \IteratorAggregate
      *
      * @throws \OutOfBoundsException
      */
-    private function search(Comparable $offset): int
+    private function search(mixed $offset): int
     {
         foreach ($this->keys as $index => $key) {
-            if ($offset->equals($key)) {
+            if ($key instanceof Comparable) {
+                /** @var Comparable $offset */
+                if ($key->equals($offset)) {
+                    return $index;
+                }
+
+                continue;
+            }
+
+            if ($offset === $key) {
                 return $index;
             }
         }

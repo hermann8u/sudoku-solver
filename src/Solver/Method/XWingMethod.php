@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SudokuSolver\Solver\Method;
 
 use SudokuSolver\DataStructure\ArrayList;
+use SudokuSolver\DataStructure\Map;
+use SudokuSolver\Grid\Cell;
 use SudokuSolver\Grid\Cell\Coordinates;
 use SudokuSolver\Grid\Cell\FillableCell;
 use SudokuSolver\Grid\Grid;
@@ -33,6 +35,7 @@ final readonly class XWingMethod implements Method
             $xWings = $xWings->merge(...$xWingsByDirection);
         }
 
+        /** @var XWing $xWing */
         foreach ($xWings as $xWing) {
             foreach ($xWing->getGroupsToModify($grid) as $group) {
                 foreach ($group->getEmptyCells() as $fillableCell) {
@@ -40,9 +43,7 @@ final readonly class XWingMethod implements Method
                         continue;
                     }
 
-                    $candidates = $map->get($fillableCell);
-                    $candidates = $candidates->withRemovedValues($xWing->value);
-
+                    $candidates = $map->get($fillableCell)->withRemovedValues($xWing->value);
                     $map = $map->with($fillableCell, $candidates);
 
                     if ($candidates->hasUniqueCandidate()) {
@@ -56,10 +57,12 @@ final readonly class XWingMethod implements Method
     }
 
     /**
-     * @return XWing[]
+     * @return ArrayList<XWing>
      */
-    private function buildXWings(Direction $direction, CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): array
+    private function buildXWings(Direction $direction, CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): ArrayList
     {
+        $xWings = ArrayList::empty();
+
         $firstDirectionGroupCallable = match ($direction) {
             Direction::Horizontal => $grid->getRowByCell(...),
             Direction::Vertical => $grid->getColumnByCell(...),
@@ -75,16 +78,12 @@ final readonly class XWingMethod implements Method
             $currentCellCandidates,
         );
 
-        if ($potentialSecondCells === []) {
-            return [];
-        }
-
         $otherDirectionGroup = match ($direction) {
             Direction::Horizontal => $grid->getColumnByCell($currentCell),
             Direction::Vertical => $grid->getRowByCell($currentCell),
         };
 
-        foreach ($potentialSecondCells as $secondCellCoordinatesString => $secondCellCandidates) {
+        foreach ($potentialSecondCells as $secondCell => $secondCellCandidates) {
             $potentialThirdCells = $this->getPotentialRelatedCellsInGroup(
                 $map,
                 $otherDirectionGroup,
@@ -93,15 +92,7 @@ final readonly class XWingMethod implements Method
                 false,
             );
 
-            if ($potentialThirdCells === []) {
-                continue;
-            }
-
-            foreach ($potentialThirdCells as $thirdCellCoordinatesString => $thirdCellCandidates) {
-                $thirdCellCoordinates = Coordinates::fromString($thirdCellCoordinatesString);
-                /** @var FillableCell $thirdCell */
-                $thirdCell = $grid->getCell($thirdCellCoordinates);
-
+            foreach ($potentialThirdCells as $thirdCell => $thirdCellCandidates) {
                 /** @var Group $secondGroup */
                 $secondGroup = $firstDirectionGroupCallable($thirdCell);
 
@@ -112,46 +103,43 @@ final readonly class XWingMethod implements Method
                     $thirdCellCandidates,
                 );
 
-                if ($potentialFourthCells === []) {
+                if ($potentialFourthCells->isEmpty()) {
                     continue;
                 }
 
-                $secondCellCoordinates = Coordinates::fromString($secondCellCoordinatesString);
+                $fourthCell = $grid->getCell(match ($direction) {
+                    Direction::Horizontal => Coordinates::from($secondCell->coordinates->x, $secondGroup->number->value),
+                    Direction::Vertical => Coordinates::from($secondGroup->number->value, $secondCell->coordinates->y),
+                });
 
-                $fourthCellCoordinates = match ($direction) {
-                    Direction::Horizontal => Coordinates::from($secondCellCoordinates->x, $secondGroup->number->value),
-                    Direction::Vertical => Coordinates::from($secondGroup->number->value, $secondCellCoordinates->y),
-                };
-
-                $fourthCellCandidates = $potentialFourthCells[$fourthCellCoordinates->toString()] ?? null;
-                if ($fourthCellCandidates === null) {
+                if (! $fourthCell instanceof FillableCell || ! $potentialFourthCells->has($fourthCell)) {
                     continue;
                 }
 
-                $allCandidatesIntersect = $thirdCellCandidates->intersect($fourthCellCandidates);
+                $allCandidatesIntersect = $thirdCellCandidates->intersect($potentialFourthCells->get($fourthCell));
 
                 if ($allCandidatesIntersect->count() !== 1) {
                     continue;
                 }
 
-                $xWings[] = new XWing(
+                $xWings = $xWings->merge(new XWing(
                     $direction,
                     ArrayList::fromItems(
-                        $currentCell->coordinates,
-                        $secondCellCoordinates,
-                        $thirdCellCoordinates,
-                        $fourthCellCoordinates,
+                        $currentCell,
+                        $secondCell,
+                        $thirdCell,
+                        $fourthCell,
                     ),
                     $allCandidatesIntersect->first(),
-                );
+                ));
             }
         }
 
-        return $xWings ?? [];
+        return $xWings;
     }
 
     /**
-     * @return array<string, Candidates>
+     * @return Map<FillableCell, Candidates>
      */
     private function getPotentialRelatedCellsInGroup(
         CellCandidatesMap $map,
@@ -159,49 +147,42 @@ final readonly class XWingMethod implements Method
         FillableCell $currentCell,
         Candidates $currentFilteredCandidates,
         bool $withFilter = true,
-    ): array {
-        $mapForGroup = $map->filter(static fn (Candidates $candidates, FillableCell $cell) => $currentGroup->cells->contains($cell) && ! $cell->is($currentCell));
+    ): Map {
+        /** @var ArrayList<FillableCell> $cells */
+        $cells = $currentGroup->cells->filter(static fn (Cell $c) => $c->isEmpty() && ! $c->is($currentCell));
 
-        if ($mapForGroup->isEmpty()) {
-            return [];
+        if ($cells->isEmpty()) {
+            return Map::empty();
         }
 
         $expectedValues = $currentFilteredCandidates;
 
         if ($withFilter) {
-            $expectedValues = $mapForGroup->multidimensionalLoop($this->filterDuplicateValues(...), $expectedValues);
+            $expectedValues = $cells
+                ->map(static fn (FillableCell $c) => $map->get($c))
+                ->multidimensionalLoop($this->filterDuplicateValues(...), $expectedValues);
         }
-
-        $potentialRelatedCells = [];
 
         $currentCellRegionNumber = RegionNumber::fromCell($currentCell);
 
-        foreach ($currentGroup->getEmptyCells() as $relatedCell) {
-            if ($currentCellRegionNumber->equals(RegionNumber::fromCell($relatedCell))) {
-                continue;
-            }
+        return $currentGroup->getEmptyCells()
+            ->filter(static fn (FillableCell $c) => ! $currentCellRegionNumber->equals(RegionNumber::fromCell($c)))
+            ->reduce(function (Map $carry, FillableCell $relatedCell) use ($expectedValues, $map, $currentFilteredCandidates) {
+                $intersectCellCandidates = $currentFilteredCandidates->intersect($map->get($relatedCell));
 
-            $intersectCellCandidates = $currentFilteredCandidates->intersect($mapForGroup->get($relatedCell));
+                if (
+                    $intersectCellCandidates->count() === 0
+                    || $intersectCellCandidates->intersect($expectedValues)->count() === 0
+                ) {
+                    return $carry;
+                }
 
-            if ($intersectCellCandidates->count() === 0) {
-                continue;
-            }
-
-            if ($intersectCellCandidates->intersect($expectedValues)->count() === 0) {
-                continue;
-            }
-
-            $potentialRelatedCells[$relatedCell->coordinates->toString()] = $intersectCellCandidates;
-        }
-
-        return $potentialRelatedCells;
+                return $carry->with($relatedCell, $intersectCellCandidates);
+            }, Map::empty());
     }
 
-    private function filterDuplicateValues(CellCandidatesMap $mapForGroup, Candidates $carry, FillableCell $a, FillableCell $b): Candidates
+    private function filterDuplicateValues(Candidates $carry, Candidates $a, Candidates $b): Candidates
     {
-        $aCandidates = $mapForGroup->get($a);
-        $bCandidates = $mapForGroup->get($b);
-
-        return $carry->withRemovedValues(...$aCandidates->intersect($bCandidates)->values);
+        return $carry->withRemovedValues(...$a->intersect($b)->values);
     }
 }

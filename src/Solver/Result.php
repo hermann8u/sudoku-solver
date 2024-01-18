@@ -44,7 +44,7 @@ final readonly class Result
     public function getCellStep(Coordinates $coordinates): ?Step
     {
         foreach ($this->steps as $step) {
-            if ($step->coordinates->toString() === $coordinates->toString()) {
+            if ($step->coordinates->equals($coordinates)) {
                 return $step;
             }
         }

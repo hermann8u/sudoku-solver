@@ -28,14 +28,9 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
         return new self($map);
     }
 
-    public function isEmpty(): bool
-    {
-        return $this->map->count() === 0;
-    }
-
     public function get(FillableCell $cell): Candidates
     {
-        return $this->map[$cell] ?? throw new \DomainException();
+        return $this->map[$cell] ?? throw new \OutOfBoundsException();
     }
 
     public function has(FillableCell $cell): bool
@@ -49,43 +44,6 @@ final readonly class CellCandidatesMap implements \IteratorAggregate
         $map[$cell] = $candidates;
 
         return new self($map);
-    }
-
-    public function filter(callable $filter): self
-    {
-        /** @var \WeakMap<FillableCell, Candidates> $filtered */
-        $filtered = new \WeakMap();
-
-        foreach ($this->map as $cell => $candidates) {
-            if ($filter($candidates, $cell)) {
-                $filtered[$cell] = $candidates;
-            }
-        }
-
-        return new self($filtered);
-    }
-
-    /**
-     * @template T of mixed
-     *
-     * @param callable(self $map, T $carry, FillableCell $a, FillableCell $b): T $callable
-     * @param T $carry
-     *
-     * @return T
-     */
-    public function multidimensionalLoop(callable $callable, mixed $carry = []): mixed
-    {
-        $bMap = clone $this->map;
-
-        foreach ($this->map as $a => $candidatesA) {
-            unset($bMap[$a]);
-
-            foreach ($bMap as $b => $candidatesB) {
-                $carry = $callable($this, $carry, $a, $b);
-            }
-        }
-
-        return $carry;
     }
 
     /**

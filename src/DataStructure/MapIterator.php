@@ -7,8 +7,8 @@ namespace SudokuSolver\DataStructure;
 use Webmozart\Assert\Assert;
 
 /**
- * @template TKey of Comparable
- * @template TValue
+ * @template TKey of object
+ * @template TValue of mixed
  * @implements \Iterator<TKey, TValue>
  */
 final class MapIterator implements \Iterator
