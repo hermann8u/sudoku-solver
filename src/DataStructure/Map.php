@@ -36,10 +36,10 @@ final readonly class Map implements \Countable, IteratorAggregate
     }
 
     /**
-     * @template UKey of Comparable
+     * @template UKey of object
      * @template UValue of mixed
      *
-     * @param array<array{UKey, UValue}> $tuples
+     * @param list<array{UKey, UValue}> $tuples
      *
      * @return self<UKey, UValue>
      */
