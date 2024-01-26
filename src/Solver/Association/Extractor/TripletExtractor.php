@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver\Association\Extractor;
+namespace Sudoku\Solver\Association\Extractor;
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\DataStructure\Map;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Group;
-use SudokuSolver\Solver\Association\AssociationExtractor;
-use SudokuSolver\Solver\Association\Pair;
-use SudokuSolver\Solver\Association\Triplet;
-use SudokuSolver\Solver\Candidates;
-use SudokuSolver\Solver\CellCandidatesMap;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\DataStructure\Map;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Group;
+use Sudoku\Solver\Association\AssociationExtractor;
+use Sudoku\Solver\Association\Pair;
+use Sudoku\Solver\Association\Triplet;
+use Sudoku\Solver\Candidates;
+use Sudoku\Solver\CellCandidatesMap;
 
 /**
  * @implements AssociationExtractor<Triplet>

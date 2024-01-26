@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Grid\Group;
+namespace Sudoku\Grid\Group;
 
-use SudokuSolver\Grid\Group;
-use SudokuSolver\Grid\Group\Number\RegionNumber;
+use Sudoku\Grid\Group;
+use Sudoku\Grid\Group\Number\RegionNumber;
 
 /**
  * @extends Group<RegionNumber>

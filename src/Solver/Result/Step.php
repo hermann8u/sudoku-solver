@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver\Result;
+namespace Sudoku\Solver\Result;
 
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\Value;
-use SudokuSolver\Solver\CellCandidatesMap;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Cell\Value;
+use Sudoku\Solver\CellCandidatesMap;
 
 final readonly class Step
 {

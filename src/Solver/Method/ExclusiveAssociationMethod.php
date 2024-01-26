@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver\Method;
+namespace Sudoku\Solver\Method;
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Grid;
-use SudokuSolver\Solver\Association;
-use SudokuSolver\Solver\Association\AssociationExtractor;
-use SudokuSolver\Solver\CellCandidatesMap;
-use SudokuSolver\Solver\Method;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\Grid;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Solver\Association;
+use Sudoku\Solver\Association\AssociationExtractor;
+use Sudoku\Solver\CellCandidatesMap;
+use Sudoku\Solver\Method;
 
 final readonly class ExclusiveAssociationMethod implements Method
 {

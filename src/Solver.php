@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver;
+namespace Sudoku;
 
-use SudokuSolver\Grid\Grid;
-use SudokuSolver\Solver\Result\Solution;
-use SudokuSolver\Solver\Result\Step;
+use Sudoku\Solver\CellCandidatesMap;
+use Sudoku\Solver\Method;
+use Sudoku\Solver\Result;
+use Sudoku\Solver\Result\Solution;
+use Sudoku\Solver\Result\Step;
 use Traversable;
 
 final readonly class Solver

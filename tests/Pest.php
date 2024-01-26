@@ -1,13 +1,13 @@
 <?php
 
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Grid;
-use SudokuSolver\Grid\GridFactory;
-use SudokuSolver\Grid\GridGenerator;
-use SudokuSolver\Solver\Association;
-use SudokuSolver\Solver\Candidates;
-use SudokuSolver\Solver\CellCandidatesMap;
+use Sudoku\Grid;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Factory\ArrayGridFactory;
+use Sudoku\Grid\Factory\CsvGridFactory;
+use Sudoku\Solver\Association;
+use Sudoku\Solver\Candidates;
+use Sudoku\Solver\CellCandidatesMap;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,7 +89,7 @@ function buildGridFromFilePath(string $path): Grid
         throw new \LogicException(sprintf('Unable to load file %s', $realpath));
     }
 
-    $generator = new GridGenerator(new GridFactory());
+    $generator = new CsvGridFactory(new ArrayGridFactory());
 
     return $generator->generate($stringGrid);
 }

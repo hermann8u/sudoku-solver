@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver;
+namespace Sudoku\Solver;
 
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Cell\Value;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Cell\Value;
 
 /**
  * @implements \IteratorAggregate<FillableCell, Candidates>

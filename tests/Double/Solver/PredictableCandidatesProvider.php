@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Tests\Double\Solver;
+namespace Sudoku\Tests\Double\Solver;
 
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Grid;
-use SudokuSolver\Solver\Candidates;
-use SudokuSolver\Solver\CandidatesProvider;
+use Sudoku\Grid;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Solver\Candidates;
+use Sudoku\Solver\CandidatesProvider;
 
 final class PredictableCandidatesProvider implements CandidatesProvider
 {

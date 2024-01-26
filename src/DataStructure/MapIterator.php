@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\DataStructure;
+namespace Sudoku\DataStructure;
 
+use Iterator;
 use Webmozart\Assert\Assert;
+use function count;
 
 /**
  * @template TKey of object
  * @template TValue of mixed
- * @implements \Iterator<TKey, TValue>
+ * @implements Iterator<TKey, TValue>
  */
-final class MapIterator implements \Iterator
+final class MapIterator implements Iterator
 {
     private int $cursor;
 
@@ -23,7 +25,7 @@ final class MapIterator implements \Iterator
         private readonly array $keys,
         private readonly array $values,
     ) {
-        Assert::same(\count($this->keys), \count($this->values));
+        Assert::same(count($this->keys), count($this->values));
 
         $this->cursor = 0;
     }

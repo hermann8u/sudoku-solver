@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver\XWing;
+namespace Sudoku\Solver\XWing;
 
 enum Direction
 {

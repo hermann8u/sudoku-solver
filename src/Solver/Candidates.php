@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver;
+namespace Sudoku\Solver;
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\DataStructure\Comparable;
-use SudokuSolver\Grid\Cell\Value;
+use Stringable;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\DataStructure\Comparable;
+use Sudoku\Grid\Cell\Value;
 
 /**
  * @implements Comparable<Candidates>
  */
-final readonly class Candidates implements Comparable, \Stringable
+final readonly class Candidates implements Comparable, Stringable
 {
     /** @var ArrayList<Value> */
     public ArrayList $values;

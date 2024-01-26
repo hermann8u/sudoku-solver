@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver;
+namespace Sudoku\Solver;
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Cell\Value;
-use SudokuSolver\Grid\Grid;
-use SudokuSolver\Grid\Group\Column;
-use SudokuSolver\Grid\Group\GroupNumber;
-use SudokuSolver\Grid\Group\Number\ColumnNumber;
-use SudokuSolver\Grid\Group\Number\RowNumber;
-use SudokuSolver\Grid\Group\Row;
-use SudokuSolver\Solver\XWing\Direction;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\Grid;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Cell\Value;
+use Sudoku\Grid\Group\Column;
+use Sudoku\Grid\Group\GroupNumber;
+use Sudoku\Grid\Group\Number\ColumnNumber;
+use Sudoku\Grid\Group\Number\RowNumber;
+use Sudoku\Grid\Group\Row;
+use Sudoku\Solver\XWing\Direction;
 use Webmozart\Assert\Assert;
 
 final readonly class XWing

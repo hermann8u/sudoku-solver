@@ -1,23 +1,23 @@
 <?php
 
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Cell\FixedValueCell;
-use SudokuSolver\Grid\GridFactory;
-use SudokuSolver\Grid\GridGenerator;
-use SudokuSolver\Solver\Association\Extractor\PairExtractor;
-use SudokuSolver\Solver\Association\Extractor\TripletExtractor;
-use SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
-use SudokuSolver\Solver\Method\ExclusiveMethod;
-use SudokuSolver\Solver\Method\InclusiveMethod;
-use SudokuSolver\Solver\Method\XWingMethod;
-use SudokuSolver\Solver\Solver;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Cell\FixedValueCell;
+use Sudoku\Grid\Factory\ArrayGridFactory;
+use Sudoku\Grid\Factory\CsvGridFactory;
+use Sudoku\Solver;
+use Sudoku\Solver\Association\Extractor\PairExtractor;
+use Sudoku\Solver\Association\Extractor\TripletExtractor;
+use Sudoku\Solver\Method\ExclusiveAssociationMethod;
+use Sudoku\Solver\Method\ExclusiveMethod;
+use Sudoku\Solver\Method\InclusiveMethod;
+use Sudoku\Solver\Method\XWingMethod;
 
 require './vendor/autoload.php';
 
-$stringGrid = file_get_contents('./data/grid/very_hard/1.csv');
+$csvStringGrid = file_get_contents('./data/grid/very_hard/1.csv');
 
-$generator = new GridGenerator(new GridFactory());
-$grid = $generator->generate($stringGrid);
+$gridFactory = new CsvGridFactory(new ArrayGridFactory());
+$grid = $gridFactory->create($csvStringGrid);
 
 $inclusiveMethod = new InclusiveMethod();
 

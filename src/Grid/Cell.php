@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Grid;
+namespace Sudoku\Grid;
 
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\Value;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Cell\Value;
 
 abstract readonly class Cell
 {

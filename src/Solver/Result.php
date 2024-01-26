@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver;
+namespace Sudoku\Solver;
 
-use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Grid;
-use SudokuSolver\Solver\Result\Step;
+use Sudoku\Grid;
+use Sudoku\Grid\Cell;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Solver\Result\Step;
 
 final readonly class Result
 {

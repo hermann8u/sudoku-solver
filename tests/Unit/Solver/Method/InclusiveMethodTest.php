@@ -1,9 +1,9 @@
 <?php
 
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Solver\CellCandidatesMap;
-use SudokuSolver\Solver\Method\InclusiveMethod;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Solver\CellCandidatesMap;
+use Sudoku\Solver\Method\InclusiveMethod;
 
 it('exclude candidates present in pair', function (string $file, string $cellToCheck, string $expectedValues) {
     // Arrange

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\DataStructure;
+namespace Sudoku\DataStructure;
 
 use ArrayIterator;
 use Countable;

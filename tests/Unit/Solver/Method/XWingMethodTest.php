@@ -1,9 +1,8 @@
 <?php
 
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Solver\Method\InclusiveMethod;
-use SudokuSolver\Solver\Method\XWingMethod;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Solver\Method\XWingMethod;
 
 it('exclude candidates thanks to horizontal X-Wing', function () {
     // Arrange

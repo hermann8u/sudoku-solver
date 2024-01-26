@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Grid\Group;
+namespace Sudoku\Grid\Group;
 
-use SudokuSolver\DataStructure\Comparable;
-use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\Coordinates;
+use Stringable;
+use Sudoku\DataStructure\Comparable;
+use Sudoku\Grid\Cell;
+use Sudoku\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;
 
 /**
  * @template T of GroupNumber
  * @template-implements Comparable<T>
  */
-abstract readonly class GroupNumber implements \Stringable, Comparable
+abstract readonly class GroupNumber implements Stringable, Comparable
 {
     public const MIN = 1;
     public const MAX = 9;

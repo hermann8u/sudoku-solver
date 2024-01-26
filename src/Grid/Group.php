@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Grid;
+namespace Sudoku\Grid;
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Cell\Value;
-use SudokuSolver\Grid\Group\GroupNumber;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Cell\Value;
+use Sudoku\Grid\Group\GroupNumber;
 use Webmozart\Assert\Assert;
 
 /**

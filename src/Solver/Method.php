@@ -1,9 +1,9 @@
 <?php
 
-namespace SudokuSolver\Solver;
+namespace Sudoku\Solver;
 
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Grid;
+use Sudoku\Grid;
+use Sudoku\Grid\Cell\FillableCell;
 
 interface Method
 {

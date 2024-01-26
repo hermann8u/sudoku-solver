@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Tests\Double\Solver\Association\Extractor;
+namespace Sudoku\Tests\Double\Solver\Association\Extractor;
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\Grid\Group;
-use SudokuSolver\Solver\Association;
-use SudokuSolver\Solver\CellCandidatesMap;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\Grid\Group;
+use Sudoku\Solver\Association;
+use Sudoku\Solver\CellCandidatesMap;
 
 trait PredictableExtractorBehavior
 {

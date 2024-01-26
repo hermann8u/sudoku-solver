@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Grid\Cell;
+namespace Sudoku\Grid\Cell;
 
-use SudokuSolver\DataStructure\Comparable;
+use Stringable;
+use Sudoku\DataStructure\Comparable;
 use Webmozart\Assert\Assert;
 
 /**
  * @implements Comparable<Value>
  */
-final readonly class Value implements Comparable, \Stringable
+final readonly class Value implements Comparable, Stringable
 {
     public const MIN = 1;
     public const MAX = 9;

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Grid\Group\Number;
+namespace Sudoku\Grid\Group\Number;
 
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Group\GroupNumber;
-use SudokuSolver\Grid\Group\Region;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Group\GroupNumber;
+use Sudoku\Grid\Group\Region;
 
 /**
  * @extends GroupNumber<RegionNumber>

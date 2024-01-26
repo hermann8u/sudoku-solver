@@ -2,20 +2,22 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Grid;
+namespace Sudoku;
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\DataStructure\Map;
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Cell\Value;
-use SudokuSolver\Grid\Group\Column;
-use SudokuSolver\Grid\Group\GroupNumber;
-use SudokuSolver\Grid\Group\Number\ColumnNumber;
-use SudokuSolver\Grid\Group\Number\RegionNumber;
-use SudokuSolver\Grid\Group\Number\RowNumber;
-use SudokuSolver\Grid\Group\Region;
-use SudokuSolver\Grid\Group\Row;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\DataStructure\Map;
+use Sudoku\Grid\Cell;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Cell\Value;
+use Sudoku\Grid\Group;
+use Sudoku\Grid\Group\Column;
+use Sudoku\Grid\Group\GroupNumber;
+use Sudoku\Grid\Group\Number\ColumnNumber;
+use Sudoku\Grid\Group\Number\RegionNumber;
+use Sudoku\Grid\Group\Number\RowNumber;
+use Sudoku\Grid\Group\Region;
+use Sudoku\Grid\Group\Row;
 use Webmozart\Assert\Assert;
 
 final readonly class Grid

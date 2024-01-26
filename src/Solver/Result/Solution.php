@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver\Result;
+namespace Sudoku\Solver\Result;
 
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Cell\Value;
-use SudokuSolver\Solver\CellCandidatesMap;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Cell\Value;
+use Sudoku\Solver\CellCandidatesMap;
 
 final readonly class Solution
 {

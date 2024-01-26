@@ -1,11 +1,11 @@
 <?php
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Solver\Association\Pair;
-use SudokuSolver\Solver\Method\ExclusiveAssociationMethod;
-use SudokuSolver\Tests\Double\Solver\Association\Extractor\PredictablePairExtractor;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Solver\Association\Pair;
+use Sudoku\Solver\Method\ExclusiveAssociationMethod;
+use Sudoku\Tests\Double\Solver\Association\Extractor\PredictablePairExtractor;
 
 it('exclude candidates present in pair', function () {
     // Arrange

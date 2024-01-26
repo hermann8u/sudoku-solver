@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Grid\Cell;
+namespace Sudoku\Grid\Cell;
 
-use SudokuSolver\Grid\Cell;
+use Sudoku\Grid\Cell;
 
 final readonly class FixedValueCell extends Cell
 {

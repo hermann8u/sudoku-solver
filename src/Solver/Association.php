@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SudokuSolver\Solver;
+namespace Sudoku\Solver;
 
-use SudokuSolver\DataStructure\ArrayList;
-use SudokuSolver\Grid\Cell;
-use SudokuSolver\Grid\Cell\FillableCell;
-use SudokuSolver\Grid\Group;
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\Grid\Cell;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Grid\Group;
 use Webmozart\Assert\Assert;
 
 abstract readonly class Association

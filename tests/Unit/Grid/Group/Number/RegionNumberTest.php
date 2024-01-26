@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use SudokuSolver\Grid\Cell\Coordinates;
-use SudokuSolver\Grid\Group\Number\RegionNumber;
+use Sudoku\Grid\Cell\Coordinates;
+use Sudoku\Grid\Group\Number\RegionNumber;
 
 it('has the expected number when built from coordinates', function (string $coordinatesString, int $expectedNumber) {
     $regionNumber = RegionNumber::fromCoordinates(Coordinates::fromString($coordinatesString));

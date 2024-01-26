@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "SudokuSolver\\": "src/"
+            "Sudoku\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SudokuSolver\\Tests\\": "tests/"
+            "Sudoku\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",
