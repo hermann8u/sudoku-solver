@@ -57,6 +57,7 @@ final readonly class ExclusiveAssociationMethod implements Method
      */
     private function getAllAssociationsInCellGroups(CellCandidatesMap $map, Grid $grid, FillableCell $cell): ArrayList
     {
+        /** @var ArrayList<Association> $associations */
         $associations = ArrayList::empty();
 
         foreach ($this->extractors as $extractor) {
@@ -66,7 +67,7 @@ final readonly class ExclusiveAssociationMethod implements Method
                     continue;
                 }
 
-                $associations = $associations->merge(...$extractor->getAssociationsInGroup($map, $group));
+                $associations = $associations->merge($extractor->getAssociationsInGroup($map, $group));
             }
         }
 

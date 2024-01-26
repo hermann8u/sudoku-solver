@@ -72,7 +72,7 @@ final readonly class Candidates implements Comparable, \Stringable
     public function merge(Candidates $other): self
     {
         return new self($this->values
-            ->merge(...$other->values)
+            ->merge($other->values)
             ->unique(static fn (Value $a, Value $b) => $a->equals($b)),
         );
     }

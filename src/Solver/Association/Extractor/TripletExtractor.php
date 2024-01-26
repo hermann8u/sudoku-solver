@@ -21,8 +21,6 @@ final readonly class TripletExtractor implements AssociationExtractor
 {
     public function getAssociationsInGroup(CellCandidatesMap $map, Group $group): ArrayList
     {
-        $triplets = ArrayList::empty();
-
         $groupCells = $group->getEmptyCells();
 
         /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
@@ -31,12 +29,14 @@ final readonly class TripletExtractor implements AssociationExtractor
             Map::empty(),
         );
 
+        $triplets = ArrayList::empty();
+
         foreach ($cellsByCandidates as $candidates => $cells) {
             if ($cells->count() !== Triplet::COUNT) {
                 continue;
             }
 
-            $triplets = $triplets->merge(new Triplet($group, $candidates, $cells));
+            $triplets = $triplets->with(new Triplet($group, $candidates, $cells));
         }
 
         return $triplets;
@@ -83,11 +83,11 @@ final readonly class TripletExtractor implements AssociationExtractor
         }
 
         if (! $cells->contains($a)) {
-            $cells = $cells->merge($a);
+            $cells = $cells->with($a);
         }
 
         if (! $cells->contains($b)) {
-            $cells = $cells->merge($b);
+            $cells = $cells->with($b);
         }
 
         return $carry->with($candidates, $cells);

@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace SudokuSolver\DataStructure;
 
+use IteratorAggregate;
+use OutOfBoundsException;
 use Traversable;
 use Webmozart\Assert\Assert;
+use function count;
 
 /**
  * A class that allows to map object to any value
  *
  * @template TKey of object
  * @template TValue of mixed
- * @implements \IteratorAggregate<TKey, TValue>
+ * @implements IteratorAggregate<TKey, TValue>
  */
-final readonly class Map implements \Countable, \IteratorAggregate
+final readonly class Map implements \Countable, IteratorAggregate
 {
     /**
      * @param TKey[] $keys
@@ -24,7 +27,7 @@ final readonly class Map implements \Countable, \IteratorAggregate
         private array $keys,
         private array $values,
     ) {
-        Assert::same(\count($this->keys), \count($this->values));
+        Assert::same(count($this->keys), count($this->values));
     }
 
     public static function empty(): self
@@ -64,7 +67,7 @@ final readonly class Map implements \Countable, \IteratorAggregate
             $this->search($key);
 
             return true;
-        } catch (\OutOfBoundsException) {
+        } catch (OutOfBoundsException) {
             return false;
         }
     }
@@ -74,7 +77,7 @@ final readonly class Map implements \Countable, \IteratorAggregate
      *
      * @return TValue
      *
-     * @throws \OutOfBoundsException
+     * @throws OutOfBoundsException
      */
     public function get(mixed $key): mixed
     {
@@ -97,7 +100,7 @@ final readonly class Map implements \Countable, \IteratorAggregate
 
             $keys[$index] = $key;
             $values[$index] = $value;
-        } catch (\OutOfBoundsException){
+        } catch (OutOfBoundsException){
             $keys[] = $key;
             $values[] = $value;
         }
@@ -123,7 +126,7 @@ final readonly class Map implements \Countable, \IteratorAggregate
     /**
      * @param TKey $offset
      *
-     * @throws \OutOfBoundsException
+     * @throws OutOfBoundsException
      */
     private function search(mixed $offset): int
     {
@@ -142,6 +145,6 @@ final readonly class Map implements \Countable, \IteratorAggregate
             }
         }
 
-        throw new \OutOfBoundsException();
+        throw new OutOfBoundsException();
     }
 }

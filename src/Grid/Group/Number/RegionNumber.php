@@ -17,9 +17,8 @@ final readonly class RegionNumber extends GroupNumber
     {
         /** @var int<self::MIN, self::MAX> $number */
         $number = (int) (
-            ceil($coordinates->x / Region::WIDTH)
-            + (ceil($coordinates->y / Region::HEIGHT) - 1)
-            * Region::HEIGHT
+            (ceil($coordinates->y / Region::HEIGHT) - 1) * Region::HEIGHT
+            + ceil($coordinates->x / Region::WIDTH)
         );
 
         return new self($number);

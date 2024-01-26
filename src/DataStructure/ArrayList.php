@@ -10,6 +10,7 @@ use IteratorAggregate;
 use Traversable;
 use Webmozart\Assert\Assert;
 use function count;
+use function in_array;
 
 /**
  * @template TItem of mixed
@@ -87,7 +88,7 @@ final readonly class ArrayList implements Countable, IteratorAggregate
      *
      * @return U
      */
-    public function reduce(callable $callable, mixed $initial = null): mixed
+    public function reduce(callable $callable, mixed $initial): mixed
     {
         return array_reduce($this->items, $callable, $initial);
     }
@@ -170,7 +171,7 @@ final readonly class ArrayList implements Countable, IteratorAggregate
      *
      * @return self<TItem>
      */
-    public function unique(callable $comparisonCallable = null): self
+    public function unique(?callable $comparisonCallable = null): self
     {
         if ($comparisonCallable === null) {
             return new self(array_values(array_unique($this->items)));
@@ -188,7 +189,7 @@ final readonly class ArrayList implements Countable, IteratorAggregate
             $filteredCount = $carry->count();
 
             if ($filteredCount !== $previousCount) {
-                $newList = $newList->merge($item);
+                $newList = $newList->with($item);
             }
 
             if ($filteredCount === 0) {
@@ -223,7 +224,7 @@ final readonly class ArrayList implements Countable, IteratorAggregate
      */
     public function contains(mixed $item): bool
     {
-        return \in_array($item, $this->items, true);
+        return in_array($item, $this->items, true);
     }
 
     /**
@@ -231,9 +232,19 @@ final readonly class ArrayList implements Countable, IteratorAggregate
      *
      * @return self<TItem>
      */
-    public function merge(mixed ...$items): self
+    public function with(mixed ...$items): self
     {
         return new self([...$this->items, ...$items]);
+    }
+
+    /**
+     * @param ArrayList<TItem> $other
+     *
+     * @return self<TItem>
+     */
+    public function merge(ArrayList $other): self
+    {
+        return new self([...$this->items, ...$other->items]);
     }
 
     public function isEmpty(): bool

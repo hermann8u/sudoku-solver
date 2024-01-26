@@ -20,8 +20,6 @@ final readonly class PairExtractor implements AssociationExtractor
 {
     public function getAssociationsInGroup(CellCandidatesMap $map, Group $group): ArrayList
     {
-        $pairs = ArrayList::empty();
-
         $groupCells = $group->getEmptyCells();
 
         /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
@@ -32,7 +30,6 @@ final readonly class PairExtractor implements AssociationExtractor
                 return $carry;
             }
 
-
             try {
                 /** @var ArrayList<FillableCell> $cells */
                 $cells = $carry->get($candidates);
@@ -40,15 +37,17 @@ final readonly class PairExtractor implements AssociationExtractor
                 $cells = ArrayList::empty();
             }
 
-            return $carry->with($candidates, $cells->merge($cell));
+            return $carry->with($candidates, $cells->with($cell));
         }, Map::empty());
+
+        $pairs = ArrayList::empty();
 
         foreach ($cellsByCandidates as $candidates => $cells) {
             if ($cells->count() !== Pair::COUNT) {
                 continue;
             }
 
-            $pairs = $pairs->merge(new Pair($group, $candidates, $cells));
+            $pairs = $pairs->with(new Pair($group, $candidates, $cells));
         }
 
         return $pairs;

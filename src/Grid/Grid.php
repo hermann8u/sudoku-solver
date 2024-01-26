@@ -108,7 +108,7 @@ final readonly class Grid
     {
         $cells = $this->cells->filter(static fn (Cell $cell) => ! $cell->coordinates->equals($coordinates));
 
-        return new self($cells->merge(new FillableCell($coordinates, $value)));
+        return new self($cells->with(new FillableCell($coordinates, $value)));
     }
 
     public function toString(): string

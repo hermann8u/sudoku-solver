@@ -32,7 +32,7 @@ final readonly class XWingMethod implements Method
 
         foreach (Direction::cases() as $direction) {
             $xWingsByDirection = $this->buildXWings($direction, $map, $grid, $currentCell);
-            $xWings = $xWings->merge(...$xWingsByDirection);
+            $xWings = $xWings->merge($xWingsByDirection);
         }
 
         /** @var XWing $xWing */
@@ -122,7 +122,7 @@ final readonly class XWingMethod implements Method
                     continue;
                 }
 
-                $xWings = $xWings->merge(new XWing(
+                $xWings = $xWings->with(new XWing(
                     $direction,
                     ArrayList::fromItems(
                         $currentCell,

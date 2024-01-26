@@ -57,6 +57,11 @@ final readonly class Coordinates implements Comparable, \Stringable
         return $this->y . $this->x <=> $coordinates->y . $coordinates->x;
     }
 
+    public function equals(Comparable $other): bool
+    {
+        return $this->x === $other->x && $this->y === $other->y;
+    }
+
     public function toString(): string
     {
         return (string) $this;
@@ -65,10 +70,5 @@ final readonly class Coordinates implements Comparable, \Stringable
     public function __toString(): string
     {
         return sprintf('(%d,%d)', $this->x, $this->y);
-    }
-
-    public function equals(Comparable $other): bool
-    {
-        return $this->x === $other->x && $this->y === $other->y;
     }
 }
