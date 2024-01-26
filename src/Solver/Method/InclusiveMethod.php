@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Sudoku\Solver\Method;
 
 use Sudoku\DataStructure\ArrayList;
+use Sudoku\DataStructure\Map;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Cell\Value;
 use Sudoku\Grid\Group;
 use Sudoku\Solver\Candidates;
 use Sudoku\Solver\CandidatesProvider;
-use Sudoku\Solver\CellCandidatesMap;
 use Sudoku\Solver\Method;
 
 final readonly class InclusiveMethod implements Method, CandidatesProvider
@@ -21,9 +21,12 @@ final readonly class InclusiveMethod implements Method, CandidatesProvider
         return 'inclusive';
     }
 
-    public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
+    /**
+     * @inheritdoc
+     */
+    public function apply(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): Map
     {
-        return $map->with($currentCell, $this->getCandidates($grid, $currentCell));
+        return $candidatesByCell->with($currentCell, $this->getCandidates($grid, $currentCell));
     }
 
     public function getCandidates(Grid $grid, FillableCell $cell): Candidates

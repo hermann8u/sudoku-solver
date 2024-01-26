@@ -13,7 +13,6 @@ use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Group;
 use Sudoku\Grid\Group\Number\RegionNumber;
 use Sudoku\Solver\Candidates;
-use Sudoku\Solver\CellCandidatesMap;
 use Sudoku\Solver\Method;
 use Sudoku\Solver\XWing;
 use Sudoku\Solver\XWing\Direction;
@@ -25,13 +24,16 @@ final readonly class XWingMethod implements Method
         return 'x_wing';
     }
 
-    public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
+    /**
+     * @inheritdoc
+     */
+    public function apply(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): Map
     {
         /** @var ArrayList<XWing> $xWings */
         $xWings = ArrayList::empty();
 
         foreach (Direction::cases() as $direction) {
-            $xWingsByDirection = $this->buildXWings($direction, $map, $grid, $currentCell);
+            $xWingsByDirection = $this->buildXWings($direction, $candidatesByCell, $grid, $currentCell);
             $xWings = $xWings->merge($xWingsByDirection);
         }
 
@@ -43,23 +45,25 @@ final readonly class XWingMethod implements Method
                         continue;
                     }
 
-                    $candidates = $map->get($fillableCell)->withRemovedValues($xWing->value);
-                    $map = $map->with($fillableCell, $candidates);
+                    $candidates = $candidatesByCell->get($fillableCell)->withRemovedValues($xWing->value);
+                    $candidatesByCell = $candidatesByCell->with($fillableCell, $candidates);
 
                     if ($candidates->hasUniqueCandidate()) {
-                        return $map;
+                        return $candidatesByCell;
                     }
                 }
             }
         }
 
-        return $map;
+        return $candidatesByCell;
     }
 
     /**
+     * @param Map<FillableCell, Candidates> $candidatesByCell
+     *
      * @return ArrayList<XWing>
      */
-    private function buildXWings(Direction $direction, CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): ArrayList
+    private function buildXWings(Direction $direction, Map $candidatesByCell, Grid $grid, FillableCell $currentCell): ArrayList
     {
         $xWings = ArrayList::empty();
 
@@ -70,9 +74,9 @@ final readonly class XWingMethod implements Method
 
         $firstGroup = $firstDirectionGroupCallable($currentCell);
 
-        $currentCellCandidates = $map->get($currentCell);
+        $currentCellCandidates = $candidatesByCell->get($currentCell);
         $potentialSecondCells = $this->getPotentialRelatedCellsInGroup(
-            $map,
+            $candidatesByCell,
             $firstGroup,
             $currentCell,
             $currentCellCandidates,
@@ -85,7 +89,7 @@ final readonly class XWingMethod implements Method
 
         foreach ($potentialSecondCells as $secondCell => $secondCellCandidates) {
             $potentialThirdCells = $this->getPotentialRelatedCellsInGroup(
-                $map,
+                $candidatesByCell,
                 $otherDirectionGroup,
                 $currentCell,
                 $secondCellCandidates,
@@ -97,7 +101,7 @@ final readonly class XWingMethod implements Method
                 $secondGroup = $firstDirectionGroupCallable($thirdCell);
 
                 $potentialFourthCells = $this->getPotentialRelatedCellsInGroup(
-                    $map,
+                    $candidatesByCell,
                     $secondGroup,
                     $thirdCell,
                     $thirdCellCandidates,
@@ -139,10 +143,12 @@ final readonly class XWingMethod implements Method
     }
 
     /**
+     * @param Map<FillableCell, Candidates> $candidatesByCell
+     *
      * @return Map<FillableCell, Candidates>
      */
     private function getPotentialRelatedCellsInGroup(
-        CellCandidatesMap $map,
+        Map $candidatesByCell,
         Group $currentGroup,
         FillableCell $currentCell,
         Candidates $currentFilteredCandidates,
@@ -159,7 +165,7 @@ final readonly class XWingMethod implements Method
 
         if ($withFilter) {
             $expectedValues = $cells
-                ->map(static fn (FillableCell $c) => $map->get($c))
+                ->map(static fn (FillableCell $c) => $candidatesByCell->get($c))
                 ->multidimensionalLoop($this->filterDuplicateValues(...), $expectedValues);
         }
 
@@ -167,8 +173,8 @@ final readonly class XWingMethod implements Method
 
         return $currentGroup->getEmptyCells()
             ->filter(static fn (FillableCell $c) => ! $currentCellRegionNumber->equals(RegionNumber::fromCell($c)))
-            ->reduce(function (Map $carry, FillableCell $relatedCell) use ($expectedValues, $map, $currentFilteredCandidates) {
-                $intersectCellCandidates = $currentFilteredCandidates->intersect($map->get($relatedCell));
+            ->reduce(function (Map $carry, FillableCell $relatedCell) use ($expectedValues, $candidatesByCell, $currentFilteredCandidates) {
+                $intersectCellCandidates = $currentFilteredCandidates->intersect($candidatesByCell->get($relatedCell));
 
                 if (
                     $intersectCellCandidates->count() === 0

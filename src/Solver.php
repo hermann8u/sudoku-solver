@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Sudoku;
 
-use Sudoku\Solver\CellCandidatesMap;
+use Sudoku\DataStructure\Map;
+use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
 use Sudoku\Solver\Result;
 use Sudoku\Solver\Result\Solution;
@@ -57,19 +59,21 @@ final readonly class Solver
 
     public function getNextSolution(Grid $grid): ?Solution
     {
-        $map = CellCandidatesMap::empty();
+        $candidatesByCell = Map::empty();
 
         foreach ($this->methods as $method) {
             foreach ($grid->getEmptyCells() as $currentCell) {
-                $map = $method->apply($map, $grid, $currentCell);
+                $candidatesByCell = $method->apply($candidatesByCell, $grid, $currentCell);
 
-                $uniqueValue = $map->findFirstUniqueCandidate();
-
-                if ($uniqueValue === null) {
-                    continue;
+                /**
+                 * @var FillableCell $cell
+                 * @var Candidates $candidates
+                 */
+                foreach ($candidatesByCell as $cell => $candidates) {
+                    if ($candidates->count() === 1) {
+                        return new Solution($method::getName(), $candidatesByCell, $cell, $candidates->first());
+                    }
                 }
-
-                return new Solution($method::getName(), $map, ...$uniqueValue);
             }
         }
 

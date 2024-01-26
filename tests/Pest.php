@@ -1,5 +1,6 @@
 <?php
 
+use Sudoku\DataStructure\Map;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\Coordinates;
 use Sudoku\Grid\Cell\FillableCell;
@@ -7,7 +8,6 @@ use Sudoku\Grid\Factory\ArrayGridFactory;
 use Sudoku\Grid\Factory\CsvGridFactory;
 use Sudoku\Solver\Association;
 use Sudoku\Solver\Candidates;
-use Sudoku\Solver\CellCandidatesMap;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,17 +94,17 @@ function buildGridFromFilePath(string $path): Grid
     return $generator->generate($stringGrid);
 }
 
-function buildMapFrom(array $mapData): CellCandidatesMap
+function buildMapFrom(array $mapData): Map
 {
-    $map = CellCandidatesMap::empty();
+    $candidatesByCell = Map::empty();
     foreach ($mapData as $coordinatesString => $candidates) {
-        $map = $map->with(
+        $candidatesByCell = $candidatesByCell->with(
             buildFillableCellFromCoordinatesString($coordinatesString),
             Candidates::fromString($candidates),
         );
     }
 
-    return $map;
+    return $candidatesByCell;
 }
 
 function buildFillableCellFromCoordinatesString(string $coordinatesString): FillableCell

@@ -11,20 +11,22 @@ use Sudoku\Grid\Group;
 use Sudoku\Solver\Association\AssociationExtractor;
 use Sudoku\Solver\Association\Pair;
 use Sudoku\Solver\Candidates;
-use Sudoku\Solver\CellCandidatesMap;
 
 /**
  * @implements AssociationExtractor<Pair>
  */
 final readonly class PairExtractor implements AssociationExtractor
 {
-    public function getAssociationsInGroup(CellCandidatesMap $map, Group $group): ArrayList
+    /**
+     * @inheritdoc
+     */
+    public function getAssociationsInGroup(Map $candidatesByCell, Group $group): ArrayList
     {
         $groupCells = $group->getEmptyCells();
 
         /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
-        $cellsByCandidates = $groupCells->reduce(function (Map $carry, FillableCell $cell) use ($map) {
-            $candidates = $map->get($cell);
+        $cellsByCandidates = $groupCells->reduce(function (Map $carry, FillableCell $cell) use ($candidatesByCell) {
+            $candidates = $candidatesByCell->get($cell);
 
             if ($candidates->count() !== 2) {
                 return $carry;

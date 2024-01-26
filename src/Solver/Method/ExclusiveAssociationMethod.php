@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Sudoku\Solver\Method;
 
 use Sudoku\DataStructure\ArrayList;
+use Sudoku\DataStructure\Map;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Solver\Association;
 use Sudoku\Solver\Association\AssociationExtractor;
-use Sudoku\Solver\CellCandidatesMap;
+use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
 
 final readonly class ExclusiveAssociationMethod implements Method
@@ -27,9 +28,12 @@ final readonly class ExclusiveAssociationMethod implements Method
         return 'exclusive_association';
     }
 
-    public function apply(CellCandidatesMap $map, Grid $grid, FillableCell $currentCell): CellCandidatesMap
+    /**
+     * @inheritdoc
+     */
+    public function apply(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): Map
     {
-        $associations = $this->getAllAssociationsInCellGroups($map, $grid, $currentCell);
+        $associations = $this->getAllAssociationsInCellGroups($candidatesByCell, $grid, $currentCell);
 
         /** @var Association $association */
         foreach ($associations as $association) {
@@ -38,24 +42,26 @@ final readonly class ExclusiveAssociationMethod implements Method
                     continue;
                 }
 
-                $candidates = $map->get($cell);
+                $candidates = $candidatesByCell->get($cell);
                 $candidates = $candidates->withRemovedValues(...$association->candidates->values);
 
-                $map = $map->with($cell, $candidates);
+                $candidatesByCell = $candidatesByCell->with($cell, $candidates);
 
                 if ($candidates->hasUniqueCandidate()) {
-                    return $map;
+                    return $candidatesByCell;
                 }
             }
         }
 
-        return $map;
+        return $candidatesByCell;
     }
 
     /**
+     * @param Map<FillableCell, Candidates> $candidatesByCell
+     *
      * @return ArrayList<Association>
      */
-    private function getAllAssociationsInCellGroups(CellCandidatesMap $map, Grid $grid, FillableCell $cell): ArrayList
+    private function getAllAssociationsInCellGroups(Map $candidatesByCell, Grid $grid, FillableCell $cell): ArrayList
     {
         /** @var ArrayList<Association> $associations */
         $associations = ArrayList::empty();
@@ -67,7 +73,7 @@ final readonly class ExclusiveAssociationMethod implements Method
                     continue;
                 }
 
-                $associations = $associations->merge($extractor->getAssociationsInGroup($map, $group));
+                $associations = $associations->merge($extractor->getAssociationsInGroup($candidatesByCell, $group));
             }
         }
 

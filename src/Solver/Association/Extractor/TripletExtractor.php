@@ -12,20 +12,22 @@ use Sudoku\Solver\Association\AssociationExtractor;
 use Sudoku\Solver\Association\Pair;
 use Sudoku\Solver\Association\Triplet;
 use Sudoku\Solver\Candidates;
-use Sudoku\Solver\CellCandidatesMap;
 
 /**
  * @implements AssociationExtractor<Triplet>
  */
 final readonly class TripletExtractor implements AssociationExtractor
 {
-    public function getAssociationsInGroup(CellCandidatesMap $map, Group $group): ArrayList
+    /**
+     * @inheritdoc
+     */
+    public function getAssociationsInGroup(Map $candidatesByCell, Group $group): ArrayList
     {
         $groupCells = $group->getEmptyCells();
 
         /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
         $cellsByCandidates = $groupCells->multidimensionalLoop(
-            fn (Map $carry, FillableCell $a, FillableCell $b) => $this->tryToAssociateCells($map, $carry, $a, $b),
+            fn (Map $carry, FillableCell $a, FillableCell $b) => $this->tryToAssociateCells($candidatesByCell, $carry, $a, $b),
             Map::empty(),
         );
 
@@ -48,12 +50,13 @@ final readonly class TripletExtractor implements AssociationExtractor
     }
 
     /**
+     * @param Map<FillableCell, Candidates> $map
      * @param Map<Candidates, ArrayList<FillableCell>> $carry
      *
      * @return Map<Candidates, ArrayList<FillableCell>>
      */
     private function tryToAssociateCells(
-        CellCandidatesMap $map,
+        Map $map,
         Map $carry,
         FillableCell $a,
         FillableCell $b,

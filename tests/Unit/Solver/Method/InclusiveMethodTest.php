@@ -1,13 +1,13 @@
 <?php
 
+use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Cell\Coordinates;
 use Sudoku\Grid\Cell\FillableCell;
-use Sudoku\Solver\CellCandidatesMap;
 use Sudoku\Solver\Method\InclusiveMethod;
 
 it('exclude candidates present in pair', function (string $file, string $cellToCheck, string $expectedValues) {
     // Arrange
-    $map = CellCandidatesMap::empty();
+    $candidatesByCell = Map::empty();
     $grid = buildGridFromFilePath($file);
     /** @var FillableCell $cell */
     $cell = $grid->getCell(Coordinates::fromString($cellToCheck));
@@ -15,7 +15,7 @@ it('exclude candidates present in pair', function (string $file, string $cellToC
     // Act
     $method = new InclusiveMethod();
 
-    $updatedMap = $method->apply($map, $grid, $cell);
+    $updatedMap = $method->apply($candidatesByCell, $grid, $cell);
 
     // Assert
     $candidates = $updatedMap->get($cellToCheck);

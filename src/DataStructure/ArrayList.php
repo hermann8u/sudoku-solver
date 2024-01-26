@@ -157,7 +157,7 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     {
         $items = $this->items;
 
-        if ($callable) {
+        if ($callable !== null) {
             usort($items, $callable);
         } else {
             sort($items);
@@ -167,14 +167,14 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
-     * @param ?callable(TItem, TItem): bool $comparisonCallable
+     * @param ?callable(TItem, TItem): bool $comparisonCallable Return true when the items are considered equals
      *
      * @return self<TItem>
      */
     public function unique(?callable $comparisonCallable = null): self
     {
         if ($comparisonCallable === null) {
-            return new self(array_values(array_unique($this->items)));
+            return new self(array_values(array_unique($this->items, SORT_REGULAR)));
         }
 
         $carry = $this;

@@ -138,9 +138,9 @@ dump($result);
                                     ?>
                                         <small class="step-number"><?= $cellStep->number ?></small>
                                     <?php endif; ?>
-                                    <?php if ($step->map->has($cell)) : ?>
+                                    <?php if ($step->candidatesByCell->has($cell)) : ?>
                                         <div class="candidates">
-                                            <?php foreach ($step->map->get($cell)->values as $value) : ?>
+                                            <?php foreach ($step->candidatesByCell->get($cell)->values as $value) : ?>
                                                 <small><?= $value ?></small>
                                             <?php endforeach;?>
                                         </div>

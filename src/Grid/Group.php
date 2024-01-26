@@ -47,8 +47,9 @@ abstract readonly class Group
     public function containsDuplicate(): bool
     {
         $presentValues = $this->getPresentValues();
+        $uniqueValues = $presentValues->unique(static fn (Value $a, Value $b) => $a->equals($b));
 
-        return $presentValues->count() !== $presentValues->map(static fn (Value $v) => $v->value)->unique()->count();
+        return $presentValues->count() !== $uniqueValues->count();
     }
 
     /**
