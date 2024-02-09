@@ -70,9 +70,16 @@ final readonly class Solver
                  * @var Candidates $candidates
                  */
                 foreach ($candidatesByCell as $cell => $candidates) {
-                    if ($candidates->count() === 1) {
-                        return new Solution($method::getName(), $candidatesByCell, $cell, $candidates->first());
+                    $candidatesCount = $candidates->count();
+
+                    if ($candidatesCount > 1) {
+                        continue;
                     }
+
+                    return match ($candidatesCount) {
+                        0 => null,
+                        1 => new Solution($method::getName(), $candidatesByCell, $cell, $candidates->first()),
+                    };
                 }
             }
         }

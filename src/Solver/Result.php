@@ -12,6 +12,7 @@ use Sudoku\Solver\Result\Step;
 
 final readonly class Result
 {
+    public Grid $grid;
     public int $memory;
     public string $realMemory;
     public bool $valid;
@@ -26,8 +27,13 @@ final readonly class Result
      */
     public function __construct(
         public array $steps,
-        public Grid $grid,
+        Grid $grid,
     ) {
+        foreach ($this->steps as $step) {
+            $grid = $grid->withUpdatedCell($step->coordinates, $step->value);
+        }
+
+        $this->grid = $grid;
         $this->memory = memory_get_peak_usage();
         $this->realMemory = round($this->memory / 1024 / 1024, 5) . ' MiB';
         $this->valid = $this->grid->isValid();
@@ -41,14 +47,21 @@ final readonly class Result
         $this->filledCells = $this->cellToFill - $this->remainingCells;
     }
 
-    public function getCellStep(Coordinates $coordinates): ?Step
+    public function getCellStepNumber(Coordinates $coordinates): ?int
     {
         foreach ($this->steps as $step) {
             if ($step->coordinates->equals($coordinates)) {
-                return $step;
+                return $step->number;
             }
         }
 
         return null;
+    }
+
+    public function getLastStep(): ?Step
+    {
+        $steps = $this->steps;
+
+        return end($steps) ?: null;
     }
 }

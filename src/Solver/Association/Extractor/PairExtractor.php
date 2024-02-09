@@ -22,25 +22,26 @@ final readonly class PairExtractor implements AssociationExtractor
      */
     public function getAssociationsInGroup(Map $candidatesByCell, Group $group): iterable
     {
-        $groupCells = $group->getEmptyCells();
-
         /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
-        $cellsByCandidates = $groupCells->reduce(function (Map $carry, FillableCell $cell) use ($candidatesByCell) {
-            $candidates = $candidatesByCell->get($cell);
+        $cellsByCandidates = $group->getEmptyCells()->reduce(
+            function (Map $carry, FillableCell $cell) use ($candidatesByCell) {
+                $candidates = $candidatesByCell->get($cell);
 
-            if ($candidates->count() !== 2) {
-                return $carry;
-            }
+                if ($candidates->count() !== 2) {
+                    return $carry;
+                }
 
-            try {
-                /** @var ArrayList<FillableCell> $cells */
-                $cells = $carry->get($candidates);
-            } catch (\OutOfBoundsException) {
-                $cells = ArrayList::empty();
-            }
+                try {
+                    /** @var ArrayList<FillableCell> $cells */
+                    $cells = $carry->get($candidates);
+                } catch (\OutOfBoundsException) {
+                    $cells = ArrayList::empty();
+                }
 
-            return $carry->with($candidates, $cells->with($cell));
-        }, Map::empty());
+                return $carry->with($candidates, $cells->with($cell));
+            },
+            Map::empty(),
+        );
 
         foreach ($cellsByCandidates as $candidates => $cells) {
             if ($cells->count() !== Pair::COUNT) {

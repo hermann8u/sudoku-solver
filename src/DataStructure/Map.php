@@ -15,6 +15,7 @@ use function count;
  *
  * @template TKey of object
  * @template TValue of mixed
+ *
  * @implements IteratorAggregate<TKey, TValue>
  */
 final readonly class Map implements \Countable, IteratorAggregate
@@ -59,9 +60,25 @@ final readonly class Map implements \Countable, IteratorAggregate
     }
 
     /**
+     * @return ArrayList<TKey>
+     */
+    public function keys(): ArrayList
+    {
+        return ArrayList::fromList($this->keys);
+    }
+
+    /**
+     * @return ArrayList<TValue>
+     */
+    public function values(): ArrayList
+    {
+        return ArrayList::fromList($this->values);
+    }
+
+    /**
      * @param TKey $key
      */
-    public function has(mixed $key): bool
+    public function has(object $key): bool
     {
         try {
             $this->search($key);
@@ -79,7 +96,7 @@ final readonly class Map implements \Countable, IteratorAggregate
      *
      * @throws OutOfBoundsException
      */
-    public function get(mixed $key): mixed
+    public function get(object $key): mixed
     {
         return $this->values[$this->search($key)];
     }
@@ -90,7 +107,7 @@ final readonly class Map implements \Countable, IteratorAggregate
      *
      * @return Map<TKey, TValue>
      */
-    public function with(mixed $key, mixed $value): self
+    public function with(object $key, mixed $value): self
     {
         $keys = $this->keys;
         $values = $this->values;
@@ -108,6 +125,32 @@ final readonly class Map implements \Countable, IteratorAggregate
         return new Map($keys, $values);
     }
 
+    /**
+     * @param TKey $key
+     * @param TKey ...$keys
+     *
+     * @return Map<TKey, TValue>
+     */
+    public function without(object $key, object ...$keys): self
+    {
+        $keys = [$key, ...$keys];
+
+        $k = $this->keys;
+        $v = $this->values;
+
+        foreach ($keys as $key) {
+            try {
+                $index = $this->search($key);
+
+                unset($k[$index]);
+                unset($v[$index]);
+            } catch (OutOfBoundsException) {
+            }
+        }
+
+        return new Map(array_values($k), array_values($v));
+    }
+
     public function getIterator(): Traversable
     {
         return new MapIterator($this->keys, $this->values);
@@ -118,6 +161,9 @@ final readonly class Map implements \Countable, IteratorAggregate
         return $this->keys === [];
     }
 
+    /**
+     * @return int<0, max>
+     */
     public function count(): int
     {
         return count($this->keys);
@@ -128,7 +174,7 @@ final readonly class Map implements \Countable, IteratorAggregate
      *
      * @throws OutOfBoundsException
      */
-    private function search(mixed $offset): int
+    private function search(object $offset): int
     {
         foreach ($this->keys as $index => $key) {
             if ($key instanceof Comparable) {

@@ -33,6 +33,11 @@ final readonly class Candidates implements Comparable, Stringable
         return self::fromIntegers($allIntegers);
     }
 
+    public static function fromValues(Value ...$values): self
+    {
+        return new self(ArrayList::fromList($values));
+    }
+
     public static function fromString(string $valuesString): self
     {
         $valuesStrings = explode(',', $valuesString);
@@ -58,6 +63,9 @@ final readonly class Candidates implements Comparable, Stringable
         return $this->values->first();
     }
 
+    /**
+     * @return int<0, max>
+     */
     public function count(): int
     {
         return $this->values->count();

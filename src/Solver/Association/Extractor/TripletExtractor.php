@@ -23,10 +23,8 @@ final readonly class TripletExtractor implements AssociationExtractor
      */
     public function getAssociationsInGroup(Map $candidatesByCell, Group $group): iterable
     {
-        $groupCells = $group->getEmptyCells();
-
         /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
-        $cellsByCandidates = $groupCells->multidimensionalLoop(
+        $cellsByCandidates = $group->getEmptyCells()->multidimensionalLoop(
             fn (Map $carry, FillableCell $a, FillableCell $b) => $this->tryToAssociateCells($candidatesByCell, $carry, $a, $b),
             Map::empty(),
         );
@@ -78,7 +76,7 @@ final readonly class TripletExtractor implements AssociationExtractor
         try {
             $cells = $carry->get($candidates);
         } catch (\OutOfBoundsException) {
-            $cells = ArrayList::empty();
+            return $carry->with($candidates, ArrayList::fromItems($a, $b));
         }
 
         if (! $cells->contains($a)) {

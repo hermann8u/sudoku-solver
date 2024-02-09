@@ -5,6 +5,7 @@ use Sudoku\Grid\Cell\FixedValueCell;
 use Sudoku\Grid\Factory\ArrayGridFactory;
 use Sudoku\Grid\Factory\CsvGridFactory;
 use Sudoku\Solver;
+use Sudoku\Solver\Association\Extractor\HiddenPairExtractor;
 use Sudoku\Solver\Association\Extractor\PairExtractor;
 use Sudoku\Solver\Association\Extractor\TripletExtractor;
 use Sudoku\Solver\Method\ExclusiveAssociationMethod;
@@ -28,6 +29,7 @@ $solver = new Solver([
         [
             new TripletExtractor(),
             new PairExtractor(),
+            new HiddenPairExtractor(),
         ]
     ),
     new XWingMethod(),
@@ -116,46 +118,47 @@ dump($result);
 </head>
 <body>
     <div class="container">
-        <?php foreach ($result->steps as $step) : ?>
-            <?php $grid = $grid->withUpdatedCell($step->coordinates, $step->value); ?>
 
-            <?php if (count($result->steps) !== $step->number) { continue; } ?>
+        <?php
+            $lastStep = $result->getLastStep();
+            $candidatesByCell = $lastStep->candidatesByCell;
+        ?>
 
-            <p><strong><?= $step->number ?></strong> <?= $step->methodName ?> : <?= $step->coordinates ?> => <?=$step->value ?></p>
+        <?php if ($lastStep) : ?>
+            <p><strong><?= $lastStep->number ?></strong> <?= $lastStep->methodName ?> : <?= $lastStep->coordinates ?> => <?=$lastStep->value ?></p>
+        <?php endif; ?>
 
-            <table>
-                <tbody>
-                <?php foreach ($grid->rows as $row) : ?>
-                    <tr>
-                        <?php foreach ($row->cells as $cell) : ?>
-                            <?php if ($cell instanceof FixedValueCell): ?>
-                                <td class="fixed">
-                                    <?= $cell->value ?>
-                                </td>
-                            <?php elseif ($cell instanceof FillableCell) : ?>
-                                <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
-                                    <span><?= $cell->value ?></span>
-                                    <?php $cellStep = $result->getCellStep($cell->coordinates);
-                                        if ($cellStep && ! $cell->isEmpty()) :
-                                    ?>
-                                        <small class="step-number"><?= $cellStep->number ?></small>
-                                    <?php endif; ?>
-                                    <?php if ($step->candidatesByCell->has($cell)) : ?>
-                                        <div class="candidates">
-                                            <?php foreach ($step->candidatesByCell->get($cell)->values as $value) : ?>
-                                                <small><?= $value ?></small>
-                                            <?php endforeach;?>
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                            <?php endif ?>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-            <br><br>
-        <?php endforeach; ?>
+        <table>
+            <tbody>
+            <?php foreach ($result->grid->rows as $row) : ?>
+                <tr>
+                    <?php foreach ($row->cells as $cell) : ?>
+                        <?php if ($cell instanceof FixedValueCell): ?>
+                            <td class="fixed">
+                                <?= $cell->value ?>
+                            </td>
+                        <?php elseif ($cell instanceof FillableCell) : ?>
+                            <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
+                                <span><?= $cell->value ?></span>
+                                <?php if ($cellStepNumber = $result->getCellStepNumber($cell->coordinates)) : ?>
+                                    <small class="step-number"><?= $cellStepNumber ?></small>
+                                <?php endif; ?>
+                                <?php if ($candidatesByCell->has($cell)) : ?>
+                                    <div class="candidates">
+                                        <?php foreach ($candidatesByCell->get($cell)->values as $value) : ?>
+                                            <small><?= $value ?></small>
+                                        <?php endforeach;?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif ?>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <hr>
 
         <ol class="steps">
             <?php foreach ($result->steps as $step) : ?>

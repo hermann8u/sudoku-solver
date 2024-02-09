@@ -297,6 +297,9 @@ final readonly class ArrayList implements Countable, IteratorAggregate
         return new self(array_slice($this->items, $offset, $length));
     }
 
+    /**
+     * @return int<0, max>
+     */
     public function count(): int
     {
         return count($this->items);

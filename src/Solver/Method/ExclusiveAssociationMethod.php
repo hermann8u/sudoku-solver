@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sudoku\Solver\Method;
 
-use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
@@ -39,6 +38,12 @@ final readonly class ExclusiveAssociationMethod implements Method
         foreach ($associations as $association) {
             foreach ($association->group->getEmptyCells() as $cell) {
                 if ($association->contains($cell)) {
+                    $previousCandidates = $candidatesByCell->get($cell);
+
+                    if ($previousCandidates->count() > $association->candidates->count()) {
+                        $candidatesByCell = $candidatesByCell->with($cell, $association->candidates);
+                    }
+
                     continue;
                 }
 
