@@ -19,9 +19,9 @@ interface AssociationExtractor
     /**
      * @param Map<FillableCell, Candidates> $candidatesByCell
      *
-     * @return ArrayList<T>
+     * @return iterable<T>
      */
-    public function getAssociationsInGroup(Map $candidatesByCell, Group $group): ArrayList;
+    public function getAssociationsInGroup(Map $candidatesByCell, Group $group): iterable;
 
     /**
      * @return class-string<T>

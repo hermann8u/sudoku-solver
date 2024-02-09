@@ -31,6 +31,8 @@ $solver = new Solver([
         ]
     ),
     new XWingMethod(),
+    // Reapply exclusive method to make sure there is no new solution
+    new ExclusiveMethod(),
 ]);
 
 $result = $solver->solve($grid);

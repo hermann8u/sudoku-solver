@@ -59,13 +59,10 @@ final readonly class ExclusiveAssociationMethod implements Method
     /**
      * @param Map<FillableCell, Candidates> $candidatesByCell
      *
-     * @return ArrayList<Association>
+     * @return iterable<Association>
      */
-    private function getAllAssociationsInCellGroups(Map $candidatesByCell, Grid $grid, FillableCell $cell): ArrayList
+    private function getAllAssociationsInCellGroups(Map $candidatesByCell, Grid $grid, FillableCell $cell): iterable
     {
-        /** @var ArrayList<Association> $associations */
-        $associations = ArrayList::empty();
-
         foreach ($this->extractors as $extractor) {
             foreach ($grid->getGroupsForCell($cell) as $group) {
                 // We don't need to identify association in groups with less remaining cells than association count
@@ -73,10 +70,8 @@ final readonly class ExclusiveAssociationMethod implements Method
                     continue;
                 }
 
-                $associations = $associations->merge($extractor->getAssociationsInGroup($candidatesByCell, $group));
+                yield from $extractor->getAssociationsInGroup($candidatesByCell, $group);
             }
         }
-
-        return $associations;
     }
 }

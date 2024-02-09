@@ -96,6 +96,7 @@ final readonly class Grid
     public function containsDuplicate(): bool
     {
         foreach ([$this->columns, $this->rows, $this->regions] as $groups) {
+            /** @var Group $group */
             foreach ($groups as $group) {
                 if ($group->containsDuplicate()) {
                     return true;

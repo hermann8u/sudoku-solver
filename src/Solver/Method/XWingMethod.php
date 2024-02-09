@@ -29,13 +29,7 @@ final readonly class XWingMethod implements Method
      */
     public function apply(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): Map
     {
-        /** @var ArrayList<XWing> $xWings */
-        $xWings = ArrayList::empty();
-
-        foreach (Direction::cases() as $direction) {
-            $xWingsByDirection = $this->buildXWings($direction, $candidatesByCell, $grid, $currentCell);
-            $xWings = $xWings->merge($xWingsByDirection);
-        }
+        $xWings = $this->buildXWings($candidatesByCell, $grid, $currentCell);
 
         /** @var XWing $xWing */
         foreach ($xWings as $xWing) {
@@ -61,12 +55,26 @@ final readonly class XWingMethod implements Method
     /**
      * @param Map<FillableCell, Candidates> $candidatesByCell
      *
-     * @return ArrayList<XWing>
+     * @return iterable<XWing>
      */
-    private function buildXWings(Direction $direction, Map $candidatesByCell, Grid $grid, FillableCell $currentCell): ArrayList
+    private function buildXWings(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): iterable
     {
-        $xWings = ArrayList::empty();
+        foreach (Direction::cases() as $direction) {
+            yield from $this->buildXWingsForDirection($direction, $candidatesByCell, $grid, $currentCell);
+        }
+    }
 
+    /**
+     * @param Map<FillableCell, Candidates> $candidatesByCell
+     *
+     * @return iterable<XWing>
+     */
+    private function buildXWingsForDirection(
+        Direction $direction,
+        Map $candidatesByCell,
+        Grid $grid,
+        FillableCell $currentCell,
+    ): iterable {
         $firstDirectionGroupCallable = match ($direction) {
             Direction::Horizontal => $grid->getRowByCell(...),
             Direction::Vertical => $grid->getColumnByCell(...),
@@ -126,7 +134,7 @@ final readonly class XWingMethod implements Method
                     continue;
                 }
 
-                $xWings = $xWings->with(new XWing(
+                yield new XWing(
                     $direction,
                     ArrayList::fromItems(
                         $currentCell,
@@ -135,11 +143,9 @@ final readonly class XWingMethod implements Method
                         $fourthCell,
                     ),
                     $allCandidatesIntersect->first(),
-                ));
+                );
             }
         }
-
-        return $xWings;
     }
 
     /**

@@ -20,7 +20,7 @@ final readonly class PairExtractor implements AssociationExtractor
     /**
      * @inheritdoc
      */
-    public function getAssociationsInGroup(Map $candidatesByCell, Group $group): ArrayList
+    public function getAssociationsInGroup(Map $candidatesByCell, Group $group): iterable
     {
         $groupCells = $group->getEmptyCells();
 
@@ -42,17 +42,13 @@ final readonly class PairExtractor implements AssociationExtractor
             return $carry->with($candidates, $cells->with($cell));
         }, Map::empty());
 
-        $pairs = ArrayList::empty();
-
         foreach ($cellsByCandidates as $candidates => $cells) {
             if ($cells->count() !== Pair::COUNT) {
                 continue;
             }
 
-            $pairs = $pairs->with(new Pair($group, $candidates, $cells));
+            yield new Pair($group, $candidates, $cells);
         }
-
-        return $pairs;
     }
 
     public static function getAssociationType(): string
