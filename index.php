@@ -118,15 +118,9 @@ dump($result);
 </head>
 <body>
     <div class="container">
+        <?php $candidatesByCell = $result->getLastCandidatesByCell(); ?>
 
-        <?php
-            $lastStep = $result->getLastStep();
-            $candidatesByCell = $lastStep->candidatesByCell;
-        ?>
-
-        <?php if ($lastStep) : ?>
-            <p><strong><?= $lastStep->number ?></strong> <?= $lastStep->methodName ?> : <?= $lastStep->coordinates ?> => <?=$lastStep->value ?></p>
-        <?php endif; ?>
+        <p><?= $result->isSolved() ? 'Solved!' : 'No solution' ?></p>
 
         <table>
             <tbody>
@@ -140,7 +134,7 @@ dump($result);
                         <?php elseif ($cell instanceof FillableCell) : ?>
                             <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
                                 <span><?= $cell->value ?></span>
-                                <?php if ($cellStepNumber = $result->getCellStepNumber($cell->coordinates)) : ?>
+                                <?php if ($cellStepNumber = $result->getCellStepNumber($cell)) : ?>
                                     <small class="step-number"><?= $cellStepNumber ?></small>
                                 <?php endif; ?>
                                 <?php if ($candidatesByCell->has($cell)) : ?>
@@ -162,7 +156,9 @@ dump($result);
 
         <ol class="steps">
             <?php foreach ($result->steps as $step) : ?>
-                <li><?= $step->methodName ?> : <?= $step->coordinates ?> => <?=$step->value ?></li>
+                <?php if ($step->solution !== null) : ?>
+                    <li><?= $step->solution->method ?> : <?= $step->solution->cell->coordinates ?> => <?= $step->solution->value ?></li>
+                <?php endif ?>
             <?php endforeach; ?>
         </ol>
     </div>

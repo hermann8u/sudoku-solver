@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku;
 
+use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Solver\Candidates;
@@ -25,11 +26,13 @@ final readonly class Solver
     ) {
     }
 
-    public function solve(Grid $grid): Result
+    public function solve(Grid $grid, int $stopAtStepNumber = self::MAX_ITERATION): Result
     {
+        $steps = iterator_to_array($this->getResolutionSteps($grid, $stopAtStepNumber));
+
         return new Result(
-            iterator_to_array($this->getResolutionSteps($grid)),
             $grid,
+            ArrayList::fromList($steps),
         );
     }
 
@@ -44,20 +47,26 @@ final readonly class Solver
 
         do {
             $i++;
-            $solution = $this->getNextSolution($grid);
+
+            [$candidatesByCell, $solution] = $this->getNextSolution($grid);
 
             if (! $solution instanceof Solution) {
-                break;
+                yield new Step($i, $candidatesByCell, null);
+
+                return;
             }
 
             $grid = $grid->withUpdatedCell($solution->cell->coordinates, $solution->value);
 
-            yield Step::fromSolution($i, $solution);
+            yield new Step($i, $candidatesByCell, $solution);
 
         } while (! $this->shouldStop($stopAtStepNumber, $i, $grid));
     }
 
-    public function getNextSolution(Grid $grid): ?Solution
+    /**
+     * @return array{Map<FillableCell, Candidates>, ?Solution}
+     */
+    public function getNextSolution(Grid $grid): array
     {
         $candidatesByCell = Map::empty();
 
@@ -77,14 +86,14 @@ final readonly class Solver
                     }
 
                     return match ($candidatesCount) {
-                        0 => null,
-                        1 => new Solution($method::getName(), $candidatesByCell, $cell, $candidates->first()),
+                        0 => [$candidatesByCell, null],
+                        1 => [$candidatesByCell, new Solution($method::getName(), $cell, $candidates->first())],
                     };
                 }
             }
         }
 
-        return null;
+        return [$candidatesByCell, null];
     }
 
     /**
@@ -96,7 +105,7 @@ final readonly class Solver
             return true;
         }
 
-        if ($grid->isValid()) {
+        if ($grid->isFilled()) {
             return true;
         }
 

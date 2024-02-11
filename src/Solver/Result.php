@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Sudoku\Solver;
 
+use Sudoku\DataStructure\ArrayList;
+use Sudoku\DataStructure\Map;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell;
-use Sudoku\Grid\Cell\Coordinates;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Solver\Result\Step;
 
@@ -15,29 +16,31 @@ final readonly class Result
     public Grid $grid;
     public int $memory;
     public string $realMemory;
-    public bool $valid;
-    public bool $filled;
+    public bool $solved;
     public bool $containsDuplicate;
     public int $cellToFill;
     public int $filledCells;
     public int $remainingCells;
 
     /**
-     * @param Step[] $steps
+     * @param ArrayList<Step> $steps
      */
     public function __construct(
-        public array $steps,
         Grid $grid,
+        public ArrayList $steps,
     ) {
         foreach ($this->steps as $step) {
-            $grid = $grid->withUpdatedCell($step->coordinates, $step->value);
+            if ($step->solution === null) {
+                break;
+            }
+
+            $grid = $grid->withUpdatedCell($step->solution->cell->coordinates, $step->solution->value);
         }
 
         $this->grid = $grid;
         $this->memory = memory_get_peak_usage();
         $this->realMemory = round($this->memory / 1024 / 1024, 5) . ' MiB';
-        $this->valid = $this->grid->isValid();
-        $this->filled = $this->grid->isFilled();
+        $this->solved = $this->grid->isSolved();
         $this->containsDuplicate = $this->grid->containsDuplicate();
         $this->cellToFill = $this->grid
             ->cells
@@ -47,21 +50,25 @@ final readonly class Result
         $this->filledCells = $this->cellToFill - $this->remainingCells;
     }
 
-    public function getCellStepNumber(Coordinates $coordinates): ?int
+    public function getCellStepNumber(Cell $cell): ?int
     {
-        foreach ($this->steps as $step) {
-            if ($step->coordinates->equals($coordinates)) {
-                return $step->number;
-            }
-        }
-
-        return null;
+        return $this->steps
+            ->findFirst(static fn (Step $step) => $step->solution !== null
+                && $cell->coordinates->equals($step->solution->cell->coordinates)
+            )
+            ?->number;
     }
 
-    public function getLastStep(): ?Step
+    public function isSolved(): bool
     {
-        $steps = $this->steps;
+        return $this->steps->last()->solution !== null;
+    }
 
-        return end($steps) ?: null;
+    /**
+     * @return Map<FillableCell, Candidates>
+     */
+    public function getLastCandidatesByCell(): Map
+    {
+        return $this->steps->last()->candidatesByCell;
     }
 }

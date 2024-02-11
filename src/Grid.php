@@ -83,7 +83,7 @@ final readonly class Grid
         return $this->rows->get(RowNumber::fromCell($cell));
     }
 
-    public function isValid(): bool
+    public function isSolved(): bool
     {
         return $this->isFilled() && $this->containsDuplicate() === false;
     }
