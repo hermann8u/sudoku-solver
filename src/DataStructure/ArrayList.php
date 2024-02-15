@@ -314,19 +314,6 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
-     * @return TItem[]
-     */
-    public function toArray(): array
-    {
-        return $this->items;
-    }
-
-    public function getIterator(): Traversable
-    {
-        return new ArrayIterator($this->items);
-    }
-
-    /**
      * @param callable(TItem): (int|string) $callable
      *
      * @return array<int|string, ArrayList<TItem>>
@@ -343,5 +330,29 @@ final readonly class ArrayList implements Countable, IteratorAggregate
             static fn (array $group) => self::fromList($group),
             $groups,
         );
+    }
+
+    /**
+     * @return self<TItem>
+     */
+    public function shuffle(): self
+    {
+        $items = $this->items;
+        shuffle($items);
+
+        return new self($items);
+    }
+
+    /**
+     * @return TItem[]
+     */
+    public function toArray(): array
+    {
+        return $this->items;
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->items);
     }
 }

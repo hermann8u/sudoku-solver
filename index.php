@@ -23,22 +23,24 @@ $grid = $gridFactory->create($csvStringGrid);
 
 $exclusiveMethod = new ExclusiveMethod();
 
-$solver = new Solver([
+$solver = new Solver(
     new InclusiveMethod(),
-    // Apply exclusive method early in order to find obvious solution
-    $exclusiveMethod,
-    new XWingMethod(),
-    new ExclusiveAssociationMethod(
-        [
-            new TripletExtractor(),
-            new PairExtractor(),
-            new HiddenPairExtractor(),
-        ]
-    ),
-    new PointingPairMethod(),
-    // Reapply exclusive method to make sure there is no new solution
-    $exclusiveMethod,
-]);
+    [
+        // Apply exclusive method early in order to find obvious solution
+        $exclusiveMethod,
+        new XWingMethod(),
+        new ExclusiveAssociationMethod(
+            [
+                new TripletExtractor(),
+                new PairExtractor(),
+                new HiddenPairExtractor(),
+            ],
+        ),
+        new PointingPairMethod(),
+        // Reapply exclusive method to make sure there is no new solution
+        $exclusiveMethod,
+    ],
+);
 
 $result = $solver->solve($grid);
 
@@ -120,7 +122,7 @@ dump($result);
 </head>
 <body>
     <div class="container">
-        <?php $candidatesByCell = $result->getLastCandidatesByCell(); ?>
+        <?php $candidatesByCell = $result->getCandidatesByCell(); ?>
 
         <p><?= $result->isSolved() ? 'Solved!' : 'No solution' ?></p>
 
@@ -136,7 +138,7 @@ dump($result);
                         <?php elseif ($cell instanceof FillableCell) : ?>
                             <td class="fillable <?= $cell->isEmpty() ? '' : 'solved' ?>">
                                 <span><?= $cell->value ?></span>
-                                <?php if ($cellStepNumber = $result->getCellStepNumber($cell)) : ?>
+                                <?php if ($cellStepNumber = $result->getStepNumberForCell($cell)) : ?>
                                     <small class="step-number"><?= $cellStepNumber ?></small>
                                 <?php endif; ?>
                                 <?php if ($candidatesByCell->has($cell)) : ?>
@@ -159,7 +161,7 @@ dump($result);
         <ol class="steps">
             <?php foreach ($result->steps as $step) : ?>
                 <?php if ($step->solution !== null) : ?>
-                    <li><?= $step->solution->method ?> : <?= $step->solution->cell->coordinates ?> => <?= $step->solution->value ?></li>
+                    <li><?= $step->solution ?></li>
                 <?php endif ?>
             <?php endforeach; ?>
         </ol>

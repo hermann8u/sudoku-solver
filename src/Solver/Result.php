@@ -50,7 +50,7 @@ final readonly class Result
         $this->filledCells = $this->cellToFill - $this->remainingCells;
     }
 
-    public function getCellStepNumber(Cell $cell): ?int
+    public function getStepNumberForCell(Cell $cell): ?int
     {
         return $this->steps
             ->findFirst(static fn (Step $step) => $step->solution !== null
@@ -67,8 +67,8 @@ final readonly class Result
     /**
      * @return Map<FillableCell, Candidates>
      */
-    public function getLastCandidatesByCell(): Map
+    public function getCandidatesByCell(): Map
     {
-        return $this->steps->last()->candidatesByCell;
+        return $this->steps->last()->candidatesByCell ?? Map::empty();
     }
 }

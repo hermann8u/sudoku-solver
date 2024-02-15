@@ -175,10 +175,10 @@ final readonly class XWingMethod implements Method
                 ->multidimensionalLoop($this->filterDuplicateValues(...), $expectedValues);
         }
 
-        $currentCellRegionNumber = RegionNumber::fromCell($currentCell);
+        $currentCellRegionNumber = $currentCell->getRegionNumber();
 
         return $currentGroup->getEmptyCells()
-            ->filter(static fn (FillableCell $c) => ! $currentCellRegionNumber->equals(RegionNumber::fromCell($c)))
+            ->filter(static fn (FillableCell $c) => ! $currentCellRegionNumber->equals($c->getRegionNumber()))
             ->reduce(function (Map $carry, FillableCell $relatedCell) use ($expectedValues, $candidatesByCell, $currentFilteredCandidates) {
                 $intersectCellCandidates = $currentFilteredCandidates->intersect($candidatesByCell->get($relatedCell));
 

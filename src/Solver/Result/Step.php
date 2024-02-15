@@ -11,11 +11,11 @@ use Sudoku\Solver\Candidates;
 final readonly class Step
 {
     /**
-     * @param Map<FillableCell, Candidates> $candidatesByCell
+     * @param ?Map<FillableCell, Candidates> $candidatesByCell
      */
     public function __construct(
         public int $number,
-        public Map $candidatesByCell,
+        public ?Map $candidatesByCell,
         public ?Solution $solution,
     ) {
     }

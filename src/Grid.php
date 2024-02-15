@@ -63,29 +63,27 @@ final readonly class Grid
      */
     public function getGroupsForCell(Cell $cell): ArrayList
     {
-        /** @var ArrayList<Group> $groups */
-        $groups = ArrayList::fromItems(
+        /** @var ArrayList<Group> */
+        return ArrayList::fromItems(
             $this->getColumnByCell($cell),
             $this->getRowByCell($cell),
             $this->getRegionByCell($cell),
         );
-
-        return $groups;
     }
 
     public function getColumnByCell(Cell $cell): Column
     {
-        return $this->columns->get(ColumnNumber::fromCell($cell));
+        return $this->columns->get($cell->getColumnNumber());
     }
 
     public function getRowByCell(Cell $cell): Row
     {
-        return $this->rows->get(RowNumber::fromCell($cell));
+        return $this->rows->get($cell->getRowNumber());
     }
 
     public function getRegionByCell(Cell $cell): Region
     {
-        return $this->regions->get(RegionNumber::fromCell($cell));
+        return $this->regions->get($cell->getRegionNumber());
     }
 
     public function isSolved(): bool
