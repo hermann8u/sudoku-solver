@@ -57,9 +57,7 @@ final readonly class Solver
             [$candidatesByCell, $solution] = $this->getNextSolution($grid, $candidatesByCell ?? null);
 
             if (! $solution instanceof Solution) {
-                yield new Step($i, $candidatesByCell, null);
-
-                return;
+                return yield new Step($i, $candidatesByCell, null);
             }
 
             $grid = $grid->withUpdatedCell($solution->cell->coordinates, $solution->value);

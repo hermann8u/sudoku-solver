@@ -28,7 +28,6 @@ $solver = new Solver(
     [
         // Apply exclusive method early in order to find obvious solution
         $exclusiveMethod,
-        new XWingMethod(),
         new ExclusiveAssociationMethod(
             [
                 new TripletExtractor(),
@@ -37,6 +36,7 @@ $solver = new Solver(
             ],
         ),
         new PointingPairMethod(),
+        new XWingMethod(),
         // Reapply exclusive method to make sure there is no new solution
         $exclusiveMethod,
     ],

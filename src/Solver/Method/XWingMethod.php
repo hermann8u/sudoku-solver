@@ -179,13 +179,10 @@ final readonly class XWingMethod implements Method
 
         return $currentGroup->getEmptyCells()
             ->filter(static fn (FillableCell $c) => ! $currentCellRegionNumber->equals($c->getRegionNumber()))
-            ->reduce(function (Map $carry, FillableCell $relatedCell) use ($expectedValues, $candidatesByCell, $currentFilteredCandidates) {
-                $intersectCellCandidates = $currentFilteredCandidates->intersect($candidatesByCell->get($relatedCell));
+            ->reduce(function (Map $carry, FillableCell $relatedCell) use ($expectedValues, $candidatesByCell) {
+                $intersectCellCandidates = $expectedValues->intersect($candidatesByCell->get($relatedCell));
 
-                if (
-                    $intersectCellCandidates->count() === 0
-                    || $intersectCellCandidates->intersect($expectedValues)->count() === 0
-                ) {
+                if ($intersectCellCandidates->count() === 0) {
                     return $carry;
                 }
 
