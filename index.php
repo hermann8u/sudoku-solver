@@ -11,6 +11,7 @@ use Sudoku\Solver\Association\Extractor\TripletExtractor;
 use Sudoku\Solver\Method\ExclusiveAssociationMethod;
 use Sudoku\Solver\Method\ExclusiveMethod;
 use Sudoku\Solver\Method\InclusiveMethod;
+use Sudoku\Solver\Method\PointingPairMethod;
 use Sudoku\Solver\Method\XWingMethod;
 
 require './vendor/autoload.php';
@@ -20,11 +21,13 @@ $csvStringGrid = file_get_contents('./data/grid/very_hard/1.csv');
 $gridFactory = new CsvGridFactory(new ArrayGridFactory());
 $grid = $gridFactory->create($csvStringGrid);
 
-$inclusiveMethod = new InclusiveMethod();
+$exclusiveMethod = new ExclusiveMethod();
 
 $solver = new Solver([
-    $inclusiveMethod,
-    new ExclusiveMethod(),
+    new InclusiveMethod(),
+    // Apply exclusive method early in order to find obvious solution
+    $exclusiveMethod,
+    new XWingMethod(),
     new ExclusiveAssociationMethod(
         [
             new TripletExtractor(),
@@ -32,9 +35,9 @@ $solver = new Solver([
             new HiddenPairExtractor(),
         ]
     ),
-    new XWingMethod(),
+    new PointingPairMethod(),
     // Reapply exclusive method to make sure there is no new solution
-    new ExclusiveMethod(),
+    $exclusiveMethod,
 ]);
 
 $result = $solver->solve($grid);
@@ -46,8 +49,7 @@ dump($result);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>

@@ -64,6 +64,22 @@ abstract readonly class Group
     }
 
     /**
+     * @return ArrayList<FillableCell>
+     */
+    public function getEmptyCellsInGroup(Group $group): ArrayList
+    {
+        return $this->getEmptyCells()->filter(static fn (FillableCell $c) => $group->cells->exists($c->is(...)));
+    }
+
+    /**
+     * @return ArrayList<FillableCell>
+     */
+    public function getEmptyCellsNotInGroup(Group $group): ArrayList
+    {
+        return $this->getEmptyCells()->filter(static fn (FillableCell $c) => ! $group->cells->exists($c->is(...)));
+    }
+
+    /**
      * @return ArrayList<Value>
      */
     public function getPresentValues(): ArrayList

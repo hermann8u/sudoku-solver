@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sudoku\Solver\Association;
 
-use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Group;

@@ -325,4 +325,23 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     {
         return new ArrayIterator($this->items);
     }
+
+    /**
+     * @param callable(TItem): (int|string) $callable
+     *
+     * @return array<int|string, ArrayList<TItem>>
+     */
+    public function groupBy(callable $callable): array
+    {
+        $groups = [];
+
+        foreach ($this->items as $item) {
+            $groups[$callable($item)][] = $item;
+        }
+
+        return array_map(
+            static fn (array $group) => self::fromList($group),
+            $groups,
+        );
+    }
 }

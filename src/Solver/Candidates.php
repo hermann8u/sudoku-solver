@@ -71,9 +71,11 @@ final readonly class Candidates implements Comparable, Stringable
         return $this->values->count();
     }
 
-    public function intersect(Candidates $other): self
+    public function intersect(Candidates ...$others): self
     {
-        $intersect = $this->toIntegers()->intersect($other->toIntegers());
+        $othersToIntegers = array_map(static fn (Candidates $c) => $c->toIntegers(), $others);
+
+        $intersect = $this->toIntegers()->intersect(...$othersToIntegers);
 
         return self::fromIntegers($intersect);
     }

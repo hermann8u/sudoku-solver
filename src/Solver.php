@@ -26,6 +26,9 @@ final readonly class Solver
     ) {
     }
 
+    /**
+     * @param positive-int $stopAtStepNumber
+     */
     public function solve(Grid $grid, int $stopAtStepNumber = self::MAX_ITERATION): Result
     {
         $steps = iterator_to_array($this->getResolutionSteps($grid, $stopAtStepNumber));

@@ -67,7 +67,7 @@ final readonly class Grid
         $groups = ArrayList::fromItems(
             $this->getColumnByCell($cell),
             $this->getRowByCell($cell),
-            $this->regions->get(RegionNumber::fromCell($cell)),
+            $this->getRegionByCell($cell),
         );
 
         return $groups;
@@ -81,6 +81,11 @@ final readonly class Grid
     public function getRowByCell(Cell $cell): Row
     {
         return $this->rows->get(RowNumber::fromCell($cell));
+    }
+
+    public function getRegionByCell(Cell $cell): Region
+    {
+        return $this->regions->get(RegionNumber::fromCell($cell));
     }
 
     public function isSolved(): bool
