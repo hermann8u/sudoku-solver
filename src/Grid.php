@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku;
 
+use OutOfBoundsException;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Cell;
@@ -44,7 +45,7 @@ final readonly class Grid
     {
         return $this->cells
             ->findFirst(static fn (Cell $cell) => $cell->coordinates->equals($coordinates))
-            ?? throw new \OutOfBoundsException();
+            ?? throw new OutOfBoundsException();
     }
 
     /**

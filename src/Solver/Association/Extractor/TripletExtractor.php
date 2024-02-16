@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku\Solver\Association\Extractor;
 
+use OutOfBoundsException;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Cell\FillableCell;
@@ -34,7 +35,7 @@ final readonly class TripletExtractor implements AssociationExtractor
                 continue;
             }
 
-            yield new Triplet($group, $candidates, $cells);
+            yield new Triplet($group, $cells, $candidates->values);
         }
     }
 
@@ -75,7 +76,7 @@ final readonly class TripletExtractor implements AssociationExtractor
 
         try {
             $cells = $carry->get($candidates);
-        } catch (\OutOfBoundsException) {
+        } catch (OutOfBoundsException) {
             return $carry->with($candidates, ArrayList::fromItems($a, $b));
         }
 

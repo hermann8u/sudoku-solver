@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Sudoku\Solver;
+namespace Sudoku\Solver\Association;
 
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Cell\Value;
 use Sudoku\Grid\Group;
+use Sudoku\Solver\Association;
 use Webmozart\Assert\Assert;
 
-final class YWing
+final class YWing implements Association
 {
     /**
      * @param ArrayList<FillableCell> $pincers
@@ -24,10 +25,7 @@ final class YWing
         Assert::count($this->pincers, 2);
     }
 
-    /**
-     * @return ArrayList<FillableCell>
-     */
-    public function getTargetedFillableCells(Grid $grid): ArrayList
+    public function getTargetedCells(Grid $grid): ArrayList
     {
         /** @var ArrayList<ArrayList<FillableCell>> $emptyCellsTargetedByPincers */
         $emptyCellsTargetedByPincers = $this->pincers
@@ -88,5 +86,10 @@ final class YWing
     private function getCommonCells(ArrayList $firstCells, ArrayList $secondCells): ArrayList
     {
         return $firstCells->filter(static fn (FillableCell $c) => $secondCells->exists($c->is(...)));
+    }
+
+    public function getCandidatesToEliminate(): ArrayList
+    {
+        return ArrayList::fromItems($this->value);
     }
 }

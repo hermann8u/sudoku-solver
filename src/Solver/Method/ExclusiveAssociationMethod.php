@@ -7,8 +7,8 @@ namespace Sudoku\Solver\Method;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
-use Sudoku\Solver\Association;
 use Sudoku\Solver\Association\AssociationExtractor;
+use Sudoku\Solver\Association\NakedAssociation;
 use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
 
@@ -34,22 +34,11 @@ final readonly class ExclusiveAssociationMethod implements Method
     {
         $associations = $this->getAllAssociationsInCellGroups($candidatesByCell, $grid, $currentCell);
 
-        /** @var Association $association */
         foreach ($associations as $association) {
-            foreach ($association->group->getEmptyCells() as $cell) {
-                if ($association->contains($cell)) {
-                    $previousCandidates = $candidatesByCell->get($cell);
-
-                    if ($previousCandidates->count() > $association->candidates->count()) {
-                        $candidatesByCell = $candidatesByCell->with($cell, $association->candidates);
-                    }
-
-                    continue;
-                }
-
+            foreach ($association->getTargetedCells($grid) as $cell) {
                 $candidatesByCell = $candidatesByCell->with(
                     $cell,
-                    $candidatesByCell->get($cell)->withRemovedValues(...$association->candidates->values),
+                    $candidatesByCell->get($cell)->withRemovedValues(...$association->getCandidatesToEliminate()),
                 );
             }
         }
@@ -60,7 +49,7 @@ final readonly class ExclusiveAssociationMethod implements Method
     /**
      * @param Map<FillableCell, Candidates> $candidatesByCell
      *
-     * @return iterable<Association>
+     * @return iterable<NakedAssociation>
      */
     private function getAllAssociationsInCellGroups(Map $candidatesByCell, Grid $grid, FillableCell $cell): iterable
     {

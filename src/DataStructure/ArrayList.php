@@ -7,6 +7,7 @@ namespace Sudoku\DataStructure;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
+use OutOfBoundsException;
 use Traversable;
 use Webmozart\Assert\Assert;
 use function count;
@@ -270,7 +271,7 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     public function first(): mixed
     {
         if ($this->isEmpty()) {
-            throw new \OutOfBoundsException();
+            throw new OutOfBoundsException();
         }
 
         $items = $this->items;
@@ -287,7 +288,7 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     public function last(): mixed
     {
         if ($this->isEmpty()) {
-            throw new \OutOfBoundsException();
+            throw new OutOfBoundsException();
         }
 
         $items = $this->items;

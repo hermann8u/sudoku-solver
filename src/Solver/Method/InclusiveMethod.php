@@ -11,10 +11,9 @@ use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Cell\Value;
 use Sudoku\Grid\Group;
 use Sudoku\Solver\Candidates;
-use Sudoku\Solver\CandidatesProvider;
 use Sudoku\Solver\Method;
 
-final readonly class InclusiveMethod implements Method, CandidatesProvider
+final readonly class InclusiveMethod implements Method
 {
     public static function getName(): string
     {
@@ -33,7 +32,7 @@ final readonly class InclusiveMethod implements Method, CandidatesProvider
         return $candidatesByCell->with($currentCell, $this->getCandidates($grid, $currentCell));
     }
 
-    public function getCandidates(Grid $grid, FillableCell $cell): Candidates
+    private function getCandidates(Grid $grid, FillableCell $cell): Candidates
     {
         /** @var ArrayList<Value> $presentValuesInCellGroups */
         $presentValuesInCellGroups = $grid->getGroupsForCell($cell)->reduce(

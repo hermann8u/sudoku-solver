@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku\Solver\Association\Extractor;
 
+use OutOfBoundsException;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Cell\FillableCell;
@@ -34,7 +35,7 @@ final readonly class PairExtractor implements AssociationExtractor
                 try {
                     /** @var ArrayList<FillableCell> $cells */
                     $cells = $carry->get($candidates);
-                } catch (\OutOfBoundsException) {
+                } catch (OutOfBoundsException) {
                     $cells = ArrayList::empty();
                 }
 
@@ -48,7 +49,7 @@ final readonly class PairExtractor implements AssociationExtractor
                 continue;
             }
 
-            yield new Pair($group, $candidates, $cells);
+            yield new Pair($group, $cells, $candidates->values);
         }
     }
 

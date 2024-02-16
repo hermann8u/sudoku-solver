@@ -10,9 +10,9 @@ use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Cell\Value;
 use Sudoku\Grid\Group;
+use Sudoku\Solver\Association\YWing;
 use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
-use Sudoku\Solver\YWing;
 
 final class YWingMethod implements Method
 {
@@ -30,10 +30,10 @@ final class YWingMethod implements Method
 
         /** @var YWing $yWing */
         foreach ($yWings as $yWing) {
-            foreach ($yWing->getTargetedFillableCells($grid) as $cell) {
+            foreach ($yWing->getTargetedCells($grid) as $cell) {
                 $candidatesByCell = $candidatesByCell->with(
                     $cell,
-                    $candidatesByCell->get($cell)->withRemovedValues($yWing->value),
+                    $candidatesByCell->get($cell)->withRemovedValues(...$yWing->getCandidatesToEliminate()),
                 );
             }
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku\Solver;
 
+use Countable;
 use Stringable;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Equable;
@@ -12,7 +13,7 @@ use Sudoku\Grid\Cell\Value;
 /**
  * @implements Equable<Candidates>
  */
-final readonly class Candidates implements Equable, Stringable
+final readonly class Candidates implements Equable, Countable, Stringable
 {
     /** @var ArrayList<Value> */
     public ArrayList $values;

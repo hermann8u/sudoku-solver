@@ -11,11 +11,10 @@ use Sudoku\Grid\Cell;
 use Sudoku\Grid\Cell\Coordinates;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Group;
-use Sudoku\Grid\Group\Number\RegionNumber;
+use Sudoku\Solver\Association\XWing;
+use Sudoku\Solver\Association\XWing\Direction;
 use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
-use Sudoku\Solver\XWing;
-use Sudoku\Solver\XWing\Direction;
 
 final readonly class XWingMethod implements Method
 {
@@ -31,19 +30,12 @@ final readonly class XWingMethod implements Method
     {
         $xWings = $this->buildXWings($candidatesByCell, $grid, $currentCell);
 
-        /** @var XWing $xWing */
         foreach ($xWings as $xWing) {
-            foreach ($xWing->getGroupsToModify($grid) as $group) {
-                foreach ($group->getEmptyCells() as $fillableCell) {
-                    if ($xWing->contains($fillableCell)) {
-                        continue;
-                    }
-
-                    $candidatesByCell = $candidatesByCell->with(
-                        $fillableCell,
-                        $candidatesByCell->get($fillableCell)->withRemovedValues($xWing->value),
-                    );
-                }
+            foreach ($xWing->getTargetedCells($grid) as $fillableCell) {
+                $candidatesByCell = $candidatesByCell->with(
+                    $fillableCell,
+                    $candidatesByCell->get($fillableCell)->withRemovedValues(...$xWing->getCandidatesToEliminate()),
+                );
             }
         }
 

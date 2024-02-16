@@ -6,7 +6,7 @@ use Sudoku\Grid\Cell\Coordinates;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Factory\ArrayGridFactory;
 use Sudoku\Grid\Factory\CsvGridFactory;
-use Sudoku\Solver\Association;
+use Sudoku\Solver\Association\NakedAssociation;
 use Sudoku\Solver\Candidates;
 
 /*
@@ -33,9 +33,9 @@ use Sudoku\Solver\Candidates;
 |
 */
 
-expect()->extend('toBeAssociation', function (Association $other) {
+expect()->extend('toBeAssociation', function (NakedAssociation $other) {
 
-    /** @var Association $association */
+    /** @var NakedAssociation $association */
     $association = $this->value;
 
     expect($association::class)->toBe($other::class);
@@ -45,7 +45,7 @@ expect()->extend('toBeAssociation', function (Association $other) {
     return $this;
 });
 
-expect()->extend('toHaveSameCandidates', function (Association $other) {
+expect()->extend('toHaveSameCandidates', function (NakedAssociation $other) {
     /** @var Candidates $candidates */
     $candidates = $this->value->candidates;
 
@@ -54,7 +54,7 @@ expect()->extend('toHaveSameCandidates', function (Association $other) {
     return $this;
 });
 
-expect()->extend('toHaveSameCoordinatesList', function (Association $other) {
+expect()->extend('toHaveSameCoordinatesList', function (NakedAssociation $other) {
     /** @var Coordinates[] $coordinatesList */
     $coordinatesList = $this->value->coordinatesList;
 

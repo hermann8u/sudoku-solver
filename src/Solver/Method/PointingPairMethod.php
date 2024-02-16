@@ -8,11 +8,10 @@ use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
-use Sudoku\Grid\Cell\Value;
 use Sudoku\Grid\Group;
+use Sudoku\Solver\Association\PointingPair;
 use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
-use Sudoku\Solver\PointingPair;
 
 final class PointingPairMethod implements Method
 {
@@ -21,24 +20,19 @@ final class PointingPairMethod implements Method
         return 'pointing_pair';
     }
 
+    /**
+     * @inheritDoc
+     */
     public function apply(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): Map
     {
         $pointingPairs = $this->getPointingPairsWithCell($candidatesByCell, $grid, $currentCell);
 
-        /** @var PointingPair $pointingPair */
         foreach ($pointingPairs as $pointingPair) {
             /** @var FillableCell $cell */
-            foreach ($pointingPair->getCellToUpdate() as $cell) {
-                /** @var Candidates $candidates */
-                $candidates = $candidatesByCell->get($cell);
-
-                if (! $candidates->values->exists(static fn (Value $v) => $v->equals($pointingPair->value))) {
-                    continue;
-                }
-
+            foreach ($pointingPair->getTargetedCells($grid) as $cell) {
                 $candidatesByCell = $candidatesByCell->with(
                     $cell,
-                    $candidates->withRemovedValues($pointingPair->value),
+                    $candidatesByCell->get($cell)->withRemovedValues(...$pointingPair->getCandidatesToEliminate()),
                 );
             }
         }

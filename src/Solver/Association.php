@@ -5,43 +5,19 @@ declare(strict_types=1);
 namespace Sudoku\Solver;
 
 use Sudoku\DataStructure\ArrayList;
-use Sudoku\Grid\Cell;
+use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
-use Sudoku\Grid\Group;
-use Webmozart\Assert\Assert;
+use Sudoku\Grid\Cell\Value;
 
-abstract readonly class Association
+interface Association
 {
     /**
-     * @param ArrayList<FillableCell> $cells
+     * @return ArrayList<FillableCell>
      */
-    public function __construct(
-        public Group $group,
-        public Candidates $candidates,
-        public ArrayList $cells,
-    ) {
-        Assert::count($this->cells, $this->getAssociationCount());
-        Assert::same($this->candidates->count(), $this->getAssociationCount());
-    }
-
-    public function toString(): string
-    {
-        return sprintf(
-            '%s => %s',
-            $this->candidates->toString(),
-            $this->cells
-                ->map(static fn (FillableCell $c) => $c->coordinates->toString())
-                ->implode(' '),
-        );
-    }
-
-    public function contains(Cell $other): bool
-    {
-        return $this->cells->exists(static fn (FillableCell $cell) => $cell->is($other));
-    }
+    public function getTargetedCells(Grid $grid): ArrayList;
 
     /**
-     * @return positive-int
+     * @return ArrayList<Value>
      */
-    abstract public static function getAssociationCount(): int;
+    public function getCandidatesToEliminate(): ArrayList;
 }

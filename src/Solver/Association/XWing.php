@@ -2,21 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Sudoku\Solver;
+namespace Sudoku\Solver\Association;
 
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Cell\Value;
-use Sudoku\Grid\Group\Column;
 use Sudoku\Grid\Group\GroupNumber;
 use Sudoku\Grid\Group\Number\ColumnNumber;
 use Sudoku\Grid\Group\Number\RowNumber;
-use Sudoku\Grid\Group\Row;
-use Sudoku\Solver\XWing\Direction;
+use Sudoku\Solver\Association;
+use Sudoku\Solver\Association\XWing\Direction;
 use Webmozart\Assert\Assert;
 
-final readonly class XWing
+final readonly class XWing implements Association
 {
     /** @var ArrayList<ColumnNumber> */
     public ArrayList $columnNumbers;
@@ -47,17 +46,9 @@ final readonly class XWing
         Assert::count($this->rowNumbers, 2);
     }
 
-    public function contains(FillableCell $cell): bool
+    public function getTargetedCells(Grid $grid): ArrayList
     {
-        return $this->cells->exists($cell->is(...));
-    }
-
-    /**
-     * @return ArrayList<Column>|ArrayList<Row>
-     */
-    public function getGroupsToModify(Grid $grid): ArrayList
-    {
-        return match ($this->direction) {
+        $groups = match ($this->direction) {
             Direction::Horizontal => $this->columnNumbers->map(
                 static fn (ColumnNumber $n) => $grid->columns->get($n),
             ),
@@ -65,6 +56,21 @@ final readonly class XWing
                 static fn (RowNumber $n) => $grid->rows->get($n),
             ),
         };
+
+        /** @var ArrayList<FillableCell> $groupsCells */
+        $groupsCells = $groups
+            ->map(static fn (Grid\Group $group) => $group->getEmptyCells())
+            ->reduce(
+                static fn (ArrayList $carry, ArrayList $cells) => $carry->with(...$cells),
+                ArrayList::empty(),
+            );
+
+        return $groupsCells->filter(fn (FillableCell $c) => ! $this->cells->exists($c->is(...)));
+    }
+
+    public function getCandidatesToEliminate(): ArrayList
+    {
+        return ArrayList::fromItems($this->value);
     }
 
     public function toString(): string

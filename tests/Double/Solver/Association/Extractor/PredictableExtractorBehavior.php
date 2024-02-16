@@ -7,12 +7,12 @@ namespace Sudoku\Tests\Double\Solver\Association\Extractor;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Group;
-use Sudoku\Solver\Association;
+use Sudoku\Solver\Association\NakedAssociation;
 
 trait PredictableExtractorBehavior
 {
     /**
-     * @param ArrayList<Association> $associations
+     * @param ArrayList<NakedAssociation> $associations
      */
     public function __construct(
         private readonly ArrayList $associations,

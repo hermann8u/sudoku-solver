@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Sudoku\Solver;
+namespace Sudoku\Solver\Association;
 
 use Sudoku\DataStructure\ArrayList;
+use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Cell\Value;
 use Sudoku\Grid\Group;
 use Sudoku\Grid\Group\Column;
 use Sudoku\Grid\Group\Region;
 use Sudoku\Grid\Group\Row;
+use Sudoku\Solver\Association;
 use Webmozart\Assert\Assert;
 
-final readonly class PointingPair
+final readonly class PointingPair implements Association
 {
     public const COUNT = 2;
 
@@ -36,12 +38,14 @@ final readonly class PointingPair
         Assert::count($this->cells, self::COUNT);
     }
 
-    /**
-     * @return ArrayList<FillableCell>
-     */
-    public function getCellToUpdate(): ArrayList
+    public function getTargetedCells(Grid $grid): ArrayList
     {
         return $this->pointingOn->getEmptyCellsNotInGroup($this->group);
+    }
+
+    public function getCandidatesToEliminate(): ArrayList
+    {
+        return ArrayList::fromItems($this->value);
     }
 
     public function toString(): string

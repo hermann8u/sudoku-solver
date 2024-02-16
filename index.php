@@ -5,11 +5,11 @@ use Sudoku\Grid\Cell\FixedValueCell;
 use Sudoku\Grid\Factory\ArrayGridFactory;
 use Sudoku\Grid\Factory\CsvGridFactory;
 use Sudoku\Solver;
-use Sudoku\Solver\Association\Extractor\HiddenPairExtractor;
 use Sudoku\Solver\Association\Extractor\PairExtractor;
 use Sudoku\Solver\Association\Extractor\TripletExtractor;
 use Sudoku\Solver\Method\ExclusiveAssociationMethod;
 use Sudoku\Solver\Method\ExclusiveMethod;
+use Sudoku\Solver\Method\HiddenPairMethod;
 use Sudoku\Solver\Method\InclusiveMethod;
 use Sudoku\Solver\Method\PointingPairMethod;
 use Sudoku\Solver\Method\XWingMethod;
@@ -33,9 +33,9 @@ $solver = new Solver(
             [
                 new TripletExtractor(),
                 new PairExtractor(),
-                new HiddenPairExtractor(),
             ],
         ),
+        new HiddenPairMethod(),
         new PointingPairMethod(),
         new YWingMethod(),
         new XWingMethod(),

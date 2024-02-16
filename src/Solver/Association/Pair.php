@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku\Solver\Association;
 
-use Sudoku\Solver\Association;
-
-final readonly class Pair extends Association
+final readonly class Pair extends NakedAssociation
 {
     public const COUNT = 2;
 
