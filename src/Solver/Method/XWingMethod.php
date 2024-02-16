@@ -39,12 +39,10 @@ final readonly class XWingMethod implements Method
                         continue;
                     }
 
-                    $candidates = $candidatesByCell->get($fillableCell)->withRemovedValues($xWing->value);
-                    $candidatesByCell = $candidatesByCell->with($fillableCell, $candidates);
-
-                    if ($candidates->hasUniqueCandidate()) {
-                        return $candidatesByCell;
-                    }
+                    $candidatesByCell = $candidatesByCell->with(
+                        $fillableCell,
+                        $candidatesByCell->get($fillableCell)->withRemovedValues($xWing->value),
+                    );
                 }
             }
         }

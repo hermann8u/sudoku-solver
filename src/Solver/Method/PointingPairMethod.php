@@ -36,13 +36,10 @@ final class PointingPairMethod implements Method
                     continue;
                 }
 
-                $candidates = $candidates->withRemovedValues($pointingPair->value);
-
-                $candidatesByCell = $candidatesByCell->with($cell, $candidates);
-
-                if ($candidates->hasUniqueCandidate()) {
-                    return $candidatesByCell;
-                }
+                $candidatesByCell = $candidatesByCell->with(
+                    $cell,
+                    $candidates->withRemovedValues($pointingPair->value),
+                );
             }
         }
 

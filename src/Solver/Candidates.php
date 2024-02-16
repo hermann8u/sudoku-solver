@@ -53,11 +53,6 @@ final readonly class Candidates implements Comparable, Stringable
         return new self(ArrayList::empty());
     }
 
-    public function hasUniqueCandidate(): bool
-    {
-        return $this->values->count() === 1;
-    }
-
     public function first(): Value
     {
         return $this->values->first();

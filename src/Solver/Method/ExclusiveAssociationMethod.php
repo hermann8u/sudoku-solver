@@ -47,14 +47,10 @@ final readonly class ExclusiveAssociationMethod implements Method
                     continue;
                 }
 
-                $candidates = $candidatesByCell->get($cell);
-                $candidates = $candidates->withRemovedValues(...$association->candidates->values);
-
-                $candidatesByCell = $candidatesByCell->with($cell, $candidates);
-
-                if ($candidates->hasUniqueCandidate()) {
-                    return $candidatesByCell;
-                }
+                $candidatesByCell = $candidatesByCell->with(
+                    $cell,
+                    $candidatesByCell->get($cell)->withRemovedValues(...$association->candidates->values),
+                );
             }
         }
 

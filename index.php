@@ -13,6 +13,7 @@ use Sudoku\Solver\Method\ExclusiveMethod;
 use Sudoku\Solver\Method\InclusiveMethod;
 use Sudoku\Solver\Method\PointingPairMethod;
 use Sudoku\Solver\Method\XWingMethod;
+use Sudoku\Solver\Method\YWingMethod;
 
 require './vendor/autoload.php';
 
@@ -36,6 +37,7 @@ $solver = new Solver(
             ],
         ),
         new PointingPairMethod(),
+        new YWingMethod(),
         new XWingMethod(),
         // Reapply exclusive method to make sure there is no new solution
         $exclusiveMethod,

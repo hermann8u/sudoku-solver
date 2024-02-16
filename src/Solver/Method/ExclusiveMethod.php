@@ -37,7 +37,7 @@ final readonly class ExclusiveMethod implements Method
                     $candidates,
                 );
 
-            if ($candidates->hasUniqueCandidate()) {
+            if ($candidates->count() === 1) {
                 return $candidatesByCell->with($currentCell, $candidates);
             }
         }
