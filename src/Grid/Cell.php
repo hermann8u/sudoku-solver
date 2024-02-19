@@ -30,6 +30,17 @@ abstract readonly class Cell
         return $this->coordinates->equals($cell->coordinates);
     }
 
+    public function hasCommonGroupWith(Cell $other): bool
+    {
+        $otherGroupNumbers = $other->getGroupNumbers();
+
+        return $this->getGroupNumbers()->exists(
+            static fn (GroupNumber $a) => $otherGroupNumbers->exists(
+                static fn (GroupNumber $b) => $a::class === $b::class && $a->equals($b),
+            ),
+        );
+    }
+
     /**
      * @return ArrayList<GroupNumber>
      */

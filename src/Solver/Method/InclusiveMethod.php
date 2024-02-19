@@ -37,10 +37,20 @@ final readonly class InclusiveMethod implements Method, CandidatesProvider
     {
         /** @var ArrayList<Value> $presentValuesInCellGroups */
         $presentValuesInCellGroups = $grid->getGroupsForCell($cell)->reduce(
-            static fn (ArrayList $carry, Group $group) => $carry->with(...$group->getPresentValues()),
+            $this->mergeValuesInGroup(...),
             ArrayList::empty(),
         );
 
         return Candidates::all()->withRemovedValues(...$presentValuesInCellGroups);
+    }
+
+    /**
+     * @param ArrayList<Value> $carry
+     *
+     * @return ArrayList<Value>
+     */
+    private function mergeValuesInGroup(ArrayList $carry, Group $group): ArrayList
+    {
+        return $carry->merge($group->getPresentValues());
     }
 }

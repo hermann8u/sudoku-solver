@@ -10,7 +10,6 @@ use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Cell\Value;
 use Sudoku\Grid\Group;
-use Sudoku\Grid\Group\GroupNumber;
 use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
 use Sudoku\Solver\YWing;
@@ -67,7 +66,6 @@ final class YWingMethod implements Method
                     Map $candidatesByPotentialFirstPincers,
                     Map $candidatesByPotentialSecondPincers,
                 ) use ($pivot, $pivotCandidates) {
-
                     $pincerAssociations = $this->associatePincers(
                         $candidatesByPotentialFirstPincers,
                         $candidatesByPotentialSecondPincers,
@@ -133,12 +131,8 @@ final class YWingMethod implements Method
         Candidates $pivotCandidates,
     ): iterable {
         foreach ($candidatesByPotentialFirstPincers as $firstPincer => $firstPincerCandidates) {
-            $firstPincerGroupNumbers = $firstPincer->getGroupNumbers();
-
             foreach ($candidatesByPotentialSecondPincers as $secondPincer => $secondPincerCandidates) {
-                $secondPincerGroupNumbers = $secondPincer->getGroupNumbers();
-
-                if ($this->hasCommonGroup($firstPincerGroupNumbers, $secondPincerGroupNumbers)) {
+                if ($firstPincer->hasCommonGroupWith($secondPincer)) {
                     continue;
                 }
 
@@ -155,20 +149,5 @@ final class YWingMethod implements Method
                 yield [$firstPincer, $secondPincer, $pincersCommonCandidates->first()];
             }
         }
-    }
-
-    /**
-     * @param ArrayList<GroupNumber> $firstGroupNumbers
-     * @param ArrayList<GroupNumber> $secondGroupNumbers
-     */
-    private function hasCommonGroup(ArrayList $firstGroupNumbers, ArrayList $secondGroupNumbers): bool
-    {
-        return $firstGroupNumbers->exists(
-            static fn (GroupNumber $firstPincerGroupNumber) => $secondGroupNumbers->exists(
-                static fn ($secondPincerGroupNumber) =>
-                    $firstPincerGroupNumber::class === $secondPincerGroupNumber::class
-                    && $firstPincerGroupNumber->equals($secondPincerGroupNumber),
-            ),
-        );
     }
 }

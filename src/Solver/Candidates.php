@@ -33,9 +33,9 @@ final readonly class Candidates implements Comparable, Stringable
         return self::fromIntegers($allIntegers);
     }
 
-    public static function fromValues(Value ...$values): self
+    public static function fromValues(Value $value, Value ...$values): self
     {
-        return new self(ArrayList::fromList($values));
+        return new self(ArrayList::fromItems($value, ...$values));
     }
 
     public static function fromString(string $valuesString): self
@@ -66,13 +66,14 @@ final readonly class Candidates implements Comparable, Stringable
         return $this->values->count();
     }
 
-    public function intersect(Candidates ...$others): self
+    public function intersect(Candidates $other, Candidates ...$others): self
     {
-        $othersToIntegers = array_map(static fn (Candidates $c) => $c->toIntegers(), $others);
+        $othersToIntegers = array_map(
+            static fn (Candidates $c) => $c->toIntegers(),
+            [$other, ...$others],
+        );
 
-        $intersect = $this->toIntegers()->intersect(...$othersToIntegers);
-
-        return self::fromIntegers($intersect);
+        return self::fromIntegers($this->toIntegers()->intersect(...$othersToIntegers));
     }
 
     public function merge(Candidates $other): self

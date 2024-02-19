@@ -7,7 +7,6 @@ namespace Sudoku;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Cell\FillableCell;
-use Sudoku\Grid\Group\GroupNumber;
 use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
 use Sudoku\Solver\Method\InclusiveMethod;
@@ -34,11 +33,9 @@ final readonly class Solver
      */
     public function solve(Grid $grid, int $stopAtStepNumber = self::MAX_ITERATION): Result
     {
-        $steps = iterator_to_array($this->getResolutionSteps($grid, $stopAtStepNumber));
-
         return new Result(
             $grid,
-            ArrayList::fromList($steps),
+            ArrayList::fromIterable($this->getResolutionSteps($grid, $stopAtStepNumber)),
         );
     }
 
@@ -133,22 +130,12 @@ final readonly class Solver
     {
         $candidatesByCell = $candidatesByCell->without($solution->cell);
 
-        $groupNumbersForSolutionCell = $solution->cell->getGroupNumbers();
-
         /**
          * @var FillableCell $currentCell
          * @var Candidates $candidates
          */
         foreach ($candidatesByCell as $currentCell => $candidates) {
-            $groupNumbersForCurrentCell = $currentCell->getGroupNumbers();
-
-            $hasCommonGroup = $groupNumbersForSolutionCell->exists(
-                static fn (GroupNumber $a) => $groupNumbersForCurrentCell->exists(
-                    static fn (GroupNumber $b) => $a::class === $b::class && $a->equals($b)
-                )
-            );
-
-            if (! $hasCommonGroup) {
+            if (! $currentCell->hasCommonGroupWith($solution->cell)) {
                 continue;
             }
 

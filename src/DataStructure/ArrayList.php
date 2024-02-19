@@ -59,6 +59,18 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
+     * @template UItem of mixed
+     *
+     * @param iterable<UItem> $iterable
+     *
+     * @return self<UItem>
+     */
+    public static function fromIterable(iterable $iterable): self
+    {
+        return new self(iterator_to_array($iterable, false));
+    }
+
+    /**
      * @template UItem
      *
      * @param callable(TItem): UItem $callable
@@ -81,12 +93,12 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
-     * @template U of mixed
+     * @template TInitial of mixed
      *
-     * @param callable(U, TItem): U $callable
-     * @param U $initial
+     * @param callable(TInitial, TItem): TInitial $callable
+     * @param TInitial $initial
      *
-     * @return U
+     * @return TInitial
      */
     public function reduce(callable $callable, mixed $initial): mixed
     {
@@ -201,15 +213,14 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
+     * @param ArrayList<TItem> $other
      * @param ArrayList<TItem> ...$others
      *
      * @return self<TItem>
      */
-    public function intersect(ArrayList ...$others): self
+    public function intersect(ArrayList $other, ArrayList ...$others): self
     {
-        if ($others === []) {
-            return $this;
-        }
+        $others = [$other, ...$others];
 
         $intersect = array_intersect($this->items, ...array_map(
             static fn (ArrayList $other) => $other->items,
@@ -228,13 +239,14 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
+     * @param TItem $item
      * @param TItem ...$items
      *
      * @return self<TItem>
      */
-    public function with(mixed ...$items): self
+    public function with(mixed $item, mixed ...$items): self
     {
-        return new self([...$this->items, ...$items]);
+        return new self([...$this->items, $item, ...$items]);
     }
 
     /**
@@ -288,11 +300,23 @@ final readonly class ArrayList implements Countable, IteratorAggregate
 
     /**
      * @param positive-int $length
-     * @param int<0, max> $offset
      *
      * @return self<TItem>
      */
-    public function takes(int $length, int $offset = 0): self
+    public function takes(int $length): self
+    {
+        return $this->slice(length: $length);
+    }
+
+    /**
+     * @param int $offset
+     * @param ?int $length
+     *
+     * @return self<TItem>
+     *
+     * @see https://www.php.net/manual/fr/function.array-slice.php
+     */
+    public function slice(int $offset = 0, ?int $length = null): self
     {
         return new self(array_slice($this->items, $offset, $length));
     }
