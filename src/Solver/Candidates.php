@@ -6,13 +6,13 @@ namespace Sudoku\Solver;
 
 use Stringable;
 use Sudoku\DataStructure\ArrayList;
-use Sudoku\DataStructure\Comparable;
+use Sudoku\DataStructure\Equable;
 use Sudoku\Grid\Cell\Value;
 
 /**
- * @implements Comparable<Candidates>
+ * @implements Equable<Candidates>
  */
-final readonly class Candidates implements Comparable, Stringable
+final readonly class Candidates implements Equable, Stringable
 {
     /** @var ArrayList<Value> */
     public ArrayList $values;
@@ -97,7 +97,7 @@ final readonly class Candidates implements Comparable, Stringable
         return new self($this->values->filter(static fn (Value $v) => ! $valuesToRemove->exists($v->equals(...))));
     }
 
-    public function equals(Comparable $other): bool
+    public function equals(Equable $other): bool
     {
         return $this->toIntegers()->toArray() === $other->toIntegers()->toArray();
     }

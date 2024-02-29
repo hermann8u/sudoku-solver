@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Sudoku\Grid\Group;
 
 use Stringable;
-use Sudoku\DataStructure\Comparable;
+use Sudoku\DataStructure\Equable;
 use Sudoku\Grid\Cell;
 use Sudoku\Grid\Cell\Coordinates;
 use Webmozart\Assert\Assert;
 
 /**
  * @template T of GroupNumber
- * @template-implements Comparable<T>
+ *
+ * @implements Equable<T>
  */
-abstract readonly class GroupNumber implements Stringable, Comparable
+abstract readonly class GroupNumber implements Equable, Stringable
 {
     public const MIN = 1;
     public const MAX = 9;
@@ -47,7 +48,7 @@ abstract readonly class GroupNumber implements Stringable, Comparable
     /**
      * @param T $other
      */
-    public function equals(Comparable $other): bool
+    public function equals(Equable $other): bool
     {
         return $this->value === $other->value;
     }

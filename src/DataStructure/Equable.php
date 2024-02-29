@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Sudoku\DataStructure;
 
 /**
- * @template T of Comparable
+ * @template T of Equable
  */
-interface Comparable
+interface Equable
 {
     /**
      * @param T $other

@@ -6,13 +6,13 @@ namespace Sudoku\Grid\Cell;
 
 use Stringable;
 use Sudoku\DataStructure\ArrayList;
-use Sudoku\DataStructure\Comparable;
+use Sudoku\DataStructure\Equable;
 use Webmozart\Assert\Assert;
 
 /**
- * @implements Comparable<Value>
+ * @implements Equable<Value>
  */
-final readonly class Value implements Comparable, Stringable
+final readonly class Value implements Equable, Stringable
 {
     public const MIN = 1;
     public const MAX = 9;
@@ -51,7 +51,7 @@ final readonly class Value implements Comparable, Stringable
         return (string) $this->value;
     }
 
-    public function equals(Comparable $other): bool
+    public function equals(Equable $other): bool
     {
         return $this->value === $other->value;
     }

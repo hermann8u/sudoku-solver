@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku\DataStructure;
 
+use Countable;
 use IteratorAggregate;
 use OutOfBoundsException;
 use Traversable;
@@ -18,7 +19,7 @@ use function count;
  *
  * @implements IteratorAggregate<TKey, TValue>
  */
-final readonly class Map implements \Countable, IteratorAggregate
+final readonly class Map implements Countable, IteratorAggregate
 {
     /**
      * @param TKey[] $keys
@@ -176,17 +177,14 @@ final readonly class Map implements \Countable, IteratorAggregate
      */
     private function search(object $offset): int
     {
+        /** @var callable(TKey): bool $comparisonCallable */
+        $comparisonCallable = match (true) {
+            $offset instanceof Equable => $offset->equals(...),
+            default => static fn (object $key) => $offset === $key,
+        };
+
         foreach ($this->keys as $index => $key) {
-            if ($key instanceof Comparable) {
-                /** @var Comparable $offset */
-                if ($key->equals($offset)) {
-                    return $index;
-                }
-
-                continue;
-            }
-
-            if ($offset === $key) {
+            if ($comparisonCallable($key)) {
                 return $index;
             }
         }

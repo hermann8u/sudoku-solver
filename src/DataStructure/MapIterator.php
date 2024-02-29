@@ -11,6 +11,7 @@ use function count;
 /**
  * @template TKey of object
  * @template TValue of mixed
+ *
  * @implements Iterator<TKey, TValue>
  */
 final class MapIterator implements Iterator

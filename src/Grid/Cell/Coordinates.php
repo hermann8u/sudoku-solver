@@ -6,13 +6,13 @@ namespace Sudoku\Grid\Cell;
 
 use Stringable;
 use Sudoku\DataStructure\ArrayList;
-use Sudoku\DataStructure\Comparable;
+use Sudoku\DataStructure\Equable;
 use Webmozart\Assert\Assert;
 
 /**
- * @implements Comparable<Coordinates>
+ * @implements Equable<Coordinates>
  */
-final readonly class Coordinates implements Comparable, Stringable
+final readonly class Coordinates implements Equable, Stringable
 {
     public const MIN = 1;
     public const MAX = 9;
@@ -76,7 +76,7 @@ final readonly class Coordinates implements Comparable, Stringable
         return $this->y . $this->x <=> $coordinates->y . $coordinates->x;
     }
 
-    public function equals(Comparable $other): bool
+    public function equals(Equable $other): bool
     {
         return $this->x === $other->x && $this->y === $other->y;
     }
