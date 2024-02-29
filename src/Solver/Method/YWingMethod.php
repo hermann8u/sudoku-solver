@@ -99,7 +99,7 @@ final class YWingMethod implements Method
         $pivotCandidates = $candidatesByCell->get($pivot);
 
         return $group->getEmptyCells()
-            ->filter(static fn (FillableCell $c) => ! $c->is($pivot))
+            ->filter($pivot->isNot(...))
             ->reduce(
                 function (Map $carry, FillableCell $pincer) use ($pivotCandidates, $candidatesByCell) {
                     $pincerCandidates = $candidatesByCell->get($pincer);

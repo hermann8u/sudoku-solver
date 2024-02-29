@@ -110,11 +110,11 @@ final readonly class Grid
         return false;
     }
 
-    public function withUpdatedCell(Coordinates $coordinates, Value $value): self
+    public function withUpdatedCell(FillableCell $cell, ?Value $value): self
     {
-        $cells = $this->cells->filter(static fn (Cell $cell) => ! $cell->coordinates->equals($coordinates));
+        $cells = $this->cells->filter($cell->isNot(...));
 
-        return new self($cells->with(new FillableCell($coordinates, $value)));
+        return new self($cells->with($cell->withValue($value)));
     }
 
     public function toString(): string

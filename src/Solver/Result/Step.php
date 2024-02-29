@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sudoku\Solver\Result;
 
 use Sudoku\DataStructure\Map;
+use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Solver\Candidates;
 
@@ -18,5 +19,14 @@ final readonly class Step
         public ?Map $candidatesByCell,
         public ?Solution $solution,
     ) {
+    }
+
+    public function applyOn(Grid $grid): Grid
+    {
+        if ($this->solution === null) {
+            return $grid;
+        }
+
+        return $grid->withUpdatedCell($this->solution->cell, $this->solution->value);
     }
 }

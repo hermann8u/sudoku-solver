@@ -30,7 +30,7 @@ final readonly class ExclusiveMethod implements Method
             $candidates = $initialCandidates;
 
             $candidates = $group->getEmptyCells()
-                ->filter(static fn (FillableCell $cell) => ! $cell->is($currentCell))
+                ->filter($currentCell->isNot(...))
                 ->reduce(
                     static fn (Candidates $carry, FillableCell $cell) =>
                         $carry->withRemovedValues(...$candidatesByCell->get($cell)->values),

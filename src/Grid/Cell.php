@@ -30,6 +30,11 @@ abstract readonly class Cell
         return $this->coordinates->equals($cell->coordinates);
     }
 
+    public function isNot(Cell $cell): bool
+    {
+        return ! $this->is($cell);
+    }
+
     public function hasCommonGroupWith(Cell $other): bool
     {
         return $this->hasGroupNumberIn($other->getGroupNumbers());

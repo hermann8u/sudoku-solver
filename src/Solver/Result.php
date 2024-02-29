@@ -29,13 +29,10 @@ final readonly class Result
         Grid $grid,
         public ArrayList $steps,
     ) {
-        foreach ($this->steps as $step) {
-            if ($step->solution === null) {
-                break;
-            }
-
-            $grid = $grid->withUpdatedCell($step->solution->cell->coordinates, $step->solution->value);
-        }
+        $grid = $this->steps->reduce(
+            static fn (Grid $grid, Step $step) => $step->applyOn($grid),
+            $grid,
+        );
 
         $this->grid = $grid;
         $this->memory = memory_get_peak_usage();

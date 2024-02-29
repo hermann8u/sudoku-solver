@@ -8,4 +8,8 @@ use Sudoku\Grid\Cell;
 
 final readonly class FillableCell extends Cell
 {
+    public function withValue(?Value $value): self
+    {
+        return new self($this->coordinates, $value);
+    }
 }

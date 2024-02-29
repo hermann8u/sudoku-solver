@@ -159,7 +159,7 @@ final readonly class XWingMethod implements Method
         bool $withFilter = true,
     ): Map {
         /** @var ArrayList<FillableCell> $cells */
-        $cells = $currentGroup->cells->filter(static fn (Cell $c) => $c->isEmpty() && ! $c->is($currentCell));
+        $cells = $currentGroup->cells->filter(static fn (Cell $c) => $c->isEmpty() && $c->isNot($currentCell));
 
         if ($cells->isEmpty()) {
             return Map::empty();

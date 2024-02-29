@@ -62,7 +62,7 @@ final class PointingPairMethod implements Method
         foreach ($otherGroups as $group) {
             $relatedCell = $group
                 ->getEmptyCellsInGroup($region)
-                ->filter(static fn (FillableCell $c) => ! $currentCell->is($c));
+                ->filter($currentCell->isNot(...));
 
             /** @var Map<FillableCell, Candidates> $intersectCandidatesByRelatedCell */
             $intersectCandidatesByRelatedCell = $relatedCell->reduce(
