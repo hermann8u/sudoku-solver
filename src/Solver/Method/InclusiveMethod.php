@@ -41,7 +41,7 @@ final readonly class InclusiveMethod implements Method, CandidatesProvider
             ArrayList::empty(),
         );
 
-        return Candidates::all()->withRemovedValues(...$presentValuesInCellGroups);
+        return Candidates::fromAllValues()->withRemovedValues(...$presentValuesInCellGroups);
     }
 
     /**

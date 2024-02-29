@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sudoku\Grid\Cell;
 
 use Stringable;
+use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Comparable;
 use Webmozart\Assert\Assert;
 
@@ -32,6 +33,17 @@ final readonly class Value implements Comparable, Stringable
     public static function from(int $value): self
     {
         return new self($value);
+    }
+
+    /**
+     * @return ArrayList<Value>
+     */
+    public static function all(): ArrayList
+    {
+        /** @var ArrayList<int<Value::MIN, Value::MAX>> $values */
+        $values = ArrayList::fromList(range(Value::MIN, Value::MAX));
+
+        return $values->map(static fn (int $v) => new self($v));
     }
 
     public function __toString(): string

@@ -71,4 +71,9 @@ final readonly class Result
     {
         return $this->steps->last()->candidatesByCell ?? Map::empty();
     }
+
+    public function hasNoSolution(): bool
+    {
+        return $this->getCandidatesByCell()->values()->exists(static fn (Candidates $c) => $c->count() === 0);
+    }
 }

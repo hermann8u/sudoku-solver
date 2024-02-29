@@ -25,12 +25,9 @@ final readonly class Candidates implements Comparable, Stringable
         $this->values = $values->sorted();
     }
 
-    public static function all(): self
+    public static function fromAllValues(): self
     {
-        /** @var ArrayList<int<Value::MIN, Value::MAX>> $allIntegers */
-        $allIntegers = ArrayList::fromList(range(Value::MIN, Value::MAX));
-
-        return self::fromIntegers($allIntegers);
+        return new self(Value::all());
     }
 
     public static function fromValues(Value $value, Value ...$values): self

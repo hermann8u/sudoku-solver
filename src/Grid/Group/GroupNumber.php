@@ -22,11 +22,19 @@ abstract readonly class GroupNumber implements Stringable, Comparable
     /**
      * @param int<self::MIN, self::MAX> $value
      */
-    protected function __construct(
+    final protected function __construct(
         public int $value,
     ) {
         Assert::greaterThanEq($this->value, self::MIN);
         Assert::lessThanEq($this->value, self::MAX);
+    }
+
+    /**
+     * @param int<self::MIN, self::MAX> $value
+     */
+    public static function from(int $value): static
+    {
+        return new static($value);
     }
 
     public static function fromCell(Cell $cell): static

@@ -32,10 +32,16 @@ abstract readonly class Cell
 
     public function hasCommonGroupWith(Cell $other): bool
     {
-        $otherGroupNumbers = $other->getGroupNumbers();
+        return $this->hasGroupNumberIn($other->getGroupNumbers());
+    }
 
+    /**
+     * @param ArrayList<GroupNumber> $groupNumbers
+     */
+    public function hasGroupNumberIn(ArrayList $groupNumbers): bool
+    {
         return $this->getGroupNumbers()->exists(
-            static fn (GroupNumber $a) => $otherGroupNumbers->exists(
+            static fn (GroupNumber $a) => $groupNumbers->exists(
                 static fn (GroupNumber $b) => $a::class === $b::class && $a->equals($b),
             ),
         );

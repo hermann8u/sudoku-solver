@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sudoku\Grid\Cell;
 
 use Stringable;
+use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Comparable;
 use Webmozart\Assert\Assert;
 
@@ -48,6 +49,23 @@ final readonly class Coordinates implements Comparable, Stringable
         [$x, $y] = explode(',', trim($coordinates, '()'));
 
         return self::from((int) $x, (int) $y);
+    }
+
+    /**
+     * @return ArrayList<Coordinates>
+     */
+    public static function all(): ArrayList
+    {
+        return ArrayList::fromList(range(0, 80))
+            ->map(static function (int $number) {
+                /** @var int<1, 9> $x */
+                $x = $number % self::MAX + 1;
+
+                /** @var int<1,9> $y */
+                $y = (int) floor($number / self::MAX) + 1;
+
+                return new self($x, $y);
+            });
     }
 
     /**
