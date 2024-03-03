@@ -23,6 +23,8 @@ use Webmozart\Assert\Assert;
 
 final readonly class Grid
 {
+    public const CELLS_COUNT = 81;
+
     /** @var Map<ColumnNumber, Column> */
     public Map $columns;
     /** @var Map<RowNumber, Row> */
@@ -36,7 +38,7 @@ final readonly class Grid
     public function __construct(
         public ArrayList $cells,
     ) {
-        Assert::count($this->cells, Coordinates::MAX * Coordinates::MAX);
+        Assert::count($this->cells, self::CELLS_COUNT);
 
         [$this->columns, $this->rows, $this->regions] = $this->prepareGroups($this->cells);
     }
@@ -111,11 +113,11 @@ final readonly class Grid
         return false;
     }
 
-    public function withUpdatedCell(FillableCell $cell, ?Value $value): self
+    public function withUpdatedCell(FillableCell $cell): self
     {
         $cells = $this->cells->filter($cell->isNot(...));
 
-        return new self($cells->with($cell->withValue($value)));
+        return new self($cells->with($cell));
     }
 
     public function toString(): string

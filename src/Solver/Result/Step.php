@@ -27,6 +27,6 @@ final readonly class Step
             return $grid;
         }
 
-        return $grid->withUpdatedCell($this->solution->cell, $this->solution->value);
+        return $grid->withUpdatedCell($this->solution->cell->withValue($this->solution->value));
     }
 }

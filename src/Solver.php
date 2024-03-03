@@ -59,7 +59,7 @@ final readonly class Solver
                 return yield new Step($i, $candidatesByCell, null);
             }
 
-            $grid = $grid->withUpdatedCell($solution->cell, $solution->value);
+            $grid = $grid->withUpdatedCell($solution->cell->withValue($solution->value));
             $candidatesByCell = $this->clearCandidatesByCellMapWithSolution($candidatesByCell, $solution);
             $shouldStop = $this->shouldStop($stopAtStepNumber, $i, $grid);
 
