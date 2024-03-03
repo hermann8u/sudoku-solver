@@ -27,39 +27,43 @@ final class YWing implements Association
 
     public function getTargetedCells(Grid $grid): ArrayList
     {
+        $associationCells = $this->pincers->with($this->pivot);
+
         /** @var ArrayList<ArrayList<FillableCell>> $emptyCellsTargetedByPincers */
         $emptyCellsTargetedByPincers = $this->pincers
             ->map(static fn (FillableCell $pincer) => $grid->getGroupsForCell($pincer))
             ->reduce(
                 fn (ArrayList $carry, ArrayList $groupsForPincer) => $carry->with(
                     $this->getEmptyCellsInGroups($groupsForPincer)
-                        ->filter(fn (FillableCell $c) => ! $this->pincers->with($this->pivot)->exists($c->is(...)))
+                        ->filter(fn (FillableCell $c) => ! $associationCells->exists($c->is(...)))
                         ->unique(static fn (FillableCell $a, FillableCell $b) => $a->is($b)),
                 ),
                 ArrayList::empty(),
             );
 
-        return $emptyCellsTargetedByPincers
-            ->multidimensionalLoop(
-                fn(
-                    ArrayList $carry,
-                    ArrayList $firstPincerTargetedCells,
-                    ArrayList $secondPincerTargetedCells,
-                ) => $carry->with(...$this->getCommonCells($firstPincerTargetedCells, $secondPincerTargetedCells)),
-                ArrayList::empty(),
-            );
+        return $emptyCellsTargetedByPincers->multidimensionalLoop($this->getCommonCells(...), ArrayList::empty());
+    }
+
+    public function getCandidatesToEliminate(): ArrayList
+    {
+        return ArrayList::fromItems($this->value);
     }
 
     public function toString(): string
     {
         return sprintf(
-            '%s => %s => %d',
+            'Y Wing : %s => %s => %s',
             $this->pivot->coordinates->toString(),
             $this->pincers
                 ->map(static fn (FillableCell $c) => $c->coordinates->toString())
                 ->implode(' '),
-            $this->value->value,
+            $this->value,
         );
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 
     /**
@@ -78,18 +82,16 @@ final class YWing implements Association
     }
 
     /**
+     * @param ArrayList<FillableCell> $carry
      * @param ArrayList<FillableCell> $firstCells
      * @param ArrayList<FillableCell> $secondCells
      *
      * @return ArrayList<FillableCell>
      */
-    private function getCommonCells(ArrayList $firstCells, ArrayList $secondCells): ArrayList
+    private function getCommonCells(ArrayList $carry, ArrayList $firstCells, ArrayList $secondCells): ArrayList
     {
-        return $firstCells->filter(static fn (FillableCell $c) => $secondCells->exists($c->is(...)));
-    }
+        $commonCells = $firstCells->filter(static fn (FillableCell $c) => $secondCells->exists($c->is(...)));
 
-    public function getCandidatesToEliminate(): ArrayList
-    {
-        return ArrayList::fromItems($this->value);
+        return $carry->merge($commonCells);
     }
 }

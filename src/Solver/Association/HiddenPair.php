@@ -42,11 +42,16 @@ final class HiddenPair implements Association
     public function toString(): string
     {
         return sprintf(
-            '%s => %s',
-            $this->values->implode(','),
+            'Hidden Pair : %s => %s',
             $this->cells
                 ->map(static fn (FillableCell $c) => $c->coordinates->toString())
                 ->implode(' '),
+            $this->values->implode(','),
         );
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 }

@@ -65,7 +65,7 @@ final readonly class XWing implements Association
                 ArrayList::empty(),
             );
 
-        return $groupsCells->filter(fn (FillableCell $c) => ! $this->cells->exists($c->is(...)));
+        return $groupsCells->filter(fn (FillableCell $c) => ! $this->contains($c));
     }
 
     public function getCandidatesToEliminate(): ArrayList
@@ -73,15 +73,25 @@ final readonly class XWing implements Association
         return ArrayList::fromItems($this->value);
     }
 
+    public function contains(FillableCell $cell): bool
+    {
+        return $this->cells->exists($cell->is(...));
+    }
+
     public function toString(): string
     {
         return sprintf(
-            '%s => %d => %s',
+            'X Wing %s : %s => %s',
             $this->direction->name,
-            $this->value->value,
             $this->cells
                 ->map(static fn (FillableCell $c) => $c->coordinates->toString())
                 ->implode(' '),
+            $this->value,
         );
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 }

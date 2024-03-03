@@ -1,7 +1,6 @@
 <?php
 
-use Sudoku\Solver\Association\Extractor\TripletExtractor;
-use Sudoku\Solver\Association\Triplet;
+use Sudoku\Solver\Association\Naked\Triplet;
 
 it('is able to find triplets', function (array $mapForGroupData, array $expectedAssociationStrings) {
     $mapForGroup = buildMapFrom($mapForGroupData);

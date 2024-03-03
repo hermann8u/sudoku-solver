@@ -3,8 +3,7 @@
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\Grid\Cell\Coordinates;
 use Sudoku\Grid\Cell\FillableCell;
-use Sudoku\Solver\Association\Pair;
-use Sudoku\Solver\Method\ExclusiveAssociationMethod;
+use Sudoku\Solver\Association\Naked\Pair;
 use Sudoku\Tests\Double\Solver\Association\Extractor\PredictablePairExtractor;
 
 it('exclude candidates present in pair', function () {

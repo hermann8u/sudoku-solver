@@ -5,10 +5,15 @@ use Sudoku\Grid\Cell\FixedValueCell;
 use Sudoku\Grid\Factory\ArrayGridFactory;
 use Sudoku\Grid\Factory\CsvGridFactory;
 use Sudoku\Solver;
-use Sudoku\Solver\Association\Extractor\PairExtractor;
-use Sudoku\Solver\Association\Extractor\TripletExtractor;
-use Sudoku\Solver\Method\ExclusiveAssociationMethod;
+use Sudoku\Solver\Method\Association\AssociationApplier;
+use Sudoku\Solver\Method\Association\Extractor\HiddenPairExtractor;
+use Sudoku\Solver\Method\Association\Extractor\PairExtractor;
+use Sudoku\Solver\Method\Association\Extractor\PointingPairExtractor;
+use Sudoku\Solver\Method\Association\Extractor\TripletExtractor;
+use Sudoku\Solver\Method\Association\Extractor\YWingExtractor;
 use Sudoku\Solver\Method\ExclusiveMethod;
+use Sudoku\Solver\Method\ExclusivePairMethod;
+use Sudoku\Solver\Method\ExclusiveTripletMethod;
 use Sudoku\Solver\Method\HiddenPairMethod;
 use Sudoku\Solver\Method\InclusiveMethod;
 use Sudoku\Solver\Method\PointingPairMethod;
@@ -23,22 +28,37 @@ $gridFactory = new CsvGridFactory(new ArrayGridFactory());
 $grid = $gridFactory->create($csvStringGrid);
 
 $exclusiveMethod = new ExclusiveMethod();
+$associationApplier = new AssociationApplier();
 
 $solver = new Solver(
     new InclusiveMethod(),
     [
         // Apply exclusive method early in order to find obvious solution
         $exclusiveMethod,
-        new ExclusiveAssociationMethod(
-            [
-                new TripletExtractor(),
-                new PairExtractor(),
-            ],
+        new ExclusiveTripletMethod(
+            new TripletExtractor(),
+            $associationApplier,
         ),
-        new HiddenPairMethod(),
-        new PointingPairMethod(),
-        new YWingMethod(),
-        new XWingMethod(),
+        new ExclusivePairMethod(
+            new PairExtractor(),
+            $associationApplier,
+        ),
+        new HiddenPairMethod(
+            new HiddenPairExtractor(),
+            $associationApplier,
+        ),
+        new PointingPairMethod(
+            new PointingPairExtractor(),
+            $associationApplier,
+        ),
+        new YWingMethod(
+            new YWingExtractor(),
+            $associationApplier,
+        ),
+        new XWingMethod(
+            new YWingExtractor(),
+            $associationApplier,
+        ),
         // Reapply exclusive method to make sure there is no new solution
         $exclusiveMethod,
     ],

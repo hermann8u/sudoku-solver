@@ -51,11 +51,16 @@ final readonly class PointingPair implements Association
     public function toString(): string
     {
         return sprintf(
-            '%d => %s',
-            $this->value->value,
+            'Pointing Pair : %s => %s',
             $this->cells
                 ->map(static fn (FillableCell $c) => $c->coordinates->toString())
                 ->implode(' '),
+            $this->value,
         );
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 }

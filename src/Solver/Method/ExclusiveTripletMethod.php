@@ -7,15 +7,15 @@ namespace Sudoku\Solver\Method;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
-use Sudoku\Solver\Association\PointingPair;
+use Sudoku\Solver\Association\Naked\Triplet;
 use Sudoku\Solver\Method;
 use Sudoku\Solver\Method\Association\AssociationApplier;
 use Sudoku\Solver\Method\Association\AssociationExtractor;
 
-final class PointingPairMethod implements Method
+final readonly class ExclusiveTripletMethod implements Method
 {
     /**
-     * @param AssociationExtractor<PointingPair> $extractor
+     * @param AssociationExtractor<Triplet> $extractor
      */
     public function __construct(
         private AssociationExtractor $extractor,
@@ -25,11 +25,11 @@ final class PointingPairMethod implements Method
 
     public static function getName(): string
     {
-        return 'pointing_pair';
+        return 'exclusive_triplet';
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function apply(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): Map
     {

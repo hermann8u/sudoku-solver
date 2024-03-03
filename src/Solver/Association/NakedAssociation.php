@@ -37,15 +37,9 @@ abstract readonly class NakedAssociation implements Association
         return $this->values;
     }
 
-    public function toString(): string
+    public function __toString(): string
     {
-        return sprintf(
-            '%s => %s',
-            $this->values->implode(','),
-            $this->cells
-                ->map(static fn (FillableCell $c) => $c->coordinates->toString())
-                ->implode(' '),
-        );
+        return $this->toString();
     }
 
     /**

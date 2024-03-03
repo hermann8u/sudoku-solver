@@ -51,6 +51,8 @@ final readonly class Solver
         do {
             $i++;
 
+            dump('Step n°' . $i);
+
             [$candidatesByCell, $solution] = $this->getNextSolution($grid, $candidatesByCell ?? null);
 
             if (! $solution instanceof Solution) {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Sudoku\Tests\Double\Solver\Association\Extractor;
 
-use Sudoku\Solver\Association\AssociationExtractor;
-use Sudoku\Solver\Association\Pair;
+use Sudoku\Solver\Method\Association\AssociationExtractor;
+use Sudoku\Solver\Association\Naked\Pair;
 
 /**
  * @implements AssociationExtractor<Pair>

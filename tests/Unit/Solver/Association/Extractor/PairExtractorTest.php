@@ -1,7 +1,7 @@
 <?php
 
 use Sudoku\Solver\Association\Extractor\PairExtractor;
-use Sudoku\Solver\Association\Pair;
+use Sudoku\Solver\Association\Naked\Pair;
 
 it('is able to find pairs', function (array $mapForGroupData, array $expectedAssociationStrings) {
     $mapForGroup = buildMapFrom($mapForGroupData);

@@ -72,6 +72,27 @@ final readonly class ArrayList implements Countable, IteratorAggregate
     }
 
     /**
+     * @param TItem $item
+     * @param TItem ...$items
+     *
+     * @return self<TItem>
+     */
+    public function with(mixed $item, mixed ...$items): self
+    {
+        return new self([...$this->items, $item, ...$items]);
+    }
+
+    /**
+     * @param ArrayList<TItem> $other
+     *
+     * @return self<TItem>
+     */
+    public function merge(ArrayList $other): self
+    {
+        return new self([...$this->items, ...$other->items]);
+    }
+
+    /**
      * @template UItem
      *
      * @param callable(TItem): UItem $callable
@@ -129,20 +150,51 @@ final readonly class ArrayList implements Countable, IteratorAggregate
         return $carry;
     }
 
-    /**
-     * @param callable(TItem): bool $callable
-     *
-     * @return ?TItem
-     */
-    public function findFirst(callable $callable): mixed
+    public function isEmpty(): bool
     {
-        foreach ($this->items as $item) {
-            if ($callable($item)) {
-                return $item;
-            }
+        return $this->items === [];
+    }
+
+    /**
+     * @return TItem
+     */
+    public function first(): mixed
+    {
+        if ($this->isEmpty()) {
+            throw new OutOfBoundsException();
         }
 
-        return null;
+        $items = $this->items;
+
+        /** @var TItem $item */
+        $item = reset($items);
+
+        return $item;
+    }
+
+    /**
+     * @return TItem
+     */
+    public function last(): mixed
+    {
+        if ($this->isEmpty()) {
+            throw new OutOfBoundsException();
+        }
+
+        $items = $this->items;
+
+        /** @var TItem $item */
+        $item = end($items);
+
+        return $item;
+    }
+
+    /**
+     * @param TItem $item
+     */
+    public function contains(mixed $item): bool
+    {
+        return in_array($item, $this->items, true);
     }
 
     /**
@@ -159,6 +211,22 @@ final readonly class ArrayList implements Countable, IteratorAggregate
         }
 
         return false;
+    }
+
+    /**
+     * @param callable(TItem): bool $callable
+     *
+     * @return ?TItem
+     */
+    public function findFirst(callable $callable): mixed
+    {
+        foreach ($this->items as $item) {
+            if ($callable($item)) {
+                return $item;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -229,74 +297,6 @@ final readonly class ArrayList implements Countable, IteratorAggregate
         ));
 
         return new self(array_values($intersect));
-    }
-
-    /**
-     * @param TItem $item
-     */
-    public function contains(mixed $item): bool
-    {
-        return in_array($item, $this->items, true);
-    }
-
-    /**
-     * @param TItem $item
-     * @param TItem ...$items
-     *
-     * @return self<TItem>
-     */
-    public function with(mixed $item, mixed ...$items): self
-    {
-        return new self([...$this->items, $item, ...$items]);
-    }
-
-    /**
-     * @param ArrayList<TItem> $other
-     *
-     * @return self<TItem>
-     */
-    public function merge(ArrayList $other): self
-    {
-        return new self([...$this->items, ...$other->items]);
-    }
-
-    public function isEmpty(): bool
-    {
-        return $this->items === [];
-    }
-
-    /**
-     * @return TItem
-     */
-    public function first(): mixed
-    {
-        if ($this->isEmpty()) {
-            throw new OutOfBoundsException();
-        }
-
-        $items = $this->items;
-
-        /** @var TItem $item */
-        $item = reset($items);
-
-        return $item;
-    }
-
-    /**
-     * @return TItem
-     */
-    public function last(): mixed
-    {
-        if ($this->isEmpty()) {
-            throw new OutOfBoundsException();
-        }
-
-        $items = $this->items;
-
-        /** @var TItem $item */
-        $item = end($items);
-
-        return $item;
     }
 
     /**

@@ -6,7 +6,8 @@ namespace Sudoku\Tests\Double\Solver\Association\Extractor;
 
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
-use Sudoku\Grid\Group;
+use Sudoku\Grid;
+use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Solver\Association\NakedAssociation;
 
 trait PredictableExtractorBehavior
@@ -19,7 +20,7 @@ trait PredictableExtractorBehavior
     ) {
     }
 
-    public function getAssociationsInGroup(Map $candidatesByCell, Group $group): ArrayList
+    public function getAssociationWithCell(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): iterable
     {
         return $this->associations;
     }

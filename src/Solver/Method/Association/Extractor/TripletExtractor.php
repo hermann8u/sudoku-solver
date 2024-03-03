@@ -2,46 +2,68 @@
 
 declare(strict_types=1);
 
-namespace Sudoku\Solver\Association\Extractor;
+namespace Sudoku\Solver\Method\Association\Extractor;
 
 use OutOfBoundsException;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
+use Sudoku\Grid;
 use Sudoku\Grid\Cell\FillableCell;
 use Sudoku\Grid\Group;
-use Sudoku\Solver\Association\AssociationExtractor;
-use Sudoku\Solver\Association\Pair;
-use Sudoku\Solver\Association\Triplet;
+use Sudoku\Solver\Association\Naked\Pair;
+use Sudoku\Solver\Association\Naked\Triplet;
 use Sudoku\Solver\Candidates;
+use Sudoku\Solver\Method\Association\AssociationExtractor;
 
 /**
  * @implements AssociationExtractor<Triplet>
  */
 final readonly class TripletExtractor implements AssociationExtractor
 {
-    /**
-     * @inheritdoc
-     */
-    public function getAssociationsInGroup(Map $candidatesByCell, Group $group): iterable
-    {
-        /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
-        $cellsByCandidates = $group->getEmptyCells()->multidimensionalLoop(
-            fn (Map $carry, FillableCell $a, FillableCell $b) => $this->tryToAssociateCells($candidatesByCell, $carry, $a, $b),
-            Map::empty(),
-        );
-
-        foreach ($cellsByCandidates as $candidates => $cells) {
-            if ($cells->count() !== Triplet::COUNT) {
-                continue;
-            }
-
-            yield new Triplet($group, $cells, $candidates->values);
-        }
-    }
-
     public static function getAssociationType(): string
     {
         return Triplet::class;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAssociationWithCell(Map $candidatesByCell, Grid $grid, FillableCell $currentCell): iterable
+    {
+        if ($candidatesByCell->get($currentCell)->count() > Triplet::COUNT) {
+            return;
+        }
+
+        $groups = $grid->getGroupsForCell($currentCell);
+
+        /** @var Group $group */
+        foreach ($groups as $group) {
+            $cells = $group->getEmptyCells()->filter($currentCell->isNot(...));
+
+            // We don't need to identify association in groups with less remaining cells than association count
+            if ($cells->count() < Triplet::COUNT) {
+                continue;
+            }
+
+            /** @var Map<Candidates, ArrayList<FillableCell>> $cellsByCandidates */
+            $cellsByCandidates = $cells->reduce(
+                fn (Map $carry, FillableCell $relatedCell) => $this->tryToAssociateCells(
+                    $candidatesByCell,
+                    $carry,
+                    $currentCell,
+                    $relatedCell,
+                ),
+                Map::empty(),
+            );
+
+            foreach ($cellsByCandidates as $candidates => $cells) {
+                if ($cells->count() !== Triplet::COUNT) {
+                    continue;
+                }
+
+                yield new Triplet($group, $cells, $candidates->values);
+            }
+        }
     }
 
     /**
@@ -53,15 +75,15 @@ final readonly class TripletExtractor implements AssociationExtractor
     private function tryToAssociateCells(
         Map $map,
         Map $carry,
-        FillableCell $a,
-        FillableCell $b,
+        FillableCell $currentCell,
+        FillableCell $relatedCell,
     ): Map {
-        $candidatesA = $map->get($a);
-        $candidatesB = $map->get($b);
+        $currentCellCandidates = $map->get($currentCell);
+        $relatedCellCandidates = $map->get($relatedCell);
 
         [$candidatesWithSmallerCount, $candidatesWithBiggerCount] = $this->sortByCount(
-            $candidatesA,
-            $candidatesB,
+            $currentCellCandidates,
+            $relatedCellCandidates,
         );
 
         $candidates = match ($candidatesWithBiggerCount->count()) {
@@ -77,18 +99,10 @@ final readonly class TripletExtractor implements AssociationExtractor
         try {
             $cells = $carry->get($candidates);
         } catch (OutOfBoundsException) {
-            return $carry->with($candidates, ArrayList::fromItems($a, $b));
+            return $carry->with($candidates, ArrayList::fromItems($currentCell, $relatedCell));
         }
 
-        if (! $cells->contains($a)) {
-            $cells = $cells->with($a);
-        }
-
-        if (! $cells->contains($b)) {
-            $cells = $cells->with($b);
-        }
-
-        return $carry->with($candidates, $cells);
+        return $carry->with($candidates, $cells->with($relatedCell));
     }
 
     /**
