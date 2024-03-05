@@ -20,8 +20,6 @@ final class AssociationApplier
      */
     public function apply(Map $candidatesByCell, Grid $grid, Association $association): array
     {
-        dump($association->toString());
-
         $hasSolution = false;
 
         foreach ($association->getTargetedCells($grid) as $cell) {
@@ -37,7 +35,7 @@ final class AssociationApplier
                 continue;
             }
 
-            dump('Update : ' . $cell->coordinates->toString() . ' => ' . $candidates->toString());
+            dump(sprintf('Update candidates %s => %s with association %s', $cell->coordinates->toString(), $candidates->toString(), $association->toString()));
 
             $candidatesByCell = $candidatesByCell->with($cell, $candidates);
         }

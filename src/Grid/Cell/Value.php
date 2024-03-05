@@ -46,13 +46,18 @@ final readonly class Value implements Equable, Stringable
         return $values->map(static fn (int $v) => new self($v));
     }
 
-    public function __toString(): string
+    public function equals(Equable $other): bool
+    {
+        return $this->value === $other->value;
+    }
+
+    public function toString(): string
     {
         return (string) $this->value;
     }
 
-    public function equals(Equable $other): bool
+    public function __toString(): string
     {
-        return $this->value === $other->value;
+        return $this->toString();
     }
 }

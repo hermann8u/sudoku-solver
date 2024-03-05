@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku\Grid;
 
+use Stringable;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\Grid\Cell\Coordinates;
 use Sudoku\Grid\Cell\Value;
@@ -12,7 +13,7 @@ use Sudoku\Grid\Group\Number\ColumnNumber;
 use Sudoku\Grid\Group\Number\RegionNumber;
 use Sudoku\Grid\Group\Number\RowNumber;
 
-abstract readonly class Cell
+abstract readonly class Cell implements Stringable
 {
     public function __construct(
         public Coordinates $coordinates,
@@ -78,5 +79,15 @@ abstract readonly class Cell
     public function getRegionNumber(): RegionNumber
     {
         return RegionNumber::fromCell($this);
+    }
+
+    public function toString(): string
+    {
+        return sprintf('%s => %s', $this->coordinates, $this->value ?? '');
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 }

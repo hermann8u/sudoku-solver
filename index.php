@@ -182,9 +182,7 @@ dump($result);
 
         <ol class="steps">
             <?php foreach ($result->steps as $step) : ?>
-                <?php if ($step->solution !== null) : ?>
-                    <li><?= $step->solution ?></li>
-                <?php endif ?>
+                <li><?= $step->solution ?? 'No solution' ?></li>
             <?php endforeach; ?>
         </ol>
     </div>
