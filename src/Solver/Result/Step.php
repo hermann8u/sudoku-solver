@@ -14,11 +14,26 @@ final readonly class Step
     /**
      * @param ?Map<FillableCell, Candidates> $candidatesByCell
      */
-    public function __construct(
-        public int $number,
-        public ?Map $candidatesByCell,
+    private function __construct(
         public ?Solution $solution,
+        public ?Map $candidatesByCell,
     ) {
+    }
+
+    /**
+     * @param ?Map<FillableCell, Candidates> $candidatesByCell
+     */
+    public static function fromSolution(Solution $solution, ?Map $candidatesByCell = null): self
+    {
+        return new self($solution, $candidatesByCell);
+    }
+
+    /**
+     * @param Map<FillableCell, Candidates> $candidatesByCell
+     */
+    public static function fromNoSolution(Map $candidatesByCell): self
+    {
+        return new self(null, $candidatesByCell);
     }
 
     public function applyOn(Grid $grid): Grid

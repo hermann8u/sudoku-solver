@@ -7,9 +7,11 @@ namespace Sudoku;
 use Sudoku\DataStructure\ArrayList;
 use Sudoku\DataStructure\Map;
 use Sudoku\Grid\Cell\FillableCell;
+use Sudoku\Solver\BackTrackingSolver;
 use Sudoku\Solver\Candidates;
 use Sudoku\Solver\Method;
 use Sudoku\Solver\Method\InclusiveMethod;
+use Sudoku\Solver\NoSolutionException;
 use Sudoku\Solver\Result;
 use Sudoku\Solver\Result\Solution;
 use Sudoku\Solver\Result\Step;
@@ -25,6 +27,7 @@ final readonly class Solver
     public function __construct(
         private InclusiveMethod $initialMethod,
         private iterable $methods,
+        private ?BackTrackingSolver $backTrackingSolver = null,
     ) {
     }
 
@@ -51,25 +54,31 @@ final readonly class Solver
         do {
             $i++;
 
-            dump('Step n°' . $i);
+            try {
+                [$candidatesByCell, $solution] = $this->getNextSolution($grid, $candidatesByCell ?? null);
+            } catch (NoSolutionException $e) {
+                return yield Step::fromNoSolution($e->candidatesByCell);
+            }
 
-            [$candidatesByCell, $solution] = $this->getNextSolution($grid, $candidatesByCell ?? null);
-
-            if (! $solution instanceof Solution) {
-                return yield new Step($i, $candidatesByCell, null);
+            if ($solution === null) {
+                return $this->backTrackingSolver
+                    ? yield from $this->backTrackingSolver->getResolutionSteps($grid, $candidatesByCell)
+                    : yield Step::fromNoSolution($candidatesByCell);
             }
 
             $grid = $grid->withUpdatedCell($solution->updatedCell);
-            $candidatesByCell = $this->clearCandidatesByCellMapWithSolution($candidatesByCell, $solution);
+            $candidatesByCell = $this->updateCandidatesFromSolution($candidatesByCell, $solution);
             $shouldStop = $this->shouldStop($stopAtStepNumber, $i, $grid);
 
-            yield new Step($i, $shouldStop ? $candidatesByCell : null, $solution);
+            yield Step::fromSolution($solution, $shouldStop ? $candidatesByCell : null);
 
         } while (! $shouldStop);
     }
 
     /**
      * @return array{Map<FillableCell, Candidates>, ?Solution}
+     *
+     * @throws NoSolutionException
      */
     public function getNextSolution(Grid $grid, ?Map $candidatesByCell = null): array
     {
@@ -88,19 +97,25 @@ final readonly class Solver
                 foreach ($candidatesByCell as $cell => $candidates) {
                     $candidatesCount = $candidates->count();
 
+                    if ($candidatesCount === 0) {
+                        throw new NoSolutionException($candidatesByCell);
+                    }
+
                     if ($candidatesCount > 1) {
                         continue;
                     }
 
-                    return match ($candidatesCount) {
-                        0 => [$candidatesByCell, null],
-                        1 => [$candidatesByCell, new Solution($method::getName(), $cell, $candidates->first())],
-                    };
+                    return [$candidatesByCell, new Solution($method::getName(), $cell, $candidates->first())];
                 }
             }
         }
 
         return [$candidatesByCell, null];
+    }
+
+    public function withBackTracking(BackTrackingSolver $backTracking): self
+    {
+        return new self($this->initialMethod, $this->methods, $backTracking);
     }
 
     /**
@@ -128,7 +143,7 @@ final readonly class Solver
      *
      * @return Map<FillableCell, Candidates>
      */
-    private function clearCandidatesByCellMapWithSolution(Map $candidatesByCell, Solution $solution): Map
+    private function updateCandidatesFromSolution(Map $candidatesByCell, Solution $solution): Map
     {
         $candidatesByCell = $candidatesByCell->without($solution->cell);
 

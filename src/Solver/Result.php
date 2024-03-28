@@ -29,12 +29,11 @@ final readonly class Result
         Grid $grid,
         public ArrayList $steps,
     ) {
-        $grid = $this->steps->reduce(
+        $this->grid = $this->steps->reduce(
             static fn (Grid $grid, Step $step) => $step->applyOn($grid),
             $grid,
         );
 
-        $this->grid = $grid;
         $this->memory = memory_get_peak_usage();
         $this->realMemory = round($this->memory / 1024 / 1024, 5) . ' MiB';
         $this->solved = $this->grid->isSolved();
@@ -49,11 +48,13 @@ final readonly class Result
 
     public function getStepNumberForCell(Cell $cell): ?int
     {
-        return $this->steps
-            ->findFirst(static fn (Step $step) => $step->solution !== null
-                && $cell->coordinates->equals($step->solution->cell->coordinates)
-            )
-            ?->number;
+        foreach ($this->steps as $key => $step) {
+            if ($step->solution !== null && $cell->coordinates->equals($step->solution->cell->coordinates)) {
+                return $key + 1;
+            }
+        }
+
+        return null;
     }
 
     public function isSolved(): bool

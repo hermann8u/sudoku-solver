@@ -35,8 +35,6 @@ final class AssociationApplier
                 continue;
             }
 
-            dump(sprintf('Update candidates %s => %s with association %s', $cell->coordinates->toString(), $candidates->toString(), $association->toString()));
-
             $candidatesByCell = $candidatesByCell->with($cell, $candidates);
         }
 

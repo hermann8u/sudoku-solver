@@ -83,11 +83,11 @@ final readonly class Coordinates implements Equable, Stringable
 
     public function toString(): string
     {
-        return (string) $this;
+        return sprintf('(%d,%d)', $this->x, $this->y);
     }
 
     public function __toString(): string
     {
-        return sprintf('(%d,%d)', $this->x, $this->y);
+        return $this->toString();
     }
 }

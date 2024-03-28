@@ -5,11 +5,13 @@ use Sudoku\Grid\Cell\FixedValueCell;
 use Sudoku\Grid\Factory\ArrayGridFactory;
 use Sudoku\Grid\Factory\CsvGridFactory;
 use Sudoku\Solver;
+use Sudoku\Solver\BackTrackingSolver;
 use Sudoku\Solver\Method\Association\AssociationApplier;
 use Sudoku\Solver\Method\Association\Extractor\HiddenPairExtractor;
 use Sudoku\Solver\Method\Association\Extractor\PairExtractor;
 use Sudoku\Solver\Method\Association\Extractor\PointingPairExtractor;
 use Sudoku\Solver\Method\Association\Extractor\TripletExtractor;
+use Sudoku\Solver\Method\Association\Extractor\XWingExtractor;
 use Sudoku\Solver\Method\Association\Extractor\YWingExtractor;
 use Sudoku\Solver\Method\ExclusiveMethod;
 use Sudoku\Solver\Method\ExclusivePairMethod;
@@ -56,13 +58,15 @@ $solver = new Solver(
             $associationApplier,
         ),
         new XWingMethod(
-            new YWingExtractor(),
+            new XWingExtractor(),
             $associationApplier,
         ),
         // Reapply exclusive method to make sure there is no new solution
         $exclusiveMethod,
     ],
 );
+
+$solver = $solver->withBackTracking(new BackTrackingSolver($solver));
 
 $result = $solver->solve($grid);
 
